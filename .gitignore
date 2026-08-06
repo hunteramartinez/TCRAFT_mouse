@@ -1,0 +1,11 @@
+# ignore input data
+/input_data
+
+# ignore output files
+/output
+
+.DS_Store
+
+/TCRAFT.egg-info
+pyproject.toml
+uv.lock

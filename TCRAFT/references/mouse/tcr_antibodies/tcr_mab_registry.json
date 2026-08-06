@@ -1,0 +1,248 @@
+{
+  "TRBV1": [
+    {
+      "clone": "B20.6",
+      "reference": "Necker et al., 1991",
+      "protein_name": "Vb2",
+      "primary_target": "TRBV1",
+      "all_reactive_genes": ["TRBV1"],
+      "non_reactive_genes": []
+    }
+  ],
+  "TRBV2": [
+    {
+      "clone": "KT4",
+      "reference": "Tomonari et al., 1990",
+      "protein_name": "Vb4",
+      "primary_target": "TRBV2",
+      "all_reactive_genes": ["TRBV2"],
+      "non_reactive_genes": []
+    }
+  ],
+  "TRBV12-1": [
+    {
+      "clone": "MR9-4",
+      "reference": "Kanagawa et al., 1991",
+      "protein_name": "Vb5.1, 5.2",
+      "primary_target": "TRBV12-1, TRBV12-2",
+      "all_reactive_genes": ["TRBV12-1", "TRBV12-2"],
+      "non_reactive_genes": []
+    }
+  ],
+  "TRBV12-2": [
+    {
+      "clone": "MR9-4",
+      "reference": "Kanagawa et al., 1991",
+      "protein_name": "Vb5.1, 5.2",
+      "primary_target": "TRBV12-1, TRBV12-2",
+      "all_reactive_genes": ["TRBV12-1", "TRBV12-2"],
+      "non_reactive_genes": []
+    }
+  ],
+  "TRBV13-1": [
+    {
+      "clone": "1B3.3",
+      "reference": "Kersh et al., 1998",
+      "protein_name": "Vb8.3",
+      "primary_target": "TRBV13-1",
+      "all_reactive_genes": ["TRBV13-1"],
+      "non_reactive_genes": ["TRBV13-2", "TRBV13-3"]
+    },
+    {
+      "clone": "F23.1",
+      "reference": "Staerz et al., 1985",
+      "protein_name": "Vb8",
+      "primary_target": "TRBV13-1/2/3",
+      "all_reactive_genes": ["TRBV13-1", "TRBV13-2", "TRBV13-3"],
+      "non_reactive_genes": []
+    }
+  ],
+  "TRBV13-2": [
+    {
+      "clone": "KJ16-1332",
+      "reference": "Haskins et al., 1984",
+      "protein_name": "Vb8.1, 8.2",
+      "primary_target": "TRBV13-2 > TRBV13-3",
+      "all_reactive_genes": ["TRBV13-2", "TRBV13-3"],
+      "non_reactive_genes": ["TRBV13-1"]
+    },
+    {
+      "clone": "MR5-2",
+      "reference": "Kanagawa, 1988",
+      "protein_name": "Vb8.1, 8.2",
+      "primary_target": "TRBV13-3 > TRBV13-2",
+      "all_reactive_genes": ["TRBV13-3", "TRBV13-2"],
+      "non_reactive_genes": ["TRBV13-1"]
+    },
+    {
+      "clone": "F23.1",
+      "reference": "Staerz et al., 1985",
+      "protein_name": "Vb8",
+      "primary_target": "TRBV13-1/2/3",
+      "all_reactive_genes": ["TRBV13-1", "TRBV13-2", "TRBV13-3"],
+      "non_reactive_genes": []
+    }
+  ],
+  "TRBV13-3": [
+    {
+      "clone": "KJ16-1332",
+      "reference": "Haskins et al., 1984",
+      "protein_name": "Vb8.1, 8.2",
+      "primary_target": "TRBV13-2 > TRBV13-3",
+      "all_reactive_genes": ["TRBV13-2", "TRBV13-3"],
+      "non_reactive_genes": ["TRBV13-1"]
+    },
+    {
+      "clone": "MR5-2",
+      "reference": "Kanagawa, 1988",
+      "protein_name": "Vb8.1, 8.2",
+      "primary_target": "TRBV13-3 > TRBV13-2",
+      "all_reactive_genes": ["TRBV13-3", "TRBV13-2"],
+      "non_reactive_genes": ["TRBV13-1"]
+    },
+    {
+      "clone": "F23.1",
+      "reference": "Staerz et al., 1985",
+      "protein_name": "Vb8",
+      "primary_target": "TRBV13-1/2/3",
+      "all_reactive_genes": ["TRBV13-1", "TRBV13-2", "TRBV13-3"],
+      "non_reactive_genes": []
+    }
+  ],
+  "TRBV14": [
+    {
+      "clone": "MR12-4",
+      "reference": "Zaller et al., 1990",
+      "protein_name": "Vb13",
+      "primary_target": "TRBV14",
+      "all_reactive_genes": ["TRBV14"],
+      "non_reactive_genes": []
+    }
+  ],
+  "TRBV15": [
+    {
+      "clone": "MR11-1",
+      "reference": "Abe et al., 1991",
+      "protein_name": "Vb12",
+      "primary_target": "TRBV15",
+      "all_reactive_genes": ["TRBV15"],
+      "non_reactive_genes": []
+    }
+  ],
+  "TRBV16": [
+    {
+      "clone": "KT11",
+      "reference": "Tomonari and Lovering, 1988",
+      "protein_name": "Vb11",
+      "primary_target": "TRBV16",
+      "all_reactive_genes": ["TRBV16"],
+      "non_reactive_genes": []
+    },
+    {
+      "clone": "RR3-15",
+      "reference": "Bill et al., 1989",
+      "protein_name": "Vb11",
+      "primary_target": "TRBV16",
+      "all_reactive_genes": ["TRBV16"],
+      "non_reactive_genes": []
+    }
+  ],
+  "TRBV17": [
+    {
+      "clone": "MR10-2",
+      "reference": "Utsunomiya et al., 1991",
+      "protein_name": "Vb9",
+      "primary_target": "TRBV17",
+      "all_reactive_genes": ["TRBV17"],
+      "non_reactive_genes": []
+    }
+  ],
+  "TRBV19": [
+    {
+      "clone": "RR4-7",
+      "reference": "Kanagawa et al., 1989",
+      "protein_name": "Vb6",
+      "primary_target": "TRBV19",
+      "all_reactive_genes": ["TRBV19"],
+      "non_reactive_genes": []
+    }
+  ],
+  "TRBV26": [
+    {
+      "clone": "KJ25",
+      "reference": "Pullen et al., 1988",
+      "protein_name": "Vb3",
+      "primary_target": "TRBV26",
+      "all_reactive_genes": ["TRBV26"],
+      "non_reactive_genes": []
+    }
+  ],
+  "TRBV29": [
+    {
+      "clone": "TR310",
+      "reference": "Okada et al., 1990",
+      "protein_name": "Vb7",
+      "primary_target": "TRBV29",
+      "all_reactive_genes": ["TRBV29"],
+      "non_reactive_genes": []
+    }
+  ],
+  "TRBV31": [
+    {
+      "clone": "14-2",
+      "reference": "Liao et al., 1989",
+      "protein_name": "Vb14",
+      "primary_target": "TRBV31",
+      "all_reactive_genes": ["TRBV31"],
+      "non_reactive_genes": []
+    }
+  ],
+  "TRAV4-4/DV10": [
+    {
+      "clone": "RR8-1",
+      "reference": "Jameson et al., 1991",
+      "protein_name": "Va11.1, 11.2",
+      "primary_target": "TRAV4-4/DV10",
+      "all_reactive_genes": ["TRAV4-4/DV10"],
+      "non_reactive_genes": ["TRAV4-1", "TRAV4-2", "TRAV4-3"]
+    }
+  ],
+  "TRAV9N-3": [
+    {
+      "clone": "RR3-16",
+      "reference": "Utsunomiya et al., 1989",
+      "protein_name": "Va3.2",
+      "primary_target": "TRAV9N-3",
+      "all_reactive_genes": ["TRAV9N-3"],
+      "non_reactive_genes": ["TRAV9-1", "TRAV9-2", "TRAV9-4"]
+    }
+  ],
+  "TRAV12-3": [
+    {
+      "clone": "KT50",
+      "reference": "Tomonari et al., 1989",
+      "protein_name": "Va8.3",
+      "primary_target": "TRAV12-3",
+      "all_reactive_genes": ["TRAV12-3"],
+      "non_reactive_genes": ["TRAV12-1", "TRAV12-2"]
+    },
+    {
+      "clone": "B21.14",
+      "reference": "Necker et al., 1991",
+      "protein_name": "Va8.3",
+      "primary_target": "TRAV12-3",
+      "all_reactive_genes": ["TRAV12-3"],
+      "non_reactive_genes": ["TRAV12-1", "TRAV12-2"]
+    }
+  ],
+  "TRAV14": [
+    {
+      "clone": "B20.1",
+      "reference": "Pircher et al., 1992",
+      "protein_name": "Va2",
+      "primary_target": "TRAV14",
+      "all_reactive_genes": ["TRAV14"],
+      "non_reactive_genes": []
+    }
+  ]
+}

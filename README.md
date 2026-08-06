@@ -1,97 +1,114 @@
-# TCRAFT
-TCRAFT is a a scalable and cost-effective platform for pooled assembly of synthetic TCR libraries. This software package converts a table of user-inputted TCR sequences into CDR3 oligonucleotide pools to order for the TCRAFT assembly process. 
+# TCRAFT — Mouse
 
-The TCRAFT package requires prior installation of [Python](https://www.python.org/downloads/) 3.7 or higher as well as an updated version of pip.
+TCRAFT is a scalable and cost-effective platform for TCR library assembly. This mouse-specific fork extends the original human TCRAFT package with a second pipeline: **TCRAFT-hdr**, which designs all DNA fragments required for Cas9-RNP mediated knock-in of a paired TCRαβ into the endogenous mouse TRAC locus.
+
+---
 
 ## Installation
 
-### Option 1: Install from GitHub
-This option requires you to have [Git](https://git-scm.com/downloads) installed.
-1. Open Terminal or Command Prompt on your machine.
-2. Enter the following command: `pip install git+https://github.com/birnbaumlab/TCRAFT.git`
+Requires Python 3.9+ and [uv](https://docs.astral.sh/uv/).
 
-### Option 2: Build the TCRAFT package locally
-1. Download or clone the TCRAFT git repository locally.
-2. In Terminal or Command Prompt, navigate to the base directory of the package (`/TCRAFT`) and execute the following command: `pip install .`
-  
-### Note: Using TCRAFT command line interface
-In order to use the command line interface to run TCRAFT, you will need to either install TCRAFT inside of a [Conda](https://www.anaconda.com/download/success) environment or make sure that the folder where your Python packages are installed is added to your `$PATH` environment variable.
+```bash
+git clone <repo>
+cd TCRAFT_mouse
+uv sync
+```
 
-If you are unfamiliar with these steps or are not interested in this, TCRAFT can also be imported and run from within a Python script. Both the Python and Command Line versions are identical, and instructions are provided for both options below.
+This creates a virtual environment and installs all dependencies from `uv.lock`. To install in editable mode for development:
 
-### Note: Install Dependencies Manually
-By default, pip will automatically find and install all Python packages that are necessary for TCRAFT to run. In the event that dependency errors arise during installation, you can also manually install the requisite packages in your Python environment by running the following line in Terminal or Command Prompt:
+```bash
+uv sync --editable
+```
 
-`pip install numpy pandas tqdm biopython`
+---
 
-TCRAFT uses the following package versions:
-- numpy>=1.26.4
-- pandas>=2.2.3
-- tqdm>=4.67.0
-- biopython>=1.84
+## Two pipelines
 
-## How to use the TCRAFT software package
-Once installed, TCRAFT can be executed from the either the terminal or a Python script using two simple functions: TCRAFT-generate and TCRAFT-validate. TCRAFT-generate takes in a CSV-formatted list of TCR sequences to assemble and generates lists of oligonucleotide sequences to order in pooled format for the TCRAFT assembly process. TCRAFT-validate takes in the list of oligonucleotides created by TCRAFT-generate and simulates TCRAFT Golden Gate assembly of these oligos into complete TCR sequences. TCRAFT-validate then checks all of these simulated assemblies to ensure that the desired TCR sequence is correctly assembled and does not contain any errors.
+### 1. TCRAFT-generate (human CDR3 oligo pools)
 
-Below are detailed instructions on how to use this package to prepare CDR3 oligo pools for your TCRAFT experiment:
+Converts a CSV of TCR sequences into CDR3 oligonucleotide pools for the human TCRAFT golden gate assembly.
 
+**Input:** CSV with columns `V_alpha`, `V_beta`, `J_alpha`, `J_beta`, `CDR3_alpha`, `CDR3_beta`
 
-1. **Prepare a CSV table of TCR sequences to assemble.** 
-The CSV table *must* contain the following columns or else TCRAFT-generate will throw an error:
-    - `V_alpha` (TCR $\alpha$ chain V region IMGT ID)
-    - `V_beta`  (TCR $\beta$ chain V region IMGT ID)
-    - `J_alpha` (TCR $\alpha$ chain J region IMGT ID)
-    - `J_beta` (TCR $\beta$ chain J region IMGT ID)
-    - `CDR3_alpha` (TCR $\alpha$ chain CDR3 amino acid sequence)
-    - `CDR3_beta` (TCR $\beta$ chain CDR3 amino acid sequence)
+```bash
+TCRAFT-generate /path/to/tcr_list.csv --output_dir ./output/
+```
+```python
+from TCRAFT.Generate import generate_cdr3_oligos
+generate_cdr3_oligos("tcr_list.csv", output_dir="./output/")
+```
 
-    A sample TCR list is provided in this repository as an example of how to properly format and prepare the TCR list and can be used to test the TCRAFT pipeline.
+**Outputs:** oligo CSVs split by pool (A/B) and length (≤300 bp / >300 bp), metadata table, invalid TCR log.
 
-2. **Generate CDR3 oligo pools by executing one of the following:**
+**Validate assembled sequences:**
+```bash
+TCRAFT-validate /path/to/oligos.csv
+```
 
-    a. Command Line option:
-        
-        TCRAFT-generate /path/to/TCR/list.csv --output_dir /path/to/output/directory
+---
 
-    b. Python script option:
-    
-        from TCRAFT.Generate import generate_cdr3_oligos
-        generate_cdr3_oligos(input_csv_path="/path/to/TCR/list.csv", output_dir="/path/to/output/directory")
+### 2. TCRAFT-hdr (mouse TRAC knock-in design)
 
-    Note: The `output_dir` argument is optional and allows you to specify the output file directory. If not specified the output files will be stored in `./TCRAFT-generate_<current date>`. 
+Designs all gene blocks and per-TCR variable fragments for a two-step BbsI → BsmBI golden gate assembly that produces a ~2.4 kb HDR template for Cas9-RNP knock-in at the endogenous mouse TRAC locus.
 
-    TCRAFT-generate creates the following output files in the output directory:
-    - `All_<Number of TCRs>_CDR3_oligos.csv`: Contains all successfully generated oligos
-    - `Under300_All_CDR3_oligos.csv`: Contains only oligos with length <= 300bp (which can be ordered from suppliers such as Twist Biosciences).
-    - `Over300_All_CDR3_oligos.csv`: Contains only oligos with length > 300bp (which can be ordered from alternative suppliers such as IDT).
-    - `Under300_Pool<A or B>_CDR3_oligos.csv`: Split up the under 300bp oligos into pools that can be ordered together from an oligo pool supplier.
-    - `Over300_Pool<A or B>_CDR3_oligos.csv`: Split up the oversize >300bp oligos into pools that can be ordered together from an oligo pool supplier.
-    - `Oligo_Pool_Metadata.csv`: Table of oligo pool statistics which are helpful to plan out TCRAFT experimental protocols (ex: number of oligos per pool, average oligo size, etc.). This table can be directly pasted into the TCRAFT experiment planning workbook template to automatically compute resuspension volumes, mixing ratios, etc.
-    - `Invalid_CDR3_Table.csv`: Contains TCRs that failed TCRAFT oligo generation. The most common reason for failure is due to specification of a V/J allele ID which is not supported by TCRAFT (TCRAFT only uses functional, coding alleles as annotated by IMGT).
+**Input:** AIRR-format rearrangement TSV (e.g., from Cell Ranger VDJ)
 
-3. **Validate the CDR3 oligo pools by executing one of the following:**
+```bash
+TCRAFT-hdr airr_rearrangement.tsv --output_dir ./output/hdr_design/
+```
+```python
+from TCRAFT.HDR_Design import generate_hdr_design
+result = generate_hdr_design("airr_rearrangement.tsv", output_dir="./output/hdr_design/")
+```
 
-    a. Command Line option:
-    
-        TCRAFT-validate /path/to/TCRAFT/oligo/file.csv --output_dir /path/to/output/directory
+The `--trbv` flag restricts output to clones using a specific TRBV gene (useful for testing):
+```bash
+TCRAFT-hdr airr_rearrangement.tsv --trbv TRBV5 --output_dir ./output/
+```
 
-    b. Python script option:
-        
-        from TCRAFT.Validate import validate_cdr3_oligos
-        validate_cdr3_oligos(input_csv_path="path/to/TCRAFT/oligo/file.csv", output_dir="/path/to/output/directory")
-        
+#### Assembled HDR template structure
 
-    Note: Similar to above, the `output_dir` argument is optional. If not specified the output files will be stored in `./TCRAFT-validate_<current date>`. 
+```
+[Left Homology Arm] [P2A leader] [TRBV] [CDR3β] [TRBC-LVL-Cys] [T2A] [TRAV] [CDR3α] [TRAC-LVL-Cys] [Right Homology Arm]
+```
 
-    TCRAFT-validate will simulate Golden Gate assembly of all inputted CDR3 oligos. If an oligo fails assembly validation, either due to presence of extraneous restriction sites or mismatch between the simulated and desired TCR protein sequence, the program will print the oligo/TCR that needs fixing. At the end, the program will output the percentage of inputted TCRs that passed assembly validation.
+All coding regions are in the correct reading frame relative to the upstream endogenous TRAC ORF. See `TCR_HDR_DESIGN.md` for full specifications.
 
-    TCRAFT-validate creates the following output files in the output directory:
-    - `Reference_Assembled_TCR_Sequences.csv`: These are the full successfully validated TCR sequences obtained after `TCRAFT-validate` simulated TCRAFT assembly of the CDR3 oligos into full TCR sequences. This reference list is sometimes useful to cross-check downstream experimental sequencing data against the ground-truth list of assembled sequences.
-    - `Failed_Assemblies.csv`: Contains the TCRs that failed assembly validation along with info that is helpful for debugging the failures.
-    - `Assembly_Metadata.csv`: Similar to the `Oligo_Pool_Metadata.csv` file, this table contains useful statistics for experimental planning and can also be directly pasted into the TCRAFT experiment planning workbook template.
+#### Outputs
+
+```
+output/hdr_design/
+├── constant_gene_blocks.csv   — 26 fragments (order once per lab)
+├── variable_gene_blocks.csv   — 1 fragment per TCR clone (order per experiment)
+├── overhangs.json             — all OH sequences and NEB efficiency scores
+├── assembly_report.txt        — OH table, pool assignments, fragment sizes
+├── invalid_clones.csv         — skipped clones with error reasons
+└── gb/
+    ├── constants/             — annotated .gb file per constant fragment
+    └── clonotypes/
+        └── <clone_id>/
+            ├── variable.gb    — gene block with GG site annotations
+            └── assembled.gb   — final HDR template, all regions annotated
+```
+
+The `assembled.gb` files can be opened directly in SnapGene, Benchling, or Geneious to visually verify the design before ordering.
+
+#### Reaction pools
+
+All 24 TRBV-specific LH-TRBV fragments, variable fragments, TRBC-T2A, and TRAC-RH assemble in a single BbsI reaction (step 1), followed by a single BsmBI reaction (step 2) to insert TRBC-T2A. One TRBV gene (currently TRBV14) requires a separate BbsI reaction pool — this is flagged in `assembly_report.txt`.
+
+---
+
+## References
+
+- Mouse TRBV/TRAV reference sequences: IMGT + Cell Ranger GRCm38 VDJ v7.0.0
+- LVL-Cys constant region sequences: engineered for improved TCRαβ pairing
+- Ligation efficiency tables: NEB BbsI and BsmBI (Pryor et al. 2020, PLOS ONE)
+- sgRNA target: `GTTAAAAGATCCTCGGTCTC` + PAM `AGG` at mouse TRAC locus
 
 ## Version
-1.1.0
+1.2.0
 
-## Author
-[Rachit Mukkamala](mailto:rsmukk@mit.edu)
+## Authors
+Original TCRAFT: Rachit Mukkamala  
+Mouse HDR extension: Hunter Martinez

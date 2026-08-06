@@ -19,14 +19,15 @@ import importlib.resources as pkg_resources
 This section loads the reference files needed for oligo assembly.
 """
 ref_dir = pkg_resources.files('TCRAFT.references')
-with open(ref_dir.joinpath('H_sapiens_codon_usage.json'), 'r') as infile:
+human_ref_dir = pkg_resources.files('TCRAFT.references.human')
+with open(human_ref_dir.joinpath('H_sapiens_codon_usage.json'), 'r') as infile:
     codon_freq_dict = json.load(infile)
 
-trbv_trac_ohset = pd.read_csv(ref_dir.joinpath('TRBV_TRAC_OHset.csv'), index_col='N')
-trbc_trav_ohset = pd.read_csv(ref_dir.joinpath('TRBC_TRAV_OHset.csv'), index_col='N')
-trbv_trac_OH_frags = pd.read_csv(ref_dir.joinpath('TRBV_TRAC_OH_frags.csv'))
-trbc_trav_OH_frags = pd.read_csv(ref_dir.joinpath('TRBC_TRAV_OH_frags.csv'))
-trj_seqs = pd.read_csv(ref_dir.joinpath('TRJ_seqs.csv'))
+trbv_trac_ohset = pd.read_csv(human_ref_dir.joinpath('TRBV_TRAC_OHset.csv'), index_col='N')
+trbc_trav_ohset = pd.read_csv(human_ref_dir.joinpath('TRBC_TRAV_OHset.csv'), index_col='N')
+trbv_trac_OH_frags = pd.read_csv(human_ref_dir.joinpath('TRBV_TRAC_OH_frags.csv'))
+trbc_trav_OH_frags = pd.read_csv(human_ref_dir.joinpath('TRBC_TRAV_OH_frags.csv'))
+trj_seqs = pd.read_csv(human_ref_dir.joinpath('TRJ_seqs.csv'))
 
 with open(ref_dir.joinpath('Oligo_Components.json'), 'r') as infile:
     oligo_components = json.load(infile)
