@@ -1,0 +1,46 @@
+LOCUS       TRBC-T2A                 620 bp    DNA              UNK 01-JAN-1980
+DEFINITION  TRBC-T2A gene block | 2a=GGAA 2b=AGGA.
+ACCESSION   TRBC-T2A
+VERSION     TRBC-T2A
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     protein_bind    1..11
+                     /label="BsmBI recognition (2a)"
+                     /bound_moiety="BsmBI"
+                     /note="Step-2 GG site (recognition on waste); 2a overhang =
+                     GGAA"
+     misc_feature    12..15
+                     /label="2a OH (GGAA)"
+                     /note="Constant BsmBI overhang at CDR3β/TRBC junction"
+     CDS             16..530
+                     /label="TRBC1 (Cys)"
+                     /gene="Trbc1"
+                     /note="TRBC1 Cys-mutant constant region"
+     misc_feature    531..605
+                     /label="furin-GSG-T2A"
+                     /note="Self-cleaving T2A peptide separating beta and alpha
+                     chains"
+     misc_feature    606..609
+                     /label="2b OH (AGGA)"
+                     /note="Constant BsmBI overhang at T2A/TRAV junction"
+     protein_bind    610..616
+                     /label="BsmBI recognition (2b)"
+                     /bound_moiety="BsmBI"
+                     /note="Step-2 GG site (recognition on waste); 2b overhang =
+                     AGGA"
+ORIGIN
+        1 acatcgtctc cggaaacctg aggaacgtaa caccaccaaa agtaagcctg ttcgagccca
+       61 gcaaggccga gatcgccaac aagcagaagg ccaccctggt gtgcctggcc aggggcttct
+      121 tccccgacca cgtggagctg agctggtggg tgaacggcaa ggaggtgcac agcggcgtgt
+      181 gcacagaccc acaagcatac aaggagagca actacagcta ctgcctgagc agcaggctga
+      241 gggtgagcgc caccttctgg cacaacccca ggaaccactt caggtgccag gtgcagttcc
+      301 acggcctgag cgaggaggac aagtggcccg agggcagccc caagcccgtg acccagaaca
+      361 tcagcgccga ggcctggggc agggccgact gcggcatcac cagcgccagc taccagcagg
+      421 gcgtgctgag cgccaccatc ctgtacgaga tcctgctggg caaggccacc ctgtacgccg
+      481 tgctggtgag caccctggtg gtgatggcca tggtgaagag gaagaacagc agggccaaga
+      541 ggggcagcgg cgagggcaga ggcagcctgc tgacctgcgg cgacgtggag gagaaccccg
+      601 gccccaggag gagacgacat
+//

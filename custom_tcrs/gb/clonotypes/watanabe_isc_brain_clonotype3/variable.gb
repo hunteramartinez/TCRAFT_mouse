@@ -1,0 +1,67 @@
+LOCUS       variable                 517 bp    DNA              UNK 01-JAN-1980
+DEFINITION  Variable fragment | TRBV17/TRAV13-4-DV7 | CDR3b=CASSKTGVGSDYTF
+            CDR3a=CAMERGSNNRIFF.
+ACCESSION   variable
+VERSION     variable
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     protein_bind    1..16
+                     /label="BbsI recognition (1a)"
+                     /bound_moiety="BbsI"
+                     /note="Step-1 GG site (recognition on waste); 1a OH = TGGA
+                     (TRBV-specific)"
+     misc_feature    13..16
+                     /label="1a OH (TGGA)"
+                     /note="Pairs with LH-TRBV17 gene block"
+     misc_feature    17..38
+                     /label="TRBV bridge (TRBV17)"
+                     /note="Germline TRBV tail after the 1a overhang, before
+                     CDR3β"
+     misc_feature    39..77
+                     /label="CDR3β (CASSKTGVGSDYTF)"
+                     /note="Codon-optimised CDR3β (aa: ASSKTGVGSDYTF); excludes
+                     leading C in TRBV"
+     protein_bind    88..102
+                     /label="BsmBI recognition (2a)"
+                     /bound_moiety="BsmBI"
+                     /note="Step-2 GG site; 2a OH = GGAA"
+     misc_feature    88..91
+                     /label="2a OH (GGAA)"
+                     /note="Junction to TRBC-T2A constant fragment"
+     protein_bind    103..117
+                     /label="BsmBI recognition (2b)"
+                     /bound_moiety="BsmBI"
+                     /note="Step-2 GG site; 2b OH = AGGA"
+     misc_feature    114..117
+                     /label="2b OH (AGGA)"
+                     /note="Junction from TRBC-T2A constant fragment"
+     gene            131..451
+                     /label="TRAV (TRAV13-4-DV7)"
+                     /gene="TRAV13-4-DV7"
+                     /note="Full codon-optimised TRAV, includes signal peptide,
+                     ends at Cys104"
+     misc_feature    452..487
+                     /label="CDR3α (CAMERGSNNRIFF)"
+                     /note="Codon-optimised CDR3α (aa: AMERGSNNRIFF); excludes
+                     leading C in TRAV"
+     protein_bind    502..517
+                     /label="BbsI recognition (1b)"
+                     /bound_moiety="BbsI"
+                     /note="Step-1 GG site; 1b OH = GGAA"
+     misc_feature    502..505
+                     /label="1b OH (GGAA)"
+                     /note="Junction to TRAC-RH constant fragment"
+ORIGIN
+        1 acatgaagac ggtggagtac agcgccatgt acctgtgcgc cagctccaaa acaggcgtgg
+       61 gctctgatta cacatttgag gacctgagga aggagacgac atacatcgtc tccaggagaa
+      121 ccccggcccc atgaagaggc tgctgtgcag cctgctgggc ctgctgtgca cccaggtgtg
+      181 ctgggtgaag ggccagcagg tgcagcagag ccccgccagc ctggtgctgc aggagggcga
+      241 gaacgccgag ctgcagtgca acttcagcag caccgccacc aggctgcagt ggttctacca
+      301 gaggcccggc ggcagcctgg tgagcctgct gagcaacccc agcggcacca agcacaccgg
+      361 caggctgacc agcaccaccg tgaccaagga gaggaggggc agcctgcaca tcagcagcag
+      421 ccagatcacc gacagcggca cctacctgtg cgctatggaa agaggaagca acaaccggat
+      481 cttcttcgat atacaaaatc cggaaaggtc ttcacat
+//

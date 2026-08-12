@@ -1,0 +1,40 @@
+LOCUS       TRAC-RH                  726 bp    DNA              UNK 01-JAN-1980
+DEFINITION  TRAC-RH gene block | 1b=GGAA.
+ACCESSION   TRAC-RH
+VERSION     TRAC-RH
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     protein_bind    1..12
+                     /label="BbsI recognition (1b)"
+                     /bound_moiety="BbsI"
+                     /note="Step-1 GG site (recognition on waste); 1b overhang =
+                     GGAA"
+     misc_feature    13..16
+                     /label="1b OH (GGAA)"
+                     /note="Constant BbsI overhang at CDR3α/TRAC junction"
+     CDS             17..426
+                     /label="TRAC (LVL-Cys)"
+                     /gene="Trac"
+                     /note="LVL-Cys engineered constant region (improved TCR
+                     pairing)"
+     misc_feature    427..726
+                     /label="Right Homology Arm"
+                     /note="Homology arm for Cas9-RNP HDR at mTRAC locus"
+ORIGIN
+        1 acatgaagac ggggaataca aaatccggaa ccggcggtat atcaattaaa agatccgcgt
+       61 tcgcaagatt cgacgttatg tttatttacg gatttcgata gtcagataaa cgtaccaaag
+      121 acgatggaga gcggtacttt tataacggat aagtgcgtat tagatatgaa ggcgatggac
+      181 agtaaatcga acggtgcgat agcgtggtcg aatcaaacgt cgtttacgtg tcaggacata
+      241 tttaaggaaa cgaatgcgac gtatccgtcg agtgatgtac cgtgtgatgc gacgctaaca
+      301 gaaaagagct tcgaaacgga tatgaattta aattttcaaa atttattagt aatggtatta
+      361 cgtatattat tattaaaagt agcgggtttt aatttattaa tgacgttacg tttatggtcg
+      421 tcgtagcagg acagcaccct ctgcctgttc accgactttg actcccaaat caatgtgccg
+      481 aaaaccatgg aatctggaac gttcatcact gacaaaactg tgctggacat gaaagctatg
+      541 gattccaaga gcaatggggc cattgcctgg agcaaccaga caagcttcac ctgccaagat
+      601 atcttcaaag agaccaacgc cacctacccc agttcaggtg agtggtgccc cagaagtctc
+      661 ctcctggctc aaatctatgg tttccaaaag ctgctttggg tcatctcacc ctcatcatta
+      721 ggcagc
+//

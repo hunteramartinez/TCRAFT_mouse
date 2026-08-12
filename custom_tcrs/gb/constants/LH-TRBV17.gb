@@ -1,0 +1,46 @@
+LOCUS       LH-TRBV17                688 bp    DNA              UNK 01-JAN-1980
+DEFINITION  LH-TRBV17 gene block | 1a=TGGA.
+ACCESSION   LH-TRBV17
+VERSION     LH-TRBV17
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    1..302
+                     /label="Left Homology Arm"
+                     /note="Homology arm for Cas9-RNP HDR at mTRAC locus"
+     misc_feature    303..368
+                     /label="P2A leader"
+                     /note="P2A self-cleaving peptide. The LH arm ends at the
+                     complete TCT (Ser) codon so P2A starts on a clean codon
+                     boundary with GSG. Do NOT codon-optimise or alter this
+                     sequence."
+     gene            369..672
+                     /label="TRBV (TRBV17)"
+                     /gene="TRBV17"
+                     /note="Codon-optimised, includes signal peptide; ends at
+                     BbsI 1a junction"
+     misc_feature    673..676
+                     /label="1a OH (TGGA)"
+                     /note="TRBV-specific BbsI overhang for step-1 pooled
+                     assembly"
+     protein_bind    677..684
+                     /label="BbsI recognition (1a)"
+                     /bound_moiety="BbsI"
+                     /note="Step-1 golden gate site (inverted — recognition on
+                     waste); 1a overhang = TGGA"
+ORIGIN
+        1 tgccagaaag gaccccgtgg agagggacta ctgaaagcta gagatcttgg ctggcactca
+       61 tgacttgtgc ctgtccctaa gcctgtgtcc atcatgggca gctagatcct aggctgtcat
+      121 ttccaatgtg aagtctgtga acaagactgg ctagtccaga gagttccgct cttgcctgtc
+      181 actggcatct gagttctgac ctaagttagg acccccaaaa aatcttctaa catcagtcct
+      241 cttggcccac agacatccag aacccagaac ctgctgtgta ccagttaaaa gatcctcggt
+      301 ctggaagtgg agcaaccaat ttctccttgc tgaagcaggc cggtgacgtt gaggaaaacc
+      361 caggaccaat ggaccccagg ctgctgtgct gcgtgatctt ctgcctgctg gccgccacct
+      421 tcgtggacac caccgtgaag cagaacccca ggtacaagct ggccagggtg ggcaagcccg
+      481 tgaacctgat ctgcagccag accatgaacc acgacaccat gtactggtac cagaagaagc
+      541 ccaaccaagc accaaaacta ctactgttct actacgacaa gatcctgaac agggaggccg
+      601 acaccttcga gaagttccag agcagcaggc ccaacaacag cttctgcagc ctgtacatcg
+      661 gcagcgccgg cctggaaggt cttcacat
+//

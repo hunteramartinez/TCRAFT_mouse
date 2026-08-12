@@ -1,6 +1,6 @@
 # TCRAFT — Mouse
 
-TCRAFT is a scalable and cost-effective platform for TCR library assembly. This mouse-specific fork extends the original human TCRAFT package with a second pipeline: **TCRAFT-hdr**, which designs all DNA fragments required for Cas9-RNP mediated knock-in of a paired TCRαβ into the endogenous mouse TRAC locus.
+TCRAFT is a scalable and cost-effective platform for TCR library assembly. This mouse-specific fork extends the original human TCRAFT package with a second pipeline: **TCRAFT-hdr**, which designs all DNA fragments required for Cas9-RNP mediated knock-in of a paired TCRαβ into an endogenous mouse TCR locus.
 
 ---
 
@@ -47,41 +47,67 @@ TCRAFT-validate /path/to/oligos.csv
 
 ---
 
-### 2. TCRAFT-hdr (mouse TRAC knock-in design)
+### 2. TCRAFT-hdr (mouse TCR knock-in design)
 
-Designs all gene blocks and per-TCR variable fragments for a two-step BbsI → BsmBI golden gate assembly that produces a ~2.4 kb HDR template for Cas9-RNP knock-in at the endogenous mouse TRAC locus.
+Designs all gene blocks and per-TCR variable fragments for a two-step BbsI → BsmBI golden gate assembly that produces an HDR template for Cas9-RNP knock-in at an endogenous mouse TCR locus.
+
+Two target loci are supported:
+
+| `--locus` | Target cells | Use when... |
+|---|---|---|
+| `TRAC` *(default)* | Mature T cells | Cells have already rearranged their TCR loci |
+| `TRBC1` | DN3 double-negative thymocytes | Cells have **not** yet rearranged their TCRβ locus |
 
 **Input:** AIRR-format rearrangement TSV (e.g., from Cell Ranger VDJ)
 
+#### TRAC locus (mature T cells — default)
+
 ```bash
-TCRAFT-hdr airr_rearrangement.tsv --output_dir ./output/hdr_design/
+TCRAFT-hdr airr_rearrangement.tsv --output_dir ./output/hdr_trac/
 ```
 ```python
 from TCRAFT.HDR_Design import generate_hdr_design
-result = generate_hdr_design("airr_rearrangement.tsv", output_dir="./output/hdr_design/")
+result = generate_hdr_design("airr_rearrangement.tsv", output_dir="./output/hdr_trac/")
 ```
 
-The `--trbv` flag restricts output to clones using a specific TRBV gene (useful for testing):
+HDR template structure:
+```
+[TRAC-LH] [P2A] [TRBV] [CDR3β] [TRBC-Cys] [T2A] [TRAV] [CDR3α] [TRAC-LVL-Cys] [BGH polyA] [TRAC-RH]
+```
+
+The P2A self-cleaving peptide rides in-frame with the upstream TRAC open reading frame. The insert is expressed as part of a polyprotein that is cleaved co-translationally.
+
+#### TRBC1 locus (DN3 thymocytes)
+
+```bash
+TCRAFT-hdr airr_rearrangement.tsv --locus TRBC1 --output_dir ./output/hdr_trbc1/
+```
+```python
+result = generate_hdr_design("airr_rearrangement.tsv", locus='TRBC1', output_dir="./output/hdr_trbc1/")
+```
+
+HDR template structure:
+```
+[TRBC1-LH] [Kozak] [TRBV] [CDR3β] [TRBC-Cys] [T2A] [TRAV] [CDR3α] [TRAC-LVL-Cys] [BGH polyA] [TRBC1-RH]
+```
+
+A Kozak context sequence (`GCCGCCACC`) is placed immediately 5' of each TRBV's native ATG start codon. The cassette is expressed from the endogenous Vβ promoter/Eβ enhancer at the TRBC1 locus. The golden gate assembly scheme — and the variable fragment — are **identical** to the TRAC design; only the LH-TRBV gene blocks and the right homology arm in the TRAC-RH gene block change.
+
+#### Restrict to a single TRBV gene (testing / specific experiments)
+
 ```bash
 TCRAFT-hdr airr_rearrangement.tsv --trbv TRBV5 --output_dir ./output/
+TCRAFT-hdr airr_rearrangement.tsv --locus TRBC1 --trbv TRBV5 --output_dir ./output/
 ```
-
-#### Assembled HDR template structure
-
-```
-[Left Homology Arm] [P2A leader] [TRBV] [CDR3β] [TRBC-LVL-Cys] [T2A] [TRAV] [CDR3α] [TRAC-LVL-Cys] [Right Homology Arm]
-```
-
-All coding regions are in the correct reading frame relative to the upstream endogenous TRAC ORF. See `TCR_HDR_DESIGN.md` for full specifications.
 
 #### Outputs
 
 ```
-output/hdr_design/
-├── constant_gene_blocks.csv   — 26 fragments (order once per lab)
-├── variable_gene_blocks.csv   — 1 fragment per TCR clone (order per experiment)
+output/hdr_*/
+├── constant_gene_blocks.csv   — LH-TRBV + TRAC-RH + TRBC-T2A fragments (order once per lab)
+├── variable_gene_blocks.csv   — 1 variable fragment per TCR clone (order per experiment)
 ├── overhangs.json             — all OH sequences and NEB efficiency scores
-├── assembly_report.txt        — OH table, pool assignments, fragment sizes
+├── assembly_report.txt        — locus, OH table, pool assignments, fragment sizes
 ├── invalid_clones.csv         — skipped clones with error reasons
 └── gb/
     ├── constants/             — annotated .gb file per constant fragment
@@ -95,7 +121,9 @@ The `assembled.gb` files can be opened directly in SnapGene, Benchling, or Genei
 
 #### Reaction pools
 
-All 24 TRBV-specific LH-TRBV fragments, variable fragments, TRBC-T2A, and TRAC-RH assemble in a single BbsI reaction (step 1), followed by a single BsmBI reaction (step 2) to insert TRBC-T2A. One TRBV gene (currently TRBV14) requires a separate BbsI reaction pool — this is flagged in `assembly_report.txt`.
+All TRBV-specific LH-TRBV fragments, variable fragments, TRBC-T2A, and TRAC-RH assemble in a single BbsI reaction (step 1), followed by a single BsmBI reaction (step 2) to insert TRBC-T2A. One TRBV gene (currently TRBV14) requires a separate BbsI reaction pool — this is flagged in `assembly_report.txt`.
+
+See `TCR_HDR_DESIGN.md` for full specifications.
 
 ---
 
@@ -104,10 +132,11 @@ All 24 TRBV-specific LH-TRBV fragments, variable fragments, TRBC-T2A, and TRAC-R
 - Mouse TRBV/TRAV reference sequences: IMGT + Cell Ranger GRCm38 VDJ v7.0.0
 - LVL-Cys constant region sequences: engineered for improved TCRαβ pairing
 - Ligation efficiency tables: NEB BbsI and BsmBI (Pryor et al. 2020, PLOS ONE)
-- sgRNA target: `GTTAAAAGATCCTCGGTCTC` + PAM `AGG` at mouse TRAC locus
+- TRAC sgRNA: `GTTAAAAGATCCTCGGTCTC` + PAM `AGG`
+- TRBC1 sgRNA: `GAGAAATGTGACTCCACCCA`
 
 ## Version
-1.2.0
+1.3.0
 
 ## Authors
 Original TCRAFT: Rachit Mukkamala  

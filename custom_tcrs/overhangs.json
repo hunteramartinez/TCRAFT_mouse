@@ -1,0 +1,31 @@
+{
+  "oh_1a": {
+    "TRBV12-1": "ACTT",
+    "TRBV17": "TGGA",
+    "TRBV20": "GACA",
+    "TRBV12-2": "TCTG",
+    "TRBV16": "CCAG",
+    "TRBV23": "AGGC",
+    "TRBV24": "ACGA",
+    "TRBV26": "GAGG",
+    "TRBV3": "TACT",
+    "TRBV5": "CGTG",
+    "TRBV1": "ACCC",
+    "TRBV10": "GTGC",
+    "TRBV15": "AGCG",
+    "TRBV19": "AGAT",
+    "TRBV4": "ATAA",
+    "TRBV13-1": "ATTC",
+    "TRBV30": "CGAC",
+    "TRBV12-2+TRBV13-2": "AAAC",
+    "TRBV13-2": "CTTA",
+    "TRBV13-3": "AATG",
+    "TRBV2": "GCTA",
+    "TRBV29": "GAGA",
+    "TRBV31": "ATGA",
+    "TRBV14": "CTGA"
+  },
+  "oh_1b": "GGAA",
+  "oh_2a": "GGAA",
+  "oh_2b": "AGGA"
+}

@@ -5,34 +5,52 @@
 HDR_Design.py — Mouse TCR HDR template designer.
 
 Designs all DNA fragments needed for Cas9-RNP mediated knock-in of a paired
-TCR alpha/beta into the mouse TRAC locus using two-step golden gate assembly.
+TCR alpha/beta into a mouse TCR locus using two-step golden gate assembly.
 
-Assembly architecture (5' → 3' in the final HDR template):
-  [LH] - [TRBV] - [CDR3β] - [TRBC-LVL-Cys] - [T2A] - [TRAV] - [CDR3α] - [TRAC-LVL-Cys] - [RH]
+Two target loci are supported (select via locus= / --locus):
 
-Fragment types:
+  TRAC (default) — for mature T cells that have already rearranged their TCR.
+    The insert rides in-frame on the upstream TRAC ORF via the P2A self-cleaving
+    peptide.  Assembly architecture (5'→3' in the final HDR template):
+      [TRAC-LH] - [P2A] - [TRBV] - [CDR3β] - [TRBC-Cys] - [T2A] -
+      [TRAV] - [CDR3α] - [TRAC-LVL-Cys] - [TRAC-RH]
+
+  TRBC1 — for DN3 thymocytes that have NOT yet rearranged their TCRβ locus.
+    A Kozak context sequence (gccgccacc) placed immediately upstream of the
+    TRBV's own ATG (start of the native signal peptide) provides an independent
+    translation start.  The cassette is expressed from the endogenous Vβ
+    promoter/Eβ enhancer at the TRBC1 locus.
+      [TRBC1-LH] - [Kozak] - [TRBV (full, ATG-start)] - [CDR3β] - [TRBC-Cys] -
+      [T2A] - [TRAV] - [CDR3α] - [TRAC-LVL-Cys] - [TRBC1-RH]
+
+Fragment types (same golden gate scheme for both loci):
   Constant (ordered once):
-    • 24 LH-TRBV gene blocks  (one per functional TRBV gene)
-    • 1  TRAC-RH gene block
+    • N  LH-TRBV gene blocks  (one per functional TRBV gene)
+    • 1  TRAC-RH gene block   (contains TRAC-LVL-Cys + polyA + locus-specific RH)
     • 1  TRBC-T2A gene block
 
   Variable (ordered per TCR):
     • 1  CDR3β-TRAV-CDR3α gene block
 
-Golden gate scheme:
+Golden gate scheme (identical for both loci):
   Step 1 — BbsI digest + ligation:
     [LH-TRBV]──1a──[CDR3β·TRAV·CDR3α]──1b──[TRAC-RH]
-    • 1a = TRBV-specific 4nt overhang (unique per gene, enables TRBV-pooled assembly)
+    • 1a = TRBV-specific 4nt overhang (unique per gene)
     • 1b = constant 4nt from the start of TRAC-LVL-Cys
 
   Step 2 — BsmBI digest + ligation:
     assembled-step1 ──2a──[TRBC-T2A]──2b──
     • 2a = constant 4nt from the start of TRBC-LVL-Cys
-    • 2b = constant 4nt from the end of T2A
+    • 2b = constant 4nt from within T2A
 
 Usage:
-  CLI:   TCRAFT-hdr input_airr.tsv --trbv TRBV5 --output_dir ./hdr_output
-  API:   from TCRAFT.HDR_Design import generate_hdr_design
+  CLI (TRAC, mature T cells):
+    TCRAFT-hdr input_airr.tsv --trbv TRBV5 --output_dir ./hdr_output
+  CLI (TRBC1, DN3 thymocytes):
+    TCRAFT-hdr input_airr.tsv --locus TRBC1 --output_dir ./hdr_output_trbc1
+  API:
+    from TCRAFT.HDR_Design import generate_hdr_design
+    generate_hdr_design('airr.tsv', locus='TRBC1')
 """
 
 import argparse
@@ -40,6 +58,7 @@ import json
 import os
 import random
 import sys
+import textwrap
 from pathlib import Path
 
 import importlib.resources as pkg_resources
@@ -64,8 +83,9 @@ _PATHS = {
     'trbj_aa':   [_MOUSE / 'imgt_genes_aa' / 'IMGT_TRBJ_aa.fa'],
     'traj_aa':   [_MOUSE / 'imgt_genes_aa' / 'IMGT_TRAJ_aa.fa'],
     'trac_lvlcys': _MOUSE / 'imgt_genes_aa' / 'IMGT_TRAC_LVL-Cys_aa.fa',
-    'trbc_lvlcys': _MOUSE / 'imgt_genes_aa' / 'IMGT_TRBC_LVL-Cys_aa.fa',
-    'hdr_seqs':  _MOUSE / 'mm_trac_HDR_sequences.fa',
+    'trbc_lvlcys': _MOUSE / 'imgt_genes_aa' / 'IMGT_TRBC1_Cys_aa.fa',
+    'hdr_seqs':       _MOUSE / 'mm_trac_HDR_sequences.fa',
+    'hdr_seqs_trbc':  _MOUSE / 'mm_trbc_HDR_sequences.fa',
     'codon_table': _MOUSE / 'mouse_codon_usage.json',
     'linkers':   _REF_ROOT / 'linkers_P2A_T2A.txt',
     'neb_bbsi':  _REF_ROOT / 'neb_tables' / 'BbsI_ligation_efficiency.csv',
@@ -120,6 +140,12 @@ def _load_fasta_dict(paths, filter_functional=True, preferred_allele='*01'):
                 continue
             allele = parts[1].strip()          # e.g. TRBV5*01
             gene = allele.split('*')[0]         # e.g. TRBV5
+            # Skip any entry whose AA sequence contains an internal stop codon (*).
+            # Internal stops indicate pseudogene/corrupt IMGT entries; back-translating
+            # them produces in-frame stop codons that break the HDR reading frame.
+            seq_stripped = seq.rstrip('*').rstrip('X')
+            if '*' in seq_stripped:
+                continue
             # Prefer *01 allele; only overwrite if this is *01 or gene not yet seen
             if gene not in gene_dict or allele.endswith(preferred_allele):
                 gene_dict[gene] = seq.upper()
@@ -187,12 +213,19 @@ _hdr_seqs     = _load_hdr_sequences(_PATHS['hdr_seqs'])
 _linkers      = _load_linkers(_PATHS['linkers'])
 
 # P2A leader placed between the left homology arm and the TRBV gene in every
-# LH-TRBV gene block.  It appears to contain an in-frame stop (TGA) when read
-# in isolation, but the reading frame is established by the upstream endogenous
-# TRAC ORF carried across the left homology arm — the LH arm positions the P2A
-# so that TGA falls out-of-frame relative to the genomic ORF.  Do NOT alter
-# or codon-optimise this sequence; it is a fixed, frame-verified design element.
+# LH-TRBV gene block (TRAC locus only).  The LH arm ends at the complete TCT
+# (Ser) codon so the P2A starts cleanly on a codon boundary with GSG.  Do NOT
+# alter or codon-optimise this sequence; it is a fixed, frame-verified design
+# element.
 _p2a_leader_nt = _hdr_seqs.get('mm_trac_p2a_leader_sequence', '').upper()
+
+# TRBC1 locus references — used when locus='TRBC1' (DN3 thymocyte insertion).
+# The Kozak context (gccgccacc, no ATG) is placed immediately 5' of the TRBV's
+# own ATG start codon so the ribosome initiates at the native TRBV Met.
+_hdr_seqs_trbc  = _load_hdr_sequences(_PATHS['hdr_seqs_trbc'])
+_trbc1_lh_nt    = _hdr_seqs_trbc.get('mm_trbc1_left_homology_arm',                         '').upper()
+_trbc1_rh_nt    = _hdr_seqs_trbc.get('mm_trbc1_right_homology_arm',                        '').upper()
+_kozak_nt       = _hdr_seqs_trbc.get('mm_trbc_kozak_leader_sequence_atg_provided_by_specific_trbv', '').upper()
 _trbv_aa_dict = _load_fasta_dict(_PATHS['trbv_aa'])
 _trav_aa_dict = _load_fasta_dict(_PATHS['trav_aa'])
 _trbj_aa_dict = _load_fasta_dict(_PATHS['trbj_aa'])
@@ -202,9 +235,13 @@ _traj_aa_dict = _load_fasta_dict(_PATHS['traj_aa'])
 _trac_lvlcys_aa = _parse_fasta(_PATHS['trac_lvlcys'])[0][1].lstrip('X').upper()
 _trbc_lvlcys_aa = _parse_fasta(_PATHS['trbc_lvlcys'])[0][1].lstrip('X').upper()
 
-# Homology arms (use uppercase portion as the "interface" sequence)
+# TRAC homology arms (use uppercase portion as the "interface" sequence)
 _lh_nt = _hdr_seqs.get('mm_trac_left_homology_arm', '')
 _rh_nt = _hdr_seqs.get('mm_trac_right_homology_arm', '')
+
+# BGH polyA + spacer inserted after TRAC stop, before right homology arm
+_bgh_polya_nt  = _hdr_seqs.get('bgh_polyA', '').upper()
+_post_stop_spacer_nt = _hdr_seqs.get('post_stop_before_bgh_polyA_spacer_nucleotides', '').upper()
 
 # T2A linker NT sequence
 _t2a_nt = _linkers.get('furin-GSG-T2A', _linkers.get('T2A', ''))
@@ -259,9 +296,71 @@ def _best_codon(aa):
     return max(options, key=lambda x: x[1])[0]
 
 
+def _least_popular_codon(aa):
+    """Least-frequent synonymous codon for an amino acid."""
+    options = _codon_table.get(aa, [])
+    if not options:
+        raise ValueError(f'No codon entry for amino acid: {aa!r}')
+    return min(options, key=lambda x: x[1])[0]
+
+
+def _most_divergent_codon(aa, ref_codon):
+    """
+    Synonymous codon for `aa` maximizing Hamming distance from ref_codon.
+    Ties broken by lower codon frequency (prefer rarer codons for double divergence).
+    """
+    options = _codon_table.get(aa, [])
+    if not options:
+        return ref_codon
+    ref = ref_codon.upper()
+    return max(options, key=lambda e: (sum(a != b for a, b in zip(e[0], ref)), -e[1]))[0]
+
+
 def back_translate_deterministic(aa_seq):
     """Back-translate using the single most-frequent codon per amino acid."""
     return ''.join(_best_codon(aa) for aa in aa_seq)
+
+
+def back_translate_diverge_from(aa_seq, avoid_nt):
+    """
+    Back-translate aa_seq choosing synonymous codons that maximize nucleotide
+    divergence from avoid_nt (the endogenous reference sequence to avoid
+    recombination with, e.g. the RHA exonic portion).
+
+    Strategy:
+      1. Initial deterministic translation to locate alignment offset.
+      2. For codon positions that overlap with avoid_nt: _most_divergent_codon().
+      3. All other positions (including LHA-overlapping region at the 5' end):
+         _least_popular_codon() for general divergence throughout.
+
+    The reading-frame relationship between avoid_nt and aa_seq is resolved
+    automatically from the best-scoring sliding alignment.
+    """
+    avoid = avoid_nt.upper()
+    n_avoid = len(avoid)
+    initial_nt = back_translate_deterministic(aa_seq)
+    n_trac = len(initial_nt)
+
+    # Find offset in initial_nt where avoid_nt aligns with maximum identity
+    best_score = -1
+    best_offset = 0
+    for offset in range(max(1, n_trac - n_avoid + 1)):
+        window = initial_nt[offset: offset + n_avoid]
+        score = sum(a == b for a, b in zip(window, avoid))
+        if score > best_score:
+            best_score = score
+            best_offset = offset
+
+    codons = []
+    for codon_idx, aa in enumerate(aa_seq):
+        codon_start = codon_idx * 3
+        avoid_pos = codon_start - best_offset
+        if 0 <= avoid_pos <= n_avoid - 3:
+            ref_codon = avoid[avoid_pos: avoid_pos + 3]
+            codons.append(_most_divergent_codon(aa, ref_codon))
+        else:
+            codons.append(_least_popular_codon(aa))
+    return ''.join(codons)
 
 
 def _sample_codon(aa, freq_cutoff=0.15):
@@ -422,19 +521,24 @@ def trim_vgene_to_cys104(aa_seq, gene_name=''):
 # ── NEB overhang utilities ───────────────────────────────────────────────────
 
 def oh_ligation_score(oh, neb_df):
-    """Diagonal (self-ligation) score for a 4nt overhang from a NEB table."""
-    oh = oh.upper()
-    if oh in neb_df.index and oh in neb_df.columns:
-        return neb_df.loc[oh, oh]
-    return 0
+    """Self-ligation efficiency for a 4nt overhang: df[oh, RC(oh)]."""
+    return _oh_self_score(oh, neb_df)
 
 
 def oh_cross_score(oh1, oh2, neb_df):
-    """Off-diagonal ligation score between two overhangs (higher = more crosstalk)."""
+    """
+    Cross-ligation score between two overhangs in the same reaction.
+
+    Returns max(df[OH1, RC(OH2)], df[OH2, RC(OH1)]):
+      df[OH1, RC(OH2)] = count of OH1 misligating with the partner of OH2
+      df[OH2, RC(OH1)] = count of OH2 misligating with the partner of OH1
+    Higher values mean more cross-talk between the two junctions.
+    """
     o1, o2 = oh1.upper(), oh2.upper()
+    rc1 = rev_comp(o1).upper()
     rc2 = rev_comp(o2).upper()
     score = 0
-    for a, b in [(o1, o2), (o1, rc2), (rev_comp(o1).upper(), o2), (rev_comp(o1).upper(), rc2)]:
+    for a, b in [(o1, rc2), (o2, rc1)]:
         if a in neb_df.index and b in neb_df.columns:
             score = max(score, neb_df.loc[a, b])
     return score
@@ -466,55 +570,69 @@ def choose_best_oh(candidates, reserved, neb_df, min_self=100, max_cross=30):
 
 _GG_TAIL = 'ACAT'  # stub outside RE sites so BioPython can detect the cut position
 
-# Empirically verified spacers (see design notes):
-#   BbsI  (GAAGAC, 2/6): 3nt spacer GGA for 3' site; 1nt spacer A for 5' site
-#   BsmBI (CGTCTC, 1/5): 2nt spacer CA for both 3' and 5' sites (both use CGTCTC on top)
+# Correct spacers verified empirically with BioPython catalyze():
+#   BbsI  (GAAGAC, 2/6): 2nt spacer GG for 3' site; 2nt spacer AG for 5' site
+#   BsmBI (CGTCTC, 1/5): 1nt spacer C for both 3' and 5' sites
 #
-# In every case, after enzyme digest the RIGHT downstream piece starts with oh_4nt
-# as a 5' top-strand overhang.  For the LEFT upstream piece, the oh appears as a
-# complementary 5' bottom-strand overhang (which anneals with the partner right piece).
+# Rule: spacer length = (enzyme cut distance - 1).  BbsI cuts at +2 → 2-1=1? No:
+# the spacer must position the cut between the last spacer nt and oh[0].
+# Verified: with these spacers BioPython.catalyze() returns oh_4nt as the first 4nt
+# of the waste piece (3' sites) and as the 5' top overhang of the functional piece
+# (5' sites), giving RC(oh_4nt) as the functional upstream 5' bottom overhang.
 
 
 def _bbsi_3prime_site(oh_4nt):
     """
-    Append to a fragment's 3' end.  After BbsI digest, the downstream waste piece
-    starts with oh_4nt (5' top-strand overhang); the functional upstream piece has
-    the complementary 5' bottom-strand overhang at its right end.
+    Append to a fragment's 3' end.  BbsI reads GAAGAC on the BOTTOM strand
+    (= GTCTTC on top, embedded in AGGTCTTC) and cuts upstream, exposing
+    RC(oh_4nt) as a 5' bottom-strand overhang on the functional piece.
+    The recognition sequence goes with the waste, so the ligated product
+    contains NO BbsI recognition site — the site is destroyed upon ligation.
 
-    Layout: [...body...] GAAGAC GGA [oh_4nt] ACAT
+    Layout: [...body...] [oh_4nt] AGGTCTTC ACAT
+             functional ←cut——————————————waste→
     """
-    return f'GAAGACGGA{oh_4nt}{_GG_TAIL}'
+    return f'{oh_4nt}AGGTCTTC{_GG_TAIL}'
 
 
 def _bbsi_5prime_site(oh_4nt):
     """
-    Prepend to a fragment's 5' end.  After BbsI digest, the downstream functional
-    piece starts with oh_4nt as a 5' top-strand overhang.
+    Prepend to a fragment's 5' end.  BbsI reads GAAGAC on the TOP strand
+    (within GAAGACGG) and cuts at +2 downstream (between GG and oh_4nt),
+    placing the recognition sequence on the LEFT waste stub.  The functional
+    piece starts with oh_4nt as a 5' top-strand overhang — no recognition
+    sequence remains in the assembled product.
 
-    Layout: ACAT [oh_4nt] A GTCTTC [...body...]
+    Layout: ACAT GAAGAC GG [oh_4nt] [...body...]
+            ←—————waste——→ cut→functional→
     """
-    return f'{_GG_TAIL}{oh_4nt}AGTCTTC'
+    return f'{_GG_TAIL}GAAGACGG{oh_4nt}'
 
 
 def _bsmbi_3prime_site(oh_4nt):
     """
     Append to a fragment's 3' end (step 2 BsmBI reaction).
-    After BsmBI digest, the downstream waste piece starts with oh_4nt; the
-    functional upstream piece has the complementary 5' bottom-strand overhang.
+    BsmBI reads CGTCTC on the BOTTOM strand (= GAGACG on top, preceded by
+    a 1-nt G spacer) and cuts upstream, exposing RC(oh_4nt) as a 5'
+    bottom-strand overhang on the functional piece.  Recognition goes with
+    the waste — site is destroyed upon ligation.
 
-    Layout: [...body...] CGTCTC CA [oh_4nt] ACAT
+    Layout: [...body...] [oh_4nt] G GAGACG ACAT
+             functional ←cut———————————————waste→
     """
-    return f'CGTCTCCA{oh_4nt}{_GG_TAIL}'
+    return f'{oh_4nt}GGAGACG{_GG_TAIL}'
 
 
 def _bsmbi_5prime_site(oh_4nt):
     """
     Prepend to a fragment's 5' end (step 2 BsmBI reaction).
-    After BsmBI digest, the downstream functional piece starts with oh_4nt.
+    After BsmBI digest, the downstream functional piece starts with oh_4nt
+    as a 5' top-strand overhang.  Recognition (CGTCTCC) goes with the waste.
 
-    Layout: ACAT CGTCTC CA [oh_4nt] [...body...]
+    Layout: ACAT CGTCTC C [oh_4nt] [...body...]
+            waste→cut——functional→
     """
-    return f'{_GG_TAIL}CGTCTCCA{oh_4nt}'
+    return f'{_GG_TAIL}CGTCTCC{oh_4nt}'
 
 
 # ── Overhang design ──────────────────────────────────────────────────────────
@@ -803,21 +921,44 @@ def build_trav_gene_nt(trav_name):
     return nt
 
 
-def build_trac_nt():
-    """Return cleaned NT sequence for TRAC-LVL-Cys (deterministic codon optimisation)."""
-    nt = back_translate_deterministic(_trac_lvlcys_aa)
-    return clean_nt_sequence(nt, _trac_lvlcys_aa, label='TRAC-LVL-Cys')
+def build_trac_nt(junc_residue=''):
+    """
+    Return cleaned NT sequence for TRAC constant region.
+
+    junc_residue: single-letter AA for the J-C split codon residue (D for mouse TRAC).
+    This residue's codon is split at the J/C exon boundary in the genomic sequence —
+    1 nt from the TRAJ exon, 2 nt from the TRAC exon.  In the synthetic intron-free
+    construct we encode it as a complete codon at the start of TRAC.
+    If empty the split codon residue is omitted (legacy behaviour).
+
+    Codon divergence: synonymous codons are chosen to minimize identity to the
+    endogenous TRAC exonic sequence (RHA uppercase region) to reduce the risk of
+    the HDR machinery using the synthetic TRAC within the insert as an ectopic
+    recombination template instead of the true right homology arm.
+    """
+    aa = junc_residue + _trac_lvlcys_aa if junc_residue else _trac_lvlcys_aa
+    rh_exonic = ''.join(c for c in _rh_nt if c.isupper())
+    nt = back_translate_diverge_from(aa, rh_exonic)
+    return clean_nt_sequence(nt, aa, label='TRAC-LVL-Cys')
 
 
-def build_trbc_nt():
-    """Return cleaned NT sequence for TRBC-LVL-Cys (deterministic codon optimisation)."""
-    nt = back_translate_deterministic(_trbc_lvlcys_aa)
-    return clean_nt_sequence(nt, _trbc_lvlcys_aa, label='TRBC-LVL-Cys')
+def build_trbc_nt(junc_residue=''):
+    """
+    Return cleaned NT sequence for TRBC constant region.
+
+    junc_residue: single-letter AA for the J-C split codon residue (E for mouse TRBC).
+    This residue's codon is split at the J/C exon boundary — 1 nt from TRBJ, 2 nt from TRBC.
+    In the synthetic intron-free construct we encode it as a complete codon at the start.
+    If empty the split codon residue is omitted (legacy behaviour).
+    """
+    aa = junc_residue + _trbc_lvlcys_aa if junc_residue else _trbc_lvlcys_aa
+    nt = back_translate_deterministic(aa)
+    return clean_nt_sequence(nt, aa, label='TRBC-LVL-Cys')
 
 
 # ── Fragment assemblers ──────────────────────────────────────────────────────
 
-def build_lh_trbv_fragment(trbv_name, oh_1a, split_from_end):
+def build_lh_trbv_fragment(trbv_name, oh_1a, split_from_end, locus='TRAC'):
     """
     Build the LH-TRBV constant gene block.
 
@@ -827,43 +968,55 @@ def build_lh_trbv_fragment(trbv_name, oh_1a, split_from_end):
     appears only as the sticky end in the BbsI site so that after ligation the full
     TRBV sequence is reconstituted exactly once.
 
-    Gene-block layout:
-      [LH] [TRBV_nt[:-split_from_end]] GAAGACGGA [oh_1a] ACAT
+    locus='TRAC'  — Gene-block layout:
+      [TRAC-LH] [P2A] [TRBV_nt[:-split_from_end]] GAAGACGGA [oh_1a] ACAT
+      The P2A rides in-frame on the upstream TRAC ORF provided by the LH arm.
 
-    After BbsI digest and ligation with the variable fragment:
-      [LH] [P2A_leader] [TRBV_nt[:-split_from_end]] + oh_1a + [bridge + CDR3β + ...]
-      = [LH] [P2A_leader] [TRBV_nt_full] [CDR3β ...]
+    locus='TRBC1' — Gene-block layout:
+      [TRBC1-LH] [Kozak] [TRBV_nt[:-split_from_end]] GAAGACGGA [oh_1a] ACAT
+      The Kozak context (gccgccacc) is placed immediately 5' of the TRBV's own
+      ATG start codon.  No codon is skipped — the full TRBV sequence (including
+      its native signal peptide starting with Met) is used identically to TRAC.
     """
-    lh   = _lh_nt.upper()
-    p2a  = _p2a_leader_nt          # frame-verified by upstream TRAC ORF via LH arm
     trbv_nt = build_trbv_gene_nt(trbv_name)
     body = trbv_nt[:-split_from_end] if split_from_end > 0 else trbv_nt
-    gene_block = lh + p2a + body + _bbsi_3prime_site(oh_1a)
+    if locus == 'TRBC1':
+        gene_block = _trbc1_lh_nt + _kozak_nt + body + _bbsi_3prime_site(oh_1a)
+    else:
+        gene_block = _lh_nt.upper() + _p2a_leader_nt + body + _bbsi_3prime_site(oh_1a)
     _validate_gene_block_re(gene_block, expected_bbsi=1, expected_bsmbi=0, label=trbv_name)
     return gene_block
 
 
-def build_trac_rh_fragment(oh_1b, split_1b):
+def build_trac_rh_fragment(oh_1b, split_1b, trac_junc_residue='', locus='TRAC'):
     """
-    Build the TRAC-LVL-Cys + right homology arm constant gene block.
+    Build the TRAC constant region + right homology arm constant gene block.
 
     oh_1b = trac_nt[split_1b : split_1b+4] — the BbsI 1b junction overhang.
     The gene-block body starts at trac_nt[split_1b+4:]; the first split_1b nt of
     TRAC go into the variable fragment as a bridge (may be empty if split_1b == 0).
 
-    Gene-block layout:
-      ACAT [oh_1b] A GTCTTC [TRAC_nt[split_1b+4:]] [RH]
+    The TRAC-LVL-Cys coding sequence + polyA are identical for both loci; only
+    the right homology arm differs (TRAC RH vs TRBC1 RH).
 
-    After BbsI digest, the right functional piece = oh_1b + TRAC_nt[split_1b+4:] + RH.
+    Gene-block layout:
+      ACAT [oh_1b] A GTCTTC [TRAC_nt[split_1b+4:]] [spacer] [BGH_polyA] [RH]
+
+    After BbsI digest, the right functional piece =
+      oh_1b + TRAC_nt[split_1b+4:] + spacer + BGH_polyA + RH.
     """
-    trac_nt = build_trac_nt()
-    rh = _rh_nt.upper()
-    gene_block = _bbsi_5prime_site(oh_1b) + trac_nt[split_1b + 4:] + rh
+    trac_nt = build_trac_nt(junc_residue=trac_junc_residue)
+    rh = _trbc1_rh_nt if locus == 'TRBC1' else _rh_nt.upper()
+    gene_block = (_bbsi_5prime_site(oh_1b)
+                  + trac_nt[split_1b + 4:]
+                  + _post_stop_spacer_nt
+                  + _bgh_polya_nt
+                  + rh)
     _validate_gene_block_re(gene_block, expected_bbsi=1, expected_bsmbi=0, label='TRAC-RH')
     return gene_block
 
 
-def build_trbc_t2a_fragment(oh_2a, split_2a, oh_2b, split_2b):
+def build_trbc_t2a_fragment(oh_2a, split_2a, oh_2b, split_2b, trbc_junc_residue=''):
     """
     Build the TRBC-LVL-Cys + partial-T2A constant gene block.
 
@@ -883,7 +1036,7 @@ def build_trbc_t2a_fragment(oh_2a, split_2a, oh_2b, split_2b):
       TRBC + T2A[:split_2b] + oh_2b(=T2A[split_2b:split_2b+4]) + T2A[split_2b+4:] + TRAV
       = TRBC + T2A + TRAV  (correct reading frame throughout)
     """
-    trbc_nt = build_trbc_nt()
+    trbc_nt = build_trbc_nt(junc_residue=trbc_junc_residue)
     t2a     = _t2a_nt.upper()
     body    = trbc_nt[split_2a + 4:] + t2a[:split_2b]
     gene_block = _bsmbi_5prime_site(oh_2a) + body + _bsmbi_3prime_site(oh_2b)
@@ -994,6 +1147,70 @@ def _validate_gene_block_re(seq, expected_bbsi, expected_bsmbi, label=''):
             f'{label}: expected {expected_bsmbi} BsmBI site(s), found {n_bsmbi} in:\n{seq[:80]}...')
 
 
+# ── Frame validation ─────────────────────────────────────────────────────────
+
+def _check_insert_frame(lh_nt, p2a_nt,
+                         trbv_nt, cdr3b_nt, trbc_nt, t2a_nt,
+                         trav_nt, cdr3a_nt, trac_nt, locus='TRAC'):
+    """
+    Verify that the HDR insert is in frame.
+
+    TRAC mode: the LH arm ends at the complete TCT (Ser) codon boundary; p2a_nt
+    starts with GSG and every component from p2a_nt onward must be divisible by 3.
+
+    TRBC1 mode: the Kozak context is non-coding (5'UTR); the ORF starts at the
+    TRBV's own ATG.  Only the coding components (TRBV onward) are checked.
+    p2a_nt is not used in this mode.
+
+    Raises ValueError if any component breaks the frame or a premature stop is found.
+    """
+    if locus == 'TRBC1':
+        frame_parts = [
+            ('TRBV', trbv_nt),
+            ('CDR3b', cdr3b_nt),
+            ('TRBC', trbc_nt),
+            ('T2A', t2a_nt),
+            ('TRAV', trav_nt),
+            ('CDR3a', cdr3a_nt),
+            ('TRAC', trac_nt),
+        ]
+        for name, seq in frame_parts:
+            if len(seq) % 3 != 0:
+                raise ValueError(
+                    f'Frame error: {name} is {len(seq)} nt (not divisible by 3) — '
+                    f'breaks reading frame.')
+        insert = trbv_nt + cdr3b_nt + trbc_nt + t2a_nt + trav_nt + cdr3a_nt + trac_nt
+        t2a_aa_start = (len(trbv_nt) + len(cdr3b_nt) + len(trbc_nt)) // 3
+    else:
+        frame_parts = [
+            ('P2A', p2a_nt),
+            ('TRBV', trbv_nt),
+            ('CDR3b', cdr3b_nt),
+            ('TRBC', trbc_nt),
+            ('T2A', t2a_nt),
+            ('TRAV', trav_nt),
+            ('CDR3a', cdr3a_nt),
+            ('TRAC', trac_nt),
+        ]
+        for name, seq in frame_parts:
+            if len(seq) % 3 != 0:
+                raise ValueError(
+                    f'Frame error: {name} is {len(seq)} nt (not divisible by 3) — '
+                    f'breaks reading frame.')
+        insert = (p2a_nt
+                  + trbv_nt + cdr3b_nt + trbc_nt + t2a_nt
+                  + trav_nt + cdr3a_nt + trac_nt)
+        t2a_aa_start = (len(p2a_nt) + len(trbv_nt) + len(cdr3b_nt) + len(trbc_nt)) // 3
+
+    aa = translate(insert.upper())
+    premature = [i for i, a in enumerate(aa[:-1]) if a == '*']
+    if premature:
+        raise ValueError(
+            f'Premature stop codon(s) in HDR insert at AA position(s) {premature} '
+            f'(T2A starts at ~AA {t2a_aa_start}). Likely frameshift.')
+    return aa
+
+
 # ── GenBank output ───────────────────────────────────────────────────────────
 
 def _feat(start, end, feat_type, strand=1, **qualifiers):
@@ -1016,35 +1233,63 @@ def _write_gb(seq_nt, record_id, description, features, filepath):
     SeqIO.write(record, filepath, 'genbank')
 
 
-def _annotate_lh_trbv_gb(lh_nt, trbv_body_nt, oh_1a, trbv_name, filepath):
+def _annotate_lh_trbv_gb(lh_nt, trbv_body_nt, oh_1a, trbv_name, filepath, locus='TRAC'):
     """Write annotated GenBank for an LH-TRBV constant gene block."""
-    p2a  = _p2a_leader_nt
     bbsi = _bbsi_3prime_site(oh_1a)          # GAAGACGGA + oh + ACAT
-    seq  = lh_nt.upper() + p2a + trbv_body_nt.upper() + bbsi
 
-    lh_end   = len(lh_nt)
-    p2a_end  = lh_end + len(p2a)
-    trbv_end = p2a_end + len(trbv_body_nt)
-    oh_start = trbv_end + 9   # after GAAGACGGA (9 nt)
+    if locus == 'TRBC1':
+        leader    = _kozak_nt
+        seq       = lh_nt.upper() + leader + trbv_body_nt.upper() + bbsi
+        lh_end    = len(lh_nt)
+        lead_end  = lh_end + len(leader)
+        trbv_end  = lead_end + len(trbv_body_nt)
+        oh_start    = trbv_end
+        recog_start = trbv_end + 4
+        features = [
+            _feat(0,            lh_end,       'misc_feature', label=['Left Homology Arm (TRBC1)'],
+                  note=['Homology arm for Cas9-RNP HDR at mTRBC1 locus']),
+            _feat(lh_end,       lead_end,     'misc_feature', label=['Kozak context'],
+                  note=['Kozak consensus sequence (gccgccacc) immediately 5\' of the '
+                        'TRBV native ATG start codon. Not translated — provides '
+                        'optimal ribosome recognition in the 5\'UTR.']),
+            _feat(lead_end,     trbv_end,     'gene',         label=[f'TRBV ({trbv_name})'],
+                  gene=[trbv_name],
+                  note=['Codon-optimised; full native signal peptide (ATG-start); '
+                        'ends at BbsI 1a junction']),
+            _feat(oh_start,     oh_start + 4, 'misc_feature', label=[f'1a OH ({oh_1a})'],
+                  note=['TRBV-specific BbsI overhang for step-1 pooled assembly']),
+            _feat(recog_start,  len(seq) - 4, 'protein_bind', label=['BbsI recognition (1a)'],
+                  bound_moiety=['BbsI'],
+                  note=[f'Step-1 golden gate site (inverted — recognition on waste); '
+                        f'1a overhang = {oh_1a}']),
+        ]
+    else:
+        p2a  = _p2a_leader_nt
+        seq  = lh_nt.upper() + p2a + trbv_body_nt.upper() + bbsi
+        lh_end    = len(lh_nt)
+        p2a_end   = lh_end + len(p2a)
+        trbv_end  = p2a_end + len(trbv_body_nt)
+        oh_start    = trbv_end
+        recog_start = trbv_end + 4
+        features = [
+            _feat(0,            lh_end,       'misc_feature', label=['Left Homology Arm'],
+                  note=['Homology arm for Cas9-RNP HDR at mTRAC locus']),
+            _feat(lh_end,       p2a_end,      'misc_feature', label=['P2A leader'],
+                  note=['P2A self-cleaving peptide. The LH arm ends at the complete TCT '
+                        '(Ser) codon so P2A starts on a clean codon boundary with GSG. '
+                        'Do NOT codon-optimise or alter this sequence.']),
+            _feat(p2a_end,      trbv_end,     'gene',         label=[f'TRBV ({trbv_name})'],
+                  gene=[trbv_name],
+                  note=['Codon-optimised, includes signal peptide; ends at BbsI 1a junction']),
+            _feat(oh_start,     oh_start + 4, 'misc_feature', label=[f'1a OH ({oh_1a})'],
+                  note=['TRBV-specific BbsI overhang for step-1 pooled assembly']),
+            _feat(recog_start,  len(seq) - 4, 'protein_bind', label=['BbsI recognition (1a)'],
+                  bound_moiety=['BbsI'],
+                  note=[f'Step-1 golden gate site (inverted — recognition on waste); '
+                        f'1a overhang = {oh_1a}']),
+        ]
 
-    features = [
-        _feat(0,        lh_end,     'misc_feature', label=['Left Homology Arm'],
-              note=['Homology arm for Cas9-RNP HDR at mTRAC locus']),
-        _feat(lh_end,   p2a_end,    'misc_feature', label=['P2A leader'],
-              note=['P2A self-cleaving peptide. Reading frame is established by the '
-                    'upstream endogenous TRAC ORF across the left homology arm — '
-                    'the apparent in-frame TGA is out-of-frame in the genomic context. '
-                    'Do NOT codon-optimise or alter this sequence.']),
-        _feat(p2a_end,  trbv_end,   'gene',         label=[f'TRBV ({trbv_name})'],
-              gene=[trbv_name],
-              note=['Codon-optimised, includes signal peptide; ends at BbsI 1a junction']),
-        _feat(trbv_end, len(seq)-4, 'protein_bind', label=['BbsI recognition (1a)'],
-              bound_moiety=['BbsI'],
-              note=[f'Step-1 golden gate site; 1a overhang = {oh_1a}']),
-        _feat(oh_start, oh_start+4, 'misc_feature', label=[f'1a OH ({oh_1a})'],
-              note=['TRBV-specific BbsI overhang for step-1 pooled assembly']),
-    ]
-    _write_gb(seq, f'LH-{trbv_name}', f'LH-{trbv_name} gene block | 1a={oh_1a}',
+    _write_gb(seq, f'LH-{trbv_name}', f'LH-{trbv_name} gene block | {locus} | 1a={oh_1a}',
               features, filepath)
 
 
@@ -1055,11 +1300,13 @@ def _annotate_trac_rh_gb(trac_nt, rh_nt, oh_1b, filepath):
     trac_start = len(bbsi)
     rh_start   = trac_start + len(trac_nt) - 4
 
+    # 5' BbsI site layout: ACAT(4) + GAAGACGG(8) + oh_1b(4) = 16 nt
+    # OH starts at byte 12; recognition (GAAGAC) at bytes 4-9
     features = [
-        _feat(0,          len(bbsi)-6,    'protein_bind', label=['BbsI recognition (1b)'],
+        _feat(0,          len(bbsi)-4,    'protein_bind', label=['BbsI recognition (1b)'],
               bound_moiety=['BbsI'],
-              note=[f'Step-1 golden gate site; 1b overhang = {oh_1b}']),
-        _feat(4,          8,              'misc_feature', label=[f'1b OH ({oh_1b})'],
+              note=[f'Step-1 GG site (recognition on waste); 1b overhang = {oh_1b}']),
+        _feat(12,         16,             'misc_feature', label=[f'1b OH ({oh_1b})'],
               note=['Constant BbsI overhang at CDR3α/TRAC junction']),
         _feat(trac_start, rh_start,       'CDS',          label=['TRAC (LVL-Cys)'],
               gene=['Trac'], note=['LVL-Cys engineered constant region (improved TCR pairing)']),
@@ -1071,29 +1318,37 @@ def _annotate_trac_rh_gb(trac_nt, rh_nt, oh_1b, filepath):
 
 def _annotate_trbc_t2a_gb(trbc_nt, t2a_nt, oh_2a, oh_2b, filepath):
     """Write annotated GenBank for the TRBC-T2A constant gene block."""
-    left  = _bsmbi_5prime_site(oh_2a)        # ACAT + CGTCTCCA + oh_2a
-    right = _bsmbi_3prime_site(oh_2b)        # CGTCTCCA + oh_2b + ACAT
+    left  = _bsmbi_5prime_site(oh_2a)   # ACAT + CGTCTCC + oh_2a  (recognition on waste)
+    right = _bsmbi_3prime_site(oh_2b)   # oh_2b + GGAGACG + ACAT  (recognition on waste)
     seq   = left + trbc_nt[4:].upper() + t2a_nt.upper() + right
 
-    trbc_start = len(left)
-    t2a_start  = trbc_start + len(trbc_nt) - 4
+    trbc_start  = len(left)
+    t2a_start   = trbc_start + len(trbc_nt) - 4
     right_start = t2a_start + len(t2a_nt)
 
+    # 5' site (2a): ACAT(4) + CGTCTCC(7) + oh_2a(4) — oh at byte 11
+    oh_2a_start    = len(_GG_TAIL) + 7   # = 11
+    recog_2a_end   = oh_2a_start          # recognition ends at byte 11
+
+    # 3' site (2b, fixed): oh_2b(4) + GGAGACG(7) + ACAT(4) — oh at byte 0 of right
+    oh_2b_start    = right_start          # OH is the first 4 nt of right
+    recog_2b_start = right_start + 4     # GGAGACG starts after OH
+
     features = [
-        _feat(0,           len(left)-4,   'protein_bind', label=['BsmBI recognition (2a)'],
+        _feat(0,               recog_2a_end,         'protein_bind', label=['BsmBI recognition (2a)'],
               bound_moiety=['BsmBI'],
-              note=[f'Step-2 golden gate site; 2a overhang = {oh_2a}']),
-        _feat(4,           8,             'misc_feature', label=[f'2a OH ({oh_2a})'],
+              note=[f'Step-2 GG site (recognition on waste); 2a overhang = {oh_2a}']),
+        _feat(oh_2a_start,     oh_2a_start + 4,      'misc_feature', label=[f'2a OH ({oh_2a})'],
               note=['Constant BsmBI overhang at CDR3β/TRBC junction']),
-        _feat(trbc_start,  t2a_start,     'CDS',          label=['TRBC (LVL-Cys)'],
-              gene=['Trbc'], note=['LVL-Cys engineered constant region']),
-        _feat(t2a_start,   right_start,   'misc_feature', label=['furin-GSG-T2A'],
+        _feat(trbc_start,      t2a_start,            'CDS',          label=['TRBC1 (Cys)'],
+              gene=['Trbc1'], note=['TRBC1 Cys-mutant constant region']),
+        _feat(t2a_start,       right_start,          'misc_feature', label=['furin-GSG-T2A'],
               note=['Self-cleaving T2A peptide separating beta and alpha chains']),
-        _feat(right_start, right_start+8, 'protein_bind', label=['BsmBI recognition (2b)'],
-              bound_moiety=['BsmBI'],
-              note=[f'Step-2 golden gate site; 2b overhang = {oh_2b}']),
-        _feat(right_start+8, right_start+12, 'misc_feature', label=[f'2b OH ({oh_2b})'],
+        _feat(oh_2b_start,     oh_2b_start + 4,      'misc_feature', label=[f'2b OH ({oh_2b})'],
               note=['Constant BsmBI overhang at T2A/TRAV junction']),
+        _feat(recog_2b_start,  len(seq) - 4,         'protein_bind', label=['BsmBI recognition (2b)'],
+              bound_moiety=['BsmBI'],
+              note=[f'Step-2 GG site (recognition on waste); 2b overhang = {oh_2b}']),
     ]
     _write_gb(seq, 'TRBC-T2A', f'TRBC-T2A gene block | 2a={oh_2a} 2b={oh_2b}',
               features, filepath)
@@ -1102,55 +1357,94 @@ def _annotate_trbc_t2a_gb(trbc_nt, t2a_nt, oh_2a, oh_2b, filepath):
 def _annotate_variable_gb(trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
                            gene_block, trbv_bridge, cdr3b_nt, trav_nt, cdr3a_nt,
                            oh_1a, oh_1b, oh_2a, oh_2b, filepath):
-    """Write annotated GenBank for a per-TCR variable gene block."""
-    # Site lengths
-    bbsi5  = len(_bbsi_5prime_site(oh_1a))   # = 4+4+1+6 = 15
-    bsmbi3 = len(_bsmbi_3prime_site(oh_2a))  # = 6+2+4+4 = 16
-    bsmbi5 = len(_bsmbi_5prime_site(oh_2b))  # = 4+6+2+4 = 16
-    bbsi3  = len(_bbsi_3prime_site(oh_1b))   # = 6+3+4+4 = 17
+    """Write annotated GenBank for a per-TCR variable gene block.
 
-    p = bbsi5
-    bridge_end  = p + len(trbv_bridge)
-    cdr3b_end   = bridge_end + len(cdr3b_nt)
-    bsmbi3_end  = cdr3b_end + bsmbi3
-    bsmbi5_end  = bsmbi3_end + bsmbi5
-    trav_end    = bsmbi5_end + len(trav_nt)
-    cdr3a_end   = trav_end + len(cdr3a_nt)
+    Positions are located by scanning the gene_block sequence directly rather
+    than tracking a cursor.  This is robust to variable-length trbc_bridge,
+    t2a_tail, and trac_bridge segments that the old cursor approach omitted,
+    which caused all features after CDR3β to be annotated at wrong positions
+    and with wrong OH labels (oh_1b and oh_2a).
+    """
+    seq = gene_block.upper()
 
+    # ── Locate each element by searching the sequence ────────────────────
+    # Site formats after the site-destroying fix:
+    #   BbsI 5' (1a):  ACAT + GAAGACGG + oh_1a  (16 nt, OH at byte 12)
+    #   BsmBI 3' (2a): oh_2a + GGAGACG + ACAT    (15 nt, OH at start)
+    #   BsmBI 5' (2b): ACAT + CGTCTCC + oh_2b    (15 nt, OH at byte 11)
+    #   BbsI 3' (1b):  oh_1b + AGGTCTTC + ACAT   (16 nt, OH at start)
+
+    # 5' BbsI site (1a): ACAT(4) + GAAGACGG(8) + oh(4) = 16 nt at position 0
+    bbsi5      = len(_bbsi_5prime_site(oh_1a))   # = 16
+    p_bridge   = bbsi5
+    p_cdr3b    = p_bridge + len(trbv_bridge)
+    p_cdr3b_e  = p_cdr3b  + len(cdr3b_nt)
+
+    # BsmBI 3' site (2a): oh_2a(4) + GGAGACG(7) + ACAT(4) = 15 nt
+    # Locate by searching for GGAGACG (the inverted recognition block)
+    p_ggagacg  = seq.index('GGAGACG', p_cdr3b_e)
+    p_bsmbi3   = p_ggagacg - 4                           # OH is 4 nt before GGAGACG
+    p_oh_2a    = p_bsmbi3                                # OH starts at site start
+    p_bsmbi3_e = p_ggagacg + 7 + 4                       # GGAGACG(7) + ACAT(4)
+
+    # BsmBI 5' site (2b): ACAT(4) + CGTCTCC(7) + oh_2b(4) = 15 nt (unchanged)
+    p_cgtctcc2 = seq.index('CGTCTCC', p_bsmbi3_e)
+    p_bsmbi5   = p_cgtctcc2 - 4                          # ACAT(4) before CGTCTCC
+    p_oh_2b    = p_cgtctcc2 + 7
+    p_bsmbi5_e = p_cgtctcc2 + 11                         # CGTCTCC(7) + oh(4)
+
+    # TRAV: starts after t2a_tail; search from end of 5' BsmBI site
+    p_trav     = seq.index(trav_nt.upper(), p_bsmbi5_e)
+    p_trav_e   = p_trav + len(trav_nt)
+
+    # CDR3α: starts after TRAV
+    p_cdr3a    = seq.index(cdr3a_nt.upper(), p_trav_e)
+    p_cdr3a_e  = p_cdr3a + len(cdr3a_nt)
+
+    # BbsI 3' site (1b): oh_1b(4) + AGGTCTTC(8) + ACAT(4) = 16 nt at 3' end
+    # Locate by searching for AGGTCTTC (the inverted recognition block)
+    p_aggtcttc = seq.rindex('AGGTCTTC')
+    p_bbsi3    = p_aggtcttc - 4    # OH is 4 nt before AGGTCTTC
+    p_oh_1b    = p_bbsi3
+    p_bbsi3_e  = p_aggtcttc + 12  # AGGTCTTC(8) + ACAT(4)
+
+    # ── Build feature list ────────────────────────────────────────────────
+    # 5' BbsI site layout: ACAT(4) + GAAGACGG(8) + oh_1a(4) = 16 nt
+    # OH starts at byte 12 (after ACAT + GAAGACGG)
     features = [
-        _feat(0,         bbsi5,       'protein_bind', label=['BbsI recognition (1a)'],
+        _feat(0,          bbsi5,       'protein_bind', label=['BbsI recognition (1a)'],
               bound_moiety=['BbsI'],
-              note=[f'Step-1 GG site; 1a OH = {oh_1a} (TRBV-specific)']),
-        _feat(4,         8,           'misc_feature', label=[f'1a OH ({oh_1a})'],
+              note=[f'Step-1 GG site (recognition on waste); 1a OH = {oh_1a} (TRBV-specific)']),
+        _feat(12,         16,          'misc_feature', label=[f'1a OH ({oh_1a})'],
               note=[f'Pairs with LH-{trbv_name} gene block']),
     ]
     if trbv_bridge:
         features.append(
-            _feat(p, bridge_end, 'misc_feature', label=[f'TRBV bridge ({trbv_name})'],
+            _feat(p_bridge, p_cdr3b, 'misc_feature', label=[f'TRBV bridge ({trbv_name})'],
                   note=['Germline TRBV tail after the 1a overhang, before CDR3β'])
         )
     features += [
-        _feat(bridge_end,  cdr3b_end,  'misc_feature', label=[f'CDR3β ({cdr3b_aa})'],
+        _feat(p_cdr3b,   p_cdr3b_e,  'misc_feature', label=[f'CDR3β ({cdr3b_aa})'],
               note=[f'Codon-optimised CDR3β (aa: {cdr3b_aa[1:]}); excludes leading C in TRBV']),
-        _feat(cdr3b_end,   bsmbi3_end, 'protein_bind', label=['BsmBI recognition (2a)'],
+        _feat(p_bsmbi3,  p_bsmbi3_e, 'protein_bind', label=['BsmBI recognition (2a)'],
               bound_moiety=['BsmBI'],
               note=[f'Step-2 GG site; 2a OH = {oh_2a}']),
-        _feat(cdr3b_end+8, cdr3b_end+12, 'misc_feature', label=[f'2a OH ({oh_2a})'],
+        _feat(p_oh_2a,   p_oh_2a+4,  'misc_feature', label=[f'2a OH ({oh_2a})'],
               note=['Junction to TRBC-T2A constant fragment']),
-        _feat(bsmbi3_end,  bsmbi5_end, 'protein_bind', label=['BsmBI recognition (2b)'],
+        _feat(p_bsmbi5,  p_bsmbi5_e, 'protein_bind', label=['BsmBI recognition (2b)'],
               bound_moiety=['BsmBI'],
               note=[f'Step-2 GG site; 2b OH = {oh_2b}']),
-        _feat(bsmbi3_end+4, bsmbi3_end+8, 'misc_feature', label=[f'2b OH ({oh_2b})'],
+        _feat(p_oh_2b,   p_oh_2b+4,  'misc_feature', label=[f'2b OH ({oh_2b})'],
               note=['Junction from TRBC-T2A constant fragment']),
-        _feat(bsmbi5_end,  trav_end,   'gene',         label=[f'TRAV ({trav_name})'],
+        _feat(p_trav,    p_trav_e,   'gene',         label=[f'TRAV ({trav_name})'],
               gene=[trav_name],
               note=['Full codon-optimised TRAV, includes signal peptide, ends at Cys104']),
-        _feat(trav_end,    cdr3a_end,  'misc_feature', label=[f'CDR3α ({cdr3a_aa})'],
+        _feat(p_cdr3a,   p_cdr3a_e,  'misc_feature', label=[f'CDR3α ({cdr3a_aa})'],
               note=[f'Codon-optimised CDR3α (aa: {cdr3a_aa[1:]}); excludes leading C in TRAV']),
-        _feat(cdr3a_end,   cdr3a_end+bbsi3, 'protein_bind', label=['BbsI recognition (1b)'],
+        _feat(p_bbsi3,   p_bbsi3_e,  'protein_bind', label=['BbsI recognition (1b)'],
               bound_moiety=['BbsI'],
               note=[f'Step-1 GG site; 1b OH = {oh_1b}']),
-        _feat(cdr3a_end+9, cdr3a_end+13, 'misc_feature', label=[f'1b OH ({oh_1b})'],
+        _feat(p_oh_1b,   p_oh_1b+4,  'misc_feature', label=[f'1b OH ({oh_1b})'],
               note=['Junction to TRAC-RH constant fragment']),
     ]
 
@@ -1162,40 +1456,72 @@ def _annotate_variable_gb(trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
 def _annotate_assembled_gb(trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
                             trbv_nt, cdr3b_nt, trav_nt, cdr3a_nt,
                             trac_nt, trbc_nt, t2a_nt, lh_nt, rh_nt,
-                            oh_2b, clone_id, filepath):
+                            oh_2b, clone_id, filepath, locus='TRAC'):
     """
     Write the fully assembled HDR template as an annotated GenBank record.
     This represents the DNA that integrates into the genome after HDR.
     No golden gate recognition sequences — only the functional insert.
     """
-    # Build assembled sequence (no GG sites; T2A reconstituted fully, no oh_2b linker)
-    p2a = _p2a_leader_nt
-    parts = [lh_nt, p2a, trbv_nt, cdr3b_nt, trbc_nt, t2a_nt, trav_nt, cdr3a_nt, trac_nt, rh_nt]
-    seq = ''.join(p.upper() for p in parts)
+    if locus == 'TRBC1':
+        leader = _kozak_nt
+        _check_insert_frame(lh_nt, None,
+                            trbv_nt, cdr3b_nt, trbc_nt, t2a_nt,
+                            trav_nt, cdr3a_nt, trac_nt, locus='TRBC1')
+        part_labels = ['lh', 'kozak', 'trbv', 'cdr3b', 'trbc', 't2a', 'trav', 'cdr3a', 'trac', 'rh']
+        parts       = [lh_nt, leader, trbv_nt, cdr3b_nt, trbc_nt, t2a_nt, trav_nt, cdr3a_nt, trac_nt, rh_nt]
+    else:
+        leader = _p2a_leader_nt
+        _check_insert_frame(lh_nt, leader,
+                            trbv_nt, cdr3b_nt, trbc_nt, t2a_nt,
+                            trav_nt, cdr3a_nt, trac_nt, locus='TRAC')
+        part_labels = ['lh', 'p2a', 'trbv', 'cdr3b', 'trbc', 't2a', 'trav', 'cdr3a', 'trac', 'rh']
+        parts       = [lh_nt, leader, trbv_nt, cdr3b_nt, trbc_nt, t2a_nt, trav_nt, cdr3a_nt, trac_nt, rh_nt]
 
+    seq = ''.join(p.upper() for p in parts)
     pos = {}
     cursor = 0
-    for label, s in zip(
-        ['lh','p2a','trbv','cdr3b','trbc','t2a','trav','cdr3a','trac','rh'], parts
-    ):
+    for label, s in zip(part_labels, parts):
         pos[label] = (cursor, cursor + len(s))
         cursor += len(s)
 
-    features = [
-        _feat(*pos['lh'],   'misc_feature', label=['Left Homology Arm'],
-              note=['~300bp homology for Cas9-RNP HDR at mTRAC locus']),
-        _feat(*pos['p2a'],  'misc_feature', label=['P2A leader'],
-              note=['P2A self-cleaving peptide. Reading frame established by upstream '
-                    'TRAC ORF across the LH arm: last nt of LH + first 2 nt of P2A '
-                    'complete a shared TCT=Ser codon.']),
-        _feat(*pos['trbv'], 'gene',         label=[f'TRBV ({trbv_name})'],
-              gene=[trbv_name],
-              note=[f'Codon-optimised {trbv_name}; includes signal peptide']),
+    if locus == 'TRBC1':
+        lh_key  = 'lh'
+        ldr_key = 'kozak'
+        features = [
+            _feat(*pos[lh_key],  'misc_feature', label=['Left Homology Arm (TRBC1)'],
+                  note=['Homology arm for Cas9-RNP HDR at mTRBC1 locus']),
+            _feat(*pos[ldr_key], 'misc_feature', label=['Kozak context'],
+                  note=['Kozak consensus (gccgccacc) immediately 5\' of TRBV ATG. '
+                        'Not translated — provides optimal translation initiation '
+                        'from the TRBV native start codon at the TRBC1 locus.']),
+            _feat(*pos['trbv'],  'gene',         label=[f'TRBV ({trbv_name})'],
+                  gene=[trbv_name],
+                  note=[f'Codon-optimised {trbv_name}; full native signal peptide (ATG-start)']),
+        ]
+    else:
+        lh_key  = 'lh'
+        ldr_key = 'p2a'
+        features = [
+            _feat(*pos[lh_key],  'misc_feature', label=['Left Homology Arm'],
+                  note=['~300bp homology for Cas9-RNP HDR at mTRAC locus']),
+            _feat(*pos[ldr_key], 'misc_feature', label=['P2A leader'],
+                  note=['P2A self-cleaving peptide. LH arm ends at complete TCT=Ser codon; '
+                        'P2A starts on a clean codon boundary with GSG-ATN-FSL...']),
+            _feat(*pos['trbv'],  'gene',         label=[f'TRBV ({trbv_name})'],
+                  gene=[trbv_name],
+                  note=[f'Codon-optimised {trbv_name}; includes signal peptide']),
+        ]
+
+    rh_label = 'Right Homology Arm (TRBC1)' if locus == 'TRBC1' else 'Right Homology Arm'
+    rh_note  = ('Homology arm for Cas9-RNP HDR at mTRBC1 locus' if locus == 'TRBC1'
+                else '~300bp homology for Cas9-RNP HDR at mTRAC locus')
+
+    features += [
         _feat(*pos['cdr3b'],'misc_feature', label=[f'CDR3β'],
               note=[f'aa: {cdr3b_aa} | codon-optimised | {len(cdr3b_nt)//3} codons']),
-        _feat(*pos['trbc'], 'CDS',          label=['TRBC (LVL-Cys)'],
-              gene=['Trbc'],
-              note=['LVL-Cys engineered constant region for improved TCRαβ pairing']),
+        _feat(*pos['trbc'], 'CDS',          label=['TRBC1 (Cys)'],
+              gene=['Trbc1'],
+              note=['TRBC1 Cys-mutant constant region']),
         _feat(*pos['t2a'],  'misc_feature', label=['furin-GSG-T2A'],
               note=['Self-cleaving T2A. oh_2b is derived from within this sequence '
                     'so T2A is fully reconstituted with no extra nt at the T2A/TRAV '
@@ -1208,18 +1534,17 @@ def _annotate_assembled_gb(trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
         _feat(*pos['trac'], 'CDS',          label=['TRAC (LVL-Cys)'],
               gene=['Trac'],
               note=['LVL-Cys engineered constant region for improved TCRαβ pairing']),
-        _feat(*pos['rh'],   'misc_feature', label=['Right Homology Arm'],
-              note=['~300bp homology for Cas9-RNP HDR at mTRAC locus']),
+        _feat(*pos['rh'],   'misc_feature', label=[rh_label], note=[rh_note]),
     ]
 
     desc = (f'HDR template | {clone_id} | {trbv_name}/{trav_name} | '
-            f'CDR3b={cdr3b_aa} CDR3a={cdr3a_aa} | {len(seq)} bp')
+            f'CDR3b={cdr3b_aa} CDR3a={cdr3a_aa} | {locus} | {len(seq)} bp')
     _write_gb(seq, clone_id[:16], desc, features, filepath)
 
 
 def write_gb_outputs(output_dir, constant_df, variable_df, oh_1a_map,
                      trbv_nt_cache, oh_2b, trac_nt, trbc_nt, t2a_nt,
-                     lh_nt, rh_nt, verbose=True):
+                     lh_nt, rh_nt, verbose=True, locus='TRAC'):
     """
     Write GenBank files for all constant and variable fragments.
 
@@ -1268,14 +1593,12 @@ def write_gb_outputs(output_dir, constant_df, variable_df, oh_1a_map,
         split   = oh_1a_map[gene]['split_from_end']
         body    = trbv_nt[:-split] if split > 0 else trbv_nt
         _annotate_lh_trbv_gb(lh_nt, body, oh_1a, gene,
-                              const_dir / f'LH-{gene}.gb')
+                              const_dir / f'LH-{gene}.gb', locus=locus)
 
     if verbose:
         print(f'  Wrote {len(list(const_dir.glob("*.gb")))} constant .gb files')
 
     # ── Variable + assembled per clonotype ───────────────────────────────────
-    oh_1b_seq = trac_nt[:4]   # used for assembled reconstruction
-
     written = 0
     for _, row in variable_df.iterrows():
         clone_id  = str(row['Clone'])
@@ -1294,47 +1617,94 @@ def write_gb_outputs(output_dir, constant_df, variable_df, oh_1a_map,
         trbv_nt_full = trbv_nt_cache[trbv_name]
         trbv_bridge  = trbv_nt_full[-split+4:] if split > 4 else ''
 
-        # Reconstruct cdr3b_nt, cdr3a_nt, trav_nt from the gene block
-        # (parse back out of the stored gene block string)
-        bbsi5_len  = len(_bbsi_5prime_site(oh_1a))
-        bsmbi3_len = len(_bsmbi_3prime_site(oh_1a_entry['oh']))  # same formula
-        bsmbi5_len = len(_bsmbi_5prime_site(oh_2b))
-        bbsi3_len  = len(_bbsi_3prime_site(oh_1b_seq))
-        try:
-            trav_nt_len = len(build_trav_gene_nt(trav_name))
-        except ValueError:
+        # Read the actual OH values from the row — these are the NEB-optimised
+        # overhangs chosen at design time and recorded in variable_gene_blocks.csv.
+        # Do NOT substitute trac_nt[:4] or trbc_nt[:4] here: those are the first
+        # codons of the constant regions, which equal the true OH only when split=0.
+        oh_1b_row = str(row.get('OH_1b', ''))
+        oh_2a_row = str(row.get('OH_2a', ''))
+
+        # Use the NT sequences stored at design time — do NOT re-extract from the
+        # gene block string, which does not account for t2a_tail / trac_bridge.
+        cdr3b_nt = str(row.get('_cdr3b_nt', ''))
+        cdr3a_nt = str(row.get('_cdr3a_nt', ''))
+        trav_nt  = str(row.get('_trav_nt',  ''))
+        if not cdr3b_nt or not trav_nt or not cdr3a_nt:
             continue
-        # CDR3 lengths from gene block
-        cdr3b_start = bbsi5_len + len(trbv_bridge)
-        cdr3b_end   = len(gene_block) - bsmbi3_len - bsmbi5_len - trav_nt_len - len(cdr3a_aa[1:])*3 - bbsi3_len
-        cdr3b_nt    = gene_block[cdr3b_start:cdr3b_end]
-        trav_start  = cdr3b_end + bsmbi3_len + bsmbi5_len
-        trav_end    = trav_start + trav_nt_len
-        cdr3a_nt    = gene_block[trav_end:len(gene_block)-bbsi3_len]
-        trav_nt     = gene_block[trav_start:trav_end]
 
         # Write clonotype folder
         cdir = clone_dir / clone_id
         cdir.mkdir(exist_ok=True)
 
-        _annotate_variable_gb(
-            trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
-            gene_block, trbv_bridge, cdr3b_nt, trav_nt, cdr3a_nt,
-            oh_1a, oh_1b_seq, trbc_nt[:4], oh_2b,
-            cdir / 'variable.gb',
-        )
-        _annotate_assembled_gb(
-            trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
-            trbv_nt_full, cdr3b_nt, trav_nt, cdr3a_nt,
-            trac_nt, trbc_nt, t2a_nt, lh_nt, rh_nt,
-            oh_2b, clone_id,
-            cdir / 'assembled.gb',
-        )
+        try:
+            _annotate_variable_gb(
+                trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
+                gene_block, trbv_bridge, cdr3b_nt, trav_nt, cdr3a_nt,
+                oh_1a, oh_1b_row, oh_2a_row, oh_2b,
+                cdir / 'variable.gb',
+            )
+            _annotate_assembled_gb(
+                trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
+                trbv_nt_full, cdr3b_nt, trav_nt, cdr3a_nt,
+                trac_nt, trbc_nt, t2a_nt, lh_nt, rh_nt,
+                oh_2b, clone_id,
+                cdir / 'assembled.gb',
+                locus=locus,
+            )
+        except ValueError as e:
+            if verbose:
+                print(f'  [SKIP GB] {clone_id}: {e}')
+            continue
         written += 1
 
     if verbose:
         print(f'  Wrote {written} clonotype folders ({written*2} .gb files)')
     return gb_root
+
+
+# ── J-C junction residue inference ──────────────────────────────────────────
+
+# Fallback values from IMGT (see docs/TCR_Constant_Region_Split_Codon…pdf):
+#   Mouse TRBC1/2: (G)AG GAT CTG → split codon = E (Glu)
+#   Mouse TRAC:    (G)AC ATC CAG → split codon = D (Asp)
+_TRBC_JUNC_FALLBACK = 'E'
+_TRAC_JUNC_FALLBACK  = 'D'
+
+
+def _infer_jc_junction_residue(airr_df, locus, fallback):
+    """
+    Infer the J-C exon boundary split codon residue from AIRR sequence_aa data.
+
+    The split codon residue is the first amino acid of the constant region whose
+    codon is split across the J exon (1 nt) and C exon (2 nt) at the splice site.
+    IMGT marks it as X in constant region FASTA files.
+
+    Strategy: search for the known constant-region AA prefix (the first several
+    residues AFTER the X) inside sequence_aa.  The character immediately before
+    that match is the split codon residue.
+
+    Using the C-region prefix rather than the junction end avoids confusing
+    the J-gene residues that follow the CDR3 (e.g. Gly from FGxG) with the
+    constant-region start.
+
+    Falls back to `fallback` if sequence_aa is absent or no match is found.
+    """
+    if 'sequence_aa' not in airr_df.columns:
+        return fallback
+    # Known constant-region prefixes (leading X / split-codon residue already stripped)
+    const_prefix = _trac_lvlcys_aa[:8] if locus == 'TRAV' else _trbc_lvlcys_aa[:8]
+    for _, row in airr_df.iterrows():
+        if locus not in str(row.get('v_call', '')).upper():
+            continue
+        seq_aa = str(row.get('sequence_aa', '')).strip().upper()
+        if not seq_aa:
+            continue
+        idx = seq_aa.find(const_prefix)
+        if idx > 0:
+            res = seq_aa[idx - 1]
+            if res.isalpha() and res not in ('X', '*'):
+                return res
+    return fallback
 
 
 # ── AIRR parsing ─────────────────────────────────────────────────────────────
@@ -1347,8 +1717,9 @@ def _normalise_gene(name):
 
 
 def load_airr(path):
-    """Load an AIRR rearrangement TSV. Return a DataFrame."""
-    df = pd.read_csv(path, sep='\t', low_memory=False)
+    """Load an AIRR rearrangement file (TSV or CSV). Return a DataFrame."""
+    sep = ',' if str(path).endswith('.csv') else '\t'
+    df = pd.read_csv(path, sep=sep, low_memory=False)
     return df
 
 
@@ -1380,7 +1751,8 @@ def pair_airr_records(df):
 
 # ── Top-level design function ────────────────────────────────────────────────
 
-def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None, verbose=True):
+def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None,
+                        verbose=True, locus='TRAC'):
     """
     Main entry point: design all HDR fragments for TCRs in an AIRR file.
 
@@ -1394,6 +1766,15 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None, verb
     output_dir : str | Path | None
         Where to write output files. Defaults to ./TCRAFT-hdr_<date>.
     verbose : bool
+    locus : 'TRAC' | 'TRBC1'
+        Target locus for HDR knock-in.
+        'TRAC'  (default) — mature T cells; uses P2A in-frame with the upstream
+                            TRAC ORF.  Requires cells that have already rearranged
+                            their TCR loci.
+        'TRBC1'           — DN3 thymocytes; uses a Kozak context (gccgccacc)
+                            immediately 5' of the TRBV's own ATG so the cassette
+                            drives its own translation from the endogenous Vβ
+                            promoter/Eβ enhancer at the TRBC1 locus.
 
     Returns
     -------
@@ -1403,11 +1784,25 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None, verb
         'overhangs'           : dict of OH sequences (1a per TRBV, 1b, 2a, 2b)
         'invalid'             : DataFrame (skipped clones with error messages)
     """
+    if locus not in ('TRAC', 'TRBC1'):
+        raise ValueError(f"locus must be 'TRAC' or 'TRBC1', got {locus!r}")
     if output_dir is None:
         date_str = pd.Timestamp.now().strftime('%Y%m%d')
         output_dir = Path(f'TCRAFT-hdr_{date_str}')
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    if verbose:
+        if locus == 'TRBC1':
+            print('Locus: TRBC1 (DN3 thymocyte insertion)')
+            print('  Leader: Kozak context (gccgccacc) + TRBV native ATG start codon')
+            print('  Left HA: mm_trbc1_left_homology_arm')
+            print('  Right HA: mm_trbc1_right_homology_arm')
+        else:
+            print('Locus: TRAC (mature T cell insertion)')
+            print('  Leader: P2A self-cleaving peptide (in-frame with upstream TRAC ORF)')
+            print('  Left HA: mm_trac_left_homology_arm')
+            print('  Right HA: mm_trac_right_homology_arm')
 
     if isinstance(airr_path_or_df, (str, Path)):
         df = load_airr(airr_path_or_df)
@@ -1422,11 +1817,19 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None, verb
         if verbose:
             print(f'  Filtered to {len(pairs)} clones with TRBV = {trbv_filter}.')
 
+    # ── Infer J-C split codon junction residues from AIRR sequence_aa ────
+    # The first AA of each constant region is encoded by a split codon at the
+    # J/C exon boundary.  We read it from sequence_aa (residue immediately after
+    # junction_aa); fall back to known mouse values if the column is absent.
+    trbc_junc = _infer_jc_junction_residue(df, 'TRBV', _TRBC_JUNC_FALLBACK)
+    trac_junc  = _infer_jc_junction_residue(df, 'TRAV', _TRAC_JUNC_FALLBACK)
+
     # ── Build constant NT sequences (shared across all TCRs) ──────────────
     if verbose:
         print('\nBuilding constant reference sequences...')
-    trac_nt = build_trac_nt()
-    trbc_nt = build_trbc_nt()
+        print(f'  J-C junction residues: TRBC={trbc_junc}, TRAC={trac_junc}')
+    trac_nt = build_trac_nt(junc_residue=trac_junc)
+    trbc_nt = build_trbc_nt(junc_residue=trbc_junc)
     t2a_nt  = _t2a_nt.upper()
 
     oh_1b, split_1b, oh_2a, split_2a, oh_2b, split_2b = design_constant_overhangs(trac_nt, trbc_nt)
@@ -1468,10 +1871,11 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None, verb
 
     # TRBC-T2A (one block)
     try:
-        trbc_t2a_gb = build_trbc_t2a_fragment(oh_2a, split_2a, oh_2b, split_2b)
+        trbc_t2a_gb = build_trbc_t2a_fragment(oh_2a, split_2a, oh_2b, split_2b,
+                                                trbc_junc_residue=trbc_junc)
         constant_rows.append({
             'Fragment': 'TRBC-T2A',
-            'Gene': 'TRBC-LVL-Cys + T2A',
+            'Gene': 'TRBC1-Cys + T2A',
             'OH_left': oh_2a,
             'OH_right': oh_2b,
             'Length': len(trbc_t2a_gb),
@@ -1484,9 +1888,10 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None, verb
         if verbose:
             print(f'  [FAIL] TRBC-T2A: {e}')
 
-    # TRAC-RH (one block)
+    # TRAC-RH (one block) — RH sequence differs by locus; TRAC coding region is identical
     try:
-        trac_rh_gb = build_trac_rh_fragment(oh_1b, split_1b)
+        trac_rh_gb = build_trac_rh_fragment(oh_1b, split_1b,
+                                              trac_junc_residue=trac_junc, locus=locus)
         constant_rows.append({
             'Fragment': 'TRAC-RH',
             'Gene': 'TRAC-LVL-Cys + RH',
@@ -1509,7 +1914,7 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None, verb
         oh_1a    = oh_1a_map[gene]['oh']
         split    = oh_1a_map[gene]['split_from_end']
         try:
-            gb = build_lh_trbv_fragment(gene, oh_1a, split)
+            gb = build_lh_trbv_fragment(gene, oh_1a, split, locus=locus)
             constant_rows.append({
                 'Fragment': f'LH-{gene}',
                 'Gene': gene,
@@ -1562,11 +1967,12 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None, verb
         # Bridge: TRBV sequence AFTER the oh_1a window and before CDR3β
         trbv_bridge  = trbv_nt_full[-split+4:] if split > 4 else ''
         try:
-            gb = build_variable_fragment(trbv, trav, cdr3b, cdr3a,
-                                         oh_1a, trbv_bridge,
-                                         oh_1b, trac_bridge,
-                                         oh_2a, trbc_bridge,
-                                         oh_2b, t2a_tail)
+            vparts = _generate_variable_parts(trbv, trav, cdr3b, cdr3a,
+                                              oh_1a, trbv_bridge,
+                                              oh_1b, trac_bridge,
+                                              oh_2a, trbc_bridge,
+                                              oh_2b, t2a_tail)
+            gb = vparts['gene_block']
             var_rows.append({
                 'Clone': clone_id,
                 'TRBV': trbv,
@@ -1580,6 +1986,9 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None, verb
                 'Length': len(gb),
                 'GC': round(gc_fraction(gb), 3),
                 'Sequence': gb,
+                '_cdr3b_nt': vparts['cdr3b_nt'],
+                '_cdr3a_nt': vparts['cdr3a_nt'],
+                '_trav_nt':  vparts['trav_nt'],
             })
         except ValueError as e:
             invalid_rows.append({'clone_id': clone_id, 'TRBV': trbv, 'TRAV': trav,
@@ -1598,23 +2007,30 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None, verb
 
     constant_df.to_csv(output_dir / 'constant_gene_blocks.csv', index=False)
     if not var_df.empty:
-        var_df.to_csv(output_dir / 'variable_gene_blocks.csv', index=False)
+        _nt_cols = [c for c in ('_cdr3b_nt', '_cdr3a_nt', '_trav_nt') if c in var_df.columns]
+        var_df.drop(columns=_nt_cols).to_csv(output_dir / 'variable_gene_blocks.csv', index=False)
     if not invalid_df.empty:
         invalid_df.to_csv(output_dir / 'invalid_clones.csv', index=False)
     with open(output_dir / 'overhangs.json', 'w') as fh:
         json.dump(oh_summary, fh, indent=2)
 
-    _write_assembly_report(output_dir, oh_summary, constant_df, var_df, invalid_df)
+    _write_assembly_report(output_dir, oh_summary, constant_df, var_df, invalid_df, locus=locus)
 
     # GenBank output
     if not var_df.empty:
+        lh_out = _trbc1_lh_nt if locus == 'TRBC1' else _lh_nt.upper()
+        rh_out = _trbc1_rh_nt if locus == 'TRBC1' else _rh_nt.upper()
         write_gb_outputs(
             output_dir, constant_df, var_df,
             oh_1a_map, trbv_nt_cache, oh_2b,
             trac_nt, trbc_nt, t2a_nt,
-            _lh_nt.upper(), _rh_nt.upper(),
+            lh_out, rh_out,
             verbose=verbose,
+            locus=locus,
         )
+
+    # Plate-file output (xlsx)
+    write_plate_xlsx(output_dir, constant_df, var_df, verbose=verbose)
 
     if verbose:
         print(f'\n✓  Designed {len(var_df)} variable fragments.')
@@ -1628,6 +2044,68 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None, verb
         'overhangs': oh_summary,
         'invalid': invalid_df,
     }
+
+
+# ── Plate-file output ────────────────────────────────────────────────────────
+
+def write_plate_xlsx(output_dir, constant_df, variable_df, verbose=True):
+    """
+    Write all gene block sequences in plate-file-upload format (xlsx).
+
+    Output: <output_dir>/gene_block_plates.xlsx
+      Sheet "Constants"           — LH-TRBV gene blocks + TRAC-RH + TRBC-T2A
+      Sheet "Variables - Plate N" — per-TCR variable gene blocks, 96 wells per sheet
+
+    Columns: Well Position | Name | Sequence
+    Well positions fill row-major: A1…A12, B1…B12, …, H1…H12 (96-well plates).
+    """
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill, Alignment
+
+    PLATE_ROWS = 'ABCDEFGH'
+    PLATE_COLS = 12
+    PLATE_SIZE = len(PLATE_ROWS) * PLATE_COLS   # 96
+
+    def _well(i):
+        return f'{PLATE_ROWS[i // PLATE_COLS]}{i % PLATE_COLS + 1}'
+
+    def _header_row(ws):
+        ws.append(['Well Position', 'Name', 'Sequence'])
+        for cell in ws[1]:
+            cell.font = Font(bold=True)
+            cell.fill = PatternFill('solid', fgColor='D9E1F2')
+        ws.column_dimensions['A'].width = 14
+        ws.column_dimensions['B'].width = 40
+        ws.column_dimensions['C'].width = 80
+
+    wb = Workbook()
+
+    # ── Constants sheet ──────────────────────────────────────────────────────
+    ws_const = wb.active
+    ws_const.title = 'Constants'
+    _header_row(ws_const)
+    for i, (_, row) in enumerate(constant_df.iterrows()):
+        ws_const.append([_well(i), row['Fragment'], row['Sequence']])
+
+    # ── Variable sheets (one per 96-well plate) ──────────────────────────────
+    n_var = len(variable_df)
+    n_plates = max(1, (n_var + PLATE_SIZE - 1) // PLATE_SIZE)
+    for plate_idx in range(n_plates):
+        chunk = variable_df.iloc[plate_idx * PLATE_SIZE : (plate_idx + 1) * PLATE_SIZE]
+        ws_var = wb.create_sheet(title=f'Variables - Plate {plate_idx + 1}')
+        _header_row(ws_var)
+        for well_idx, (_, row) in enumerate(chunk.iterrows()):
+            name = f"{row['Clone']}/{row['TRBV']}/{row['TRAV']}"
+            ws_var.append([_well(well_idx), name, row['Sequence']])
+
+    out_path = Path(output_dir) / 'gene_block_plates.xlsx'
+    wb.save(out_path)
+
+    if verbose:
+        print(f'\nPlate file: {out_path}')
+        print(f'  Constants : 1 sheet  ({len(constant_df)} fragments)')
+        print(f'  Variables : {n_plates} sheet(s)  ({n_var} fragments)')
+    return out_path
 
 
 # ── Reporting helpers ─────────────────────────────────────────────────────────
@@ -1645,11 +2123,17 @@ def _report_oh_conflicts(oh_1a_map, oh_1b, oh_2a, oh_2b):
         print(f'    {g:<28} {oh}  (BbsI score={score})')
 
 
-def _write_assembly_report(output_dir, ohs, const_df, var_df, invalid_df):
+def _write_assembly_report(output_dir, ohs, const_df, var_df, invalid_df, locus='TRAC'):
     report_path = output_dir / 'assembly_report.txt'
     with open(report_path, 'w') as fh:
         fh.write('TCRAFT Mouse TCR HDR Design Report\n')
         fh.write('=' * 60 + '\n\n')
+        fh.write(f'Target locus : {locus}\n')
+        if locus == 'TRBC1':
+            fh.write('Insert mode  : TRBC1 (DN3 thymocyte) — Kozak + TRBV native ATG\n')
+        else:
+            fh.write('Insert mode  : TRAC (mature T cell) — P2A in-frame with upstream TRAC ORF\n')
+        fh.write('\n')
         fh.write('Golden Gate Overhang Summary\n')
         fh.write('-' * 40 + '\n')
         fh.write(f"  Step 1 enzyme: BbsI\n")
@@ -1679,15 +2163,39 @@ def _write_assembly_report(output_dir, ohs, const_df, var_df, invalid_df):
 
 def run_CLI():
     parser = argparse.ArgumentParser(
-        description='TCRAFT-hdr: Design mouse TCR HDR template fragments.')
+        description='TCRAFT-hdr: Design mouse TCR HDR template fragments.',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=textwrap.dedent("""\
+            Locus options
+            -------------
+            TRAC   (default) — knock-in at the TCR alpha constant locus.
+                   For mature T cells that have already rearranged their TCR.
+                   A P2A self-cleaving peptide rides in-frame with the upstream
+                   TRAC open reading frame.
+
+            TRBC1  — knock-in at the TCR beta constant 1 locus.
+                   For DN3 double-negative thymocytes that have NOT yet rearranged
+                   their TCRβ.  A Kozak context sequence (gccgccacc) is placed
+                   immediately 5' of each TRBV's native ATG start codon so the
+                   cassette drives its own translation from the endogenous Vβ
+                   promoter/Eβ enhancer.  The golden gate assembly scheme is
+                   identical to TRAC; only the left/right homology arms and the
+                   in-frame leader change.
+        """),
+    )
     parser.add_argument('airr', type=str,
                         help='AIRR rearrangement TSV file.')
     parser.add_argument('--trbv', type=str, default=None,
                         help='Restrict to clones using this TRBV gene (e.g. TRBV5).')
     parser.add_argument('--output_dir', type=str, default=None,
                         help='Output directory (default: ./TCRAFT-hdr_<date>).')
+    parser.add_argument('--locus', type=str, default='TRAC', choices=['TRAC', 'TRBC1'],
+                        help=('Target locus for HDR knock-in.  '
+                              'TRAC (default): mature T cells.  '
+                              'TRBC1: DN3 double-negative thymocytes.'))
     args = parser.parse_args()
-    generate_hdr_design(args.airr, trbv_filter=args.trbv, output_dir=args.output_dir)
+    generate_hdr_design(args.airr, trbv_filter=args.trbv,
+                        output_dir=args.output_dir, locus=args.locus)
 
 
 if __name__ == '__main__':

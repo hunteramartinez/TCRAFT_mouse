@@ -1,0 +1,46 @@
+LOCUS       LH-TRBV3                 708 bp    DNA              UNK 01-JAN-1980
+DEFINITION  LH-TRBV3 gene block | 1a=TACT.
+ACCESSION   LH-TRBV3
+VERSION     LH-TRBV3
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    1..302
+                     /label="Left Homology Arm"
+                     /note="Homology arm for Cas9-RNP HDR at mTRAC locus"
+     misc_feature    303..368
+                     /label="P2A leader"
+                     /note="P2A self-cleaving peptide. The LH arm ends at the
+                     complete TCT (Ser) codon so P2A starts on a clean codon
+                     boundary with GSG. Do NOT codon-optimise or alter this
+                     sequence."
+     gene            369..692
+                     /label="TRBV (TRBV3)"
+                     /gene="TRBV3"
+                     /note="Codon-optimised, includes signal peptide; ends at
+                     BbsI 1a junction"
+     misc_feature    693..696
+                     /label="1a OH (TACT)"
+                     /note="TRBV-specific BbsI overhang for step-1 pooled
+                     assembly"
+     protein_bind    697..704
+                     /label="BbsI recognition (1a)"
+                     /bound_moiety="BbsI"
+                     /note="Step-1 golden gate site (inverted — recognition on
+                     waste); 1a overhang = TACT"
+ORIGIN
+        1 tgccagaaag gaccccgtgg agagggacta ctgaaagcta gagatcttgg ctggcactca
+       61 tgacttgtgc ctgtccctaa gcctgtgtcc atcatgggca gctagatcct aggctgtcat
+      121 ttccaatgtg aagtctgtga acaagactgg ctagtccaga gagttccgct cttgcctgtc
+      181 actggcatct gagttctgac ctaagttagg acccccaaaa aatcttctaa catcagtcct
+      241 cttggcccac agacatccag aacccagaac ctgctgtgta ccagttaaaa gatcctcggt
+      301 ctggaagtgg agcaaccaat ttctccttgc tgaagcaggc cggtgacgtt gaggaaaacc
+      361 caggaccaat ggacatctgg ctgctgggct ggatcatctt cagcttcctg gaggccggcc
+      421 acaccggccc caaggtgctg cagatcccca gccaccagat catcgacatg ggccagatgg
+      481 tgaccctgaa ctgcgacccc gtgagcaacc acctgtactt ctactggtac aagcagatcc
+      541 tgggccagca gatggagttc ctggtgaact tctacaacgg caaggtaatg gaaaagagca
+      601 aactattcaa ggaccagttc agcgtggaga ggcccgacgg cagctacttc accctgaaga
+      661 tccagcccac cgccctggag gacagcgccg tgtactaggt cttcacat
+//

@@ -1,0 +1,70 @@
+TCRAFT Mouse TCR HDR Design Report
+============================================================
+
+Golden Gate Overhang Summary
+----------------------------------------
+  Step 1 enzyme: BbsI
+  Step 2 enzyme: BsmBI
+  1b overhang (CDR3α/TRAC junction): GGAA
+  2a overhang (CDR3β/TRBC junction): GGAA
+  2b overhang (T2A/TRAV junction):   AGGA
+
+Per-TRBV 1a Overhangs
+----------------------------------------
+  TRBV1                ACCC
+  TRBV10               GTGC
+  TRBV12-1             ACTT
+  TRBV12-2             TCTG
+  TRBV12-2+TRBV13-2    AAAC
+  TRBV13-1             ATTC
+  TRBV13-2             CTTA
+  TRBV13-3             AATG
+  TRBV14               CTGA
+  TRBV15               AGCG
+  TRBV16               CCAG
+  TRBV17               TGGA
+  TRBV19               AGAT
+  TRBV2                GCTA
+  TRBV20               GACA
+  TRBV23               AGGC
+  TRBV24               ACGA
+  TRBV26               GAGG
+  TRBV29               GAGA
+  TRBV3                TACT
+  TRBV30               CGAC
+  TRBV31               ATGA
+  TRBV4                ATAA
+  TRBV5                CGTG
+
+Constant Fragment Summary
+----------------------------------------
+  TRBC-T2A             593 nt  GC=64%
+  TRAC-RH              954 nt  GC=47%
+  LH-TRBV1             708 nt  GC=57%
+  LH-TRBV10            710 nt  GC=53%
+  LH-TRBV12-1          736 nt  GC=57%
+  LH-TRBV12-2          739 nt  GC=57%
+  LH-TRBV12-2+TRBV13-2 724 nt  GC=57%
+  LH-TRBV13-1          704 nt  GC=57%
+  LH-TRBV13-2          707 nt  GC=56%
+  LH-TRBV13-3          707 nt  GC=57%
+  LH-TRBV14            713 nt  GC=58%
+  LH-TRBV15            699 nt  GC=55%
+  LH-TRBV16            692 nt  GC=56%
+  LH-TRBV17            688 nt  GC=54%
+  LH-TRBV19            703 nt  GC=53%
+  LH-TRBV2             710 nt  GC=56%
+  LH-TRBV20            687 nt  GC=56%
+  LH-TRBV23            688 nt  GC=56%
+  LH-TRBV24            694 nt  GC=56%
+  LH-TRBV26            687 nt  GC=54%
+  LH-TRBV29            710 nt  GC=55%
+  LH-TRBV3             708 nt  GC=54%
+  LH-TRBV30            686 nt  GC=56%
+  LH-TRBV31            704 nt  GC=56%
+  LH-TRBV4             710 nt  GC=53%
+  LH-TRBV5             698 nt  GC=54%
+
+Variable Fragments: 16
+  Lengths: 489–532 nt
+  GC:      57%–62%

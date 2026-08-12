@@ -1,0 +1,67 @@
+LOCUS       variable                 529 bp    DNA              UNK 01-JAN-1980
+DEFINITION  Variable fragment | TRBV19/TRAV12-2 | CDR3b=CASSPTTNQDTQYF
+            CDR3a=CALTYRGSALGRLHF.
+ACCESSION   variable
+VERSION     variable
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     protein_bind    1..16
+                     /label="BbsI recognition (1a)"
+                     /bound_moiety="BbsI"
+                     /note="Step-1 GG site (recognition on waste); 1a OH = AGAT
+                     (TRBV-specific)"
+     misc_feature    13..16
+                     /label="1a OH (AGAT)"
+                     /note="Pairs with LH-TRBV19 gene block"
+     misc_feature    17..32
+                     /label="TRBV bridge (TRBV19)"
+                     /note="Germline TRBV tail after the 1a overhang, before
+                     CDR3β"
+     misc_feature    33..71
+                     /label="CDR3β (CASSPTTNQDTQYF)"
+                     /note="Codon-optimised CDR3β (aa: ASSPTTNQDTQYF); excludes
+                     leading C in TRBV"
+     protein_bind    82..96
+                     /label="BsmBI recognition (2a)"
+                     /bound_moiety="BsmBI"
+                     /note="Step-2 GG site; 2a OH = GGAA"
+     misc_feature    82..85
+                     /label="2a OH (GGAA)"
+                     /note="Junction to TRBC-T2A constant fragment"
+     protein_bind    97..111
+                     /label="BsmBI recognition (2b)"
+                     /bound_moiety="BsmBI"
+                     /note="Step-2 GG site; 2b OH = AGGA"
+     misc_feature    108..111
+                     /label="2b OH (AGGA)"
+                     /note="Junction from TRBC-T2A constant fragment"
+     gene            125..457
+                     /label="TRAV (TRAV12-2)"
+                     /gene="TRAV12-2"
+                     /note="Full codon-optimised TRAV, includes signal peptide,
+                     ends at Cys104"
+     misc_feature    458..499
+                     /label="CDR3α (CALTYRGSALGRLHF)"
+                     /note="Codon-optimised CDR3α (aa: ALTYRGSALGRLHF); excludes
+                     leading C in TRAV"
+     protein_bind    514..529
+                     /label="BbsI recognition (1b)"
+                     /bound_moiety="BbsI"
+                     /note="Step-1 GG site; 1b OH = GGAA"
+     misc_feature    514..517
+                     /label="1b OH (GGAA)"
+                     /note="Junction to TRAC-RH constant fragment"
+ORIGIN
+        1 acatgaagac ggagatggcc gtgttcctgt gcgcatccag cccaacaacc aaccaggaca
+       61 ctcagtattt tgaggacctg aggaaggaga cgacatacat cgtctccagg agaaccccgg
+      121 ccccatgaac atgcaccccg tgacctgcag cgtgctggtg ctgctgctga tgctgaggag
+      181 gagcaacggc gacagcgtga cccagaccga gggcctggtg accctgaccg agggcctgcc
+      241 cgtgatgctg aactgcacct accagaccgc ctacagcacc ttcctgttct ggtacgtgca
+      301 gcacctgaac gaagcaccaa aactactact aaaatcaagc acagacaaca agaggaccga
+      361 gcaccagggc ttccacgcca ccctgcacaa gagcagcagc agcttccacc tacaaaagag
+      421 cagcgcacaa ctgagcgaca gcgccctgta ctactgcgcc ctgacctacc ggggctctgc
+      481 cctgggtcgg ctccactttg atatacaaaa tccggaaagg tcttcacat
+//

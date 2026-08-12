@@ -1,0 +1,93 @@
+LOCUS       OTII                    2459 bp    DNA              UNK 01-JAN-1980
+DEFINITION  HDR template | OTII | TRBV12-2/TRAV14D-1 | CDR3b=CASSLGGESQNTLYF
+            CDR3a=CAARGNRIFF | 2459 bp.
+ACCESSION   OTII
+VERSION     OTII
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    1..302
+                     /label="Left Homology Arm"
+                     /note="~300bp homology for Cas9-RNP HDR at mTRAC locus"
+     misc_feature    303..368
+                     /label="P2A leader"
+                     /note="P2A self-cleaving peptide. LH arm ends at complete
+                     TCT=Ser codon; P2A starts on a clean codon boundary with
+                     GSG-ATN-FSL..."
+     gene            369..728
+                     /label="TRBV (TRBV12-2)"
+                     /gene="TRBV12-2"
+                     /note="Codon-optimised TRBV12-2; includes signal peptide"
+     misc_feature    729..770
+                     /label="CDR3β"
+                     /note="aa: CASSLGGESQNTLYF | codon-optimised | 14 codons"
+     CDS             771..1289
+                     /label="TRBC1 (Cys)"
+                     /gene="Trbc1"
+                     /note="TRBC1 Cys-mutant constant region"
+     misc_feature    1290..1364
+                     /label="furin-GSG-T2A"
+                     /note="Self-cleaving T2A. oh_2b is derived from within this
+                     sequence so T2A is fully reconstituted with no extra nt at
+                     the T2A/TRAV junction — preserving the reading frame into
+                     TRAV."
+     gene            1365..1718
+                     /label="TRAV (TRAV14D-1)"
+                     /gene="TRAV14D-1"
+                     /note="Codon-optimised TRAV14D-1; includes signal peptide"
+     misc_feature    1719..1745
+                     /label="CDR3α"
+                     /note="aa: CAARGNRIFF | codon-optimised | 9 codons"
+     CDS             1746..2159
+                     /label="TRAC (LVL-Cys)"
+                     /gene="Trac"
+                     /note="LVL-Cys engineered constant region for improved
+                     TCRαβ pairing"
+     misc_feature    2160..2459
+                     /label="Right Homology Arm"
+                     /note="~300bp homology for Cas9-RNP HDR at mTRAC locus"
+ORIGIN
+        1 tgccagaaag gaccccgtgg agagggacta ctgaaagcta gagatcttgg ctggcactca
+       61 tgacttgtgc ctgtccctaa gcctgtgtcc atcatgggca gctagatcct aggctgtcat
+      121 ttccaatgtg aagtctgtga acaagactgg ctagtccaga gagttccgct cttgcctgtc
+      181 actggcatct gagttctgac ctaagttagg acccccaaaa aatcttctaa catcagtcct
+      241 cttggcccac agacatccag aacccagaac ctgctgtgta ccagttaaaa gatcctcggt
+      301 ctggaagtgg agcaaccaat ttctccttgc tgaagcaggc cggtgacgtt gaggaaaacc
+      361 caggaccaat gagcaacacc gccttccccg accccgcctg gaacaccacc ctgctgagct
+      421 gggtggccct gttcctgctg ggcaccagca gcgccaacag cggcgtggtg cagagcccca
+      481 ggtacatcat caagggcaag ggcgagagga gcatcctgaa gtgcatcccc atcagcggcc
+      541 acctgagcgt ggcctggtac cagcagaccc agggccagga gctgaagttc ttcatccagc
+      601 actacgacaa gatggagagg gacaagggca acctgcccag caggttcagc gtgcagcagt
+      661 tcgacgacta ccacagcgag atgaacatga gcgccctgga gctggaggac agcgccgtgt
+      721 acttctgcgc atctagcctc ggaggagagt cccagaatac actgtatttc gaggacctga
+      781 ggaacgtaac accaccaaaa gtaagcctgt tcgagcccag caaggccgag atcgccaaca
+      841 agcagaaggc caccctggtg tgcctggcca ggggcttctt ccccgaccac gtggagctga
+      901 gctggtgggt gaacggcaag gaggtgcaca gcggcgtgtg cacagaccca caagcataca
+      961 aggagagcaa ctacagctac tgcctgagca gcaggctgag ggtgagcgcc accttctggc
+     1021 acaaccccag gaaccacttc aggtgccagg tgcagttcca cggcctgagc gaggaggaca
+     1081 agtggcccga gggcagcccc aagcccgtga cccagaacat cagcgccgag gcctggggca
+     1141 gggccgactg cggcatcacc agcgccagct accagcaggg cgtgctgagc gccaccatcc
+     1201 tgtacgagat cctgctgggc aaggccaccc tgtacgccgt gctggtgagc accctggtgg
+     1261 tgatggccat ggtgaagagg aagaacagca gggccaagag gggcagcggc gagggcagag
+     1321 gcagcctgct gacctgcggc gacgtggagg agaaccccgg ccccatggac aagatcctga
+     1381 ccgccacctt cctgctgctg ggcctgcacc tggccggcgt gaacggccag cagcaggaga
+     1441 agagggacca gcagcaggtg agacaaagcc cacaaagcct aaccgtgtgg gaaggagaaa
+     1501 cagcaatact aaactgcagc tacgaggaca gcaccttcaa ctacttcccc tggtaccagc
+     1561 agttccccgg cgagggcccc gccctgctga tcagcatcag gagcgtgagc gacaagaagg
+     1621 aggacggcag gttcaccatc ttcttcaaca agagggagaa gaagctgagc ctgcacatca
+     1681 ccgacagcca gcccggcgac agcgccacct acttctgcgc tgccagggga aacagaatat
+     1741 tcttcgatat acaaaatccg gaaccggcgg tatatcaatt aaaagatccg cgttcgcaag
+     1801 attcgacgtt atgtttattt acggatttcg atagtcagat aaacgtacca aagacgatgg
+     1861 agagcggtac ttttataacg gataagtgcg tattagatat gaaggcgatg gacagtaaat
+     1921 cgaacggtgc gatagcgtgg tcgaatcaaa cgtcgtttac gtgtcaggac atatttaagg
+     1981 aaacgaatgc gacgtatccg tcgagtgatg taccgtgtga tgcgacgcta acagaaaaga
+     2041 gcttcgaaac ggatatgaat ttaaattttc aaaatttatt agtaatggta ttacgtatat
+     2101 tattattaaa agtagcgggt tttaatttat taatgacgtt acgtttatgg tcgtcgtagc
+     2161 aggacagcac cctctgcctg ttcaccgact ttgactccca aatcaatgtg ccgaaaacca
+     2221 tggaatctgg aacgttcatc actgacaaaa ctgtgctgga catgaaagct atggattcca
+     2281 agagcaatgg ggccattgcc tggagcaacc agacaagctt cacctgccaa gatatcttca
+     2341 aagagaccaa cgccacctac cccagttcag gtgagtggtg ccccagaagt ctcctcctgg
+     2401 ctcaaatcta tggtttccaa aagctgcttt gggtcatctc accctcatca ttaggcagc
+//

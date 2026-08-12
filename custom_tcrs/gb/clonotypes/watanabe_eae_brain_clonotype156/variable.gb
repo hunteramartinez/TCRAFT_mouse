@@ -1,0 +1,63 @@
+LOCUS       variable                 489 bp    DNA              UNK 01-JAN-1980
+DEFINITION  Variable fragment | TRBV29/TRAV7D-4 | CDR3b=CASSFGGGFAETLYF
+            CDR3a=CAASLTGNTGKLIF.
+ACCESSION   variable
+VERSION     variable
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     protein_bind    1..16
+                     /label="BbsI recognition (1a)"
+                     /bound_moiety="BbsI"
+                     /note="Step-1 GG site (recognition on waste); 1a OH = GAGA
+                     (TRBV-specific)"
+     misc_feature    13..16
+                     /label="1a OH (GAGA)"
+                     /note="Pairs with LH-TRBV29 gene block"
+     misc_feature    17..58
+                     /label="CDR3β (CASSFGGGFAETLYF)"
+                     /note="Codon-optimised CDR3β (aa: ASSFGGGFAETLYF); excludes
+                     leading C in TRBV"
+     protein_bind    69..83
+                     /label="BsmBI recognition (2a)"
+                     /bound_moiety="BsmBI"
+                     /note="Step-2 GG site; 2a OH = GGAA"
+     misc_feature    69..72
+                     /label="2a OH (GGAA)"
+                     /note="Junction to TRBC-T2A constant fragment"
+     protein_bind    84..98
+                     /label="BsmBI recognition (2b)"
+                     /bound_moiety="BsmBI"
+                     /note="Step-2 GG site; 2b OH = AGGA"
+     misc_feature    95..98
+                     /label="2b OH (AGGA)"
+                     /note="Junction from TRBC-T2A constant fragment"
+     gene            112..420
+                     /label="TRAV (TRAV7D-4)"
+                     /gene="TRAV7D-4"
+                     /note="Full codon-optimised TRAV, includes signal peptide,
+                     ends at Cys104"
+     misc_feature    421..459
+                     /label="CDR3α (CAASLTGNTGKLIF)"
+                     /note="Codon-optimised CDR3α (aa: AASLTGNTGKLIF); excludes
+                     leading C in TRAV"
+     protein_bind    474..489
+                     /label="BbsI recognition (1b)"
+                     /bound_moiety="BbsI"
+                     /note="Step-1 GG site; 1b OH = GGAA"
+     misc_feature    474..477
+                     /label="1b OH (GGAA)"
+                     /note="Junction to TRAC-RH constant fragment"
+ORIGIN
+        1 acatgaagac gggagagctt cttccttcgg aggaggattc gcagaaaccc tgtacttcga
+       61 ggacctgagg aaggagacga catacatcgt ctccaggaga accccggccc catggtgcag
+      121 acccagatgt tcctgatcag cagcgtgagg agccagcaga aggtgcagca gagccccgag
+      181 agcctgagcg tgcccgaggg cggcatggcc agcctgaact gcaccagcag cgacaggaac
+      241 ttccagtact tctggtggta caggcagcac agcggcgagg gccccaaggc cctgatgagc
+      301 atcttcagcg acggcgacaa gaaggagggc aggttcaccg cccacctgaa caaggccagc
+      361 ctgcacgtga gcctgcacat cagggacagc cagcccagcg acagcgccct gtacttctgc
+      421 gcagcaagcc tgacaggcaa caccggtaaa ctgatcttcg atatacaaaa tccggaaagg
+      481 tcttcacat
+//
