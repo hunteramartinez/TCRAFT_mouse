@@ -1,5 +1,5 @@
 LOCUS       LH-TRBV20                687 bp    DNA              UNK 01-JAN-1980
-DEFINITION  LH-TRBV20 gene block | 1a=GACA.
+DEFINITION  LH-TRBV20 gene block | TRAC | 1a=GACA.
 ACCESSION   LH-TRBV20
 VERSION     LH-TRBV20
 KEYWORDS    .
@@ -37,7 +37,7 @@ ORIGIN
       181 actggcatct gagttctgac ctaagttagg acccccaaaa aatcttctaa catcagtcct
       241 cttggcccac agacatccag aacccagaac ctgctgtgta ccagttaaaa gatcctcggt
       301 ctggaagtgg agcaaccaat ttctccttgc tgaagcaggc cggtgacgtt gaggaaaacc
-      361 caggaccaat gctgctgctg ctgctgctgc tgggccccgg ctgcggcctg ggcgccctgg
+      361 caggaccaat gctactacta ctattactac tgggccccgg ctgcggcctg ggcgccctgg
       421 tgtaccagta ccccaggagg accatctgca agagcggcac cagcatgagg atggagtgcc
       481 aggccgtggg cttccaggcc accagcgtgg cctggtacag gcagagccca caaaagacat
       541 tcgaactgat cgccctgagc accgtgaaca gcgccatcaa gtacgagcag aacttcaccc

@@ -9,3 +9,6 @@
 /TCRAFT.egg-info
 pyproject.toml
 uv.lock
+
+# GitHub 100 MB limit: large raw clonotype tables stay local
+custom_tcrs/HAM-07-007-012_CD4_clonotypes*

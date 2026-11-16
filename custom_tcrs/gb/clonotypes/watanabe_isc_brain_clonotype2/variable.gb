@@ -1,4 +1,4 @@
-LOCUS       variable                 532 bp    DNA              UNK 01-JAN-1980
+LOCUS       variable                 583 bp    DNA              UNK 01-JAN-1980
 DEFINITION  Variable fragment | TRBV12-2+TRBV13-2/TRAV6N-6 |
             CDR3b=CASGDAGQPNSDYTF CDR3a=CALSRAGTGGYKVVF.
 ACCESSION   variable
@@ -24,44 +24,45 @@ FEATURES             Location/Qualifiers
                      /label="CDR3β (CASGDAGQPNSDYTF)"
                      /note="Codon-optimised CDR3β (aa: ASGDAGQPNSDYTF); excludes
                      leading C in TRBV"
-     protein_bind    85..99
+     protein_bind    84..98
                      /label="BsmBI recognition (2a)"
                      /bound_moiety="BsmBI"
-                     /note="Step-2 GG site; 2a OH = GGAA"
-     misc_feature    85..88
-                     /label="2a OH (GGAA)"
+                     /note="Step-2 GG site; 2a OH = AGAA"
+     misc_feature    84..87
+                     /label="2a OH (AGAA)"
                      /note="Junction to TRBC-T2A constant fragment"
-     protein_bind    100..114
+     protein_bind    99..113
                      /label="BsmBI recognition (2b)"
                      /bound_moiety="BsmBI"
-                     /note="Step-2 GG site; 2b OH = AGGA"
-     misc_feature    111..114
-                     /label="2b OH (AGGA)"
+                     /note="Step-2 GG site; 2b OH = AAGA"
+     misc_feature    110..113
+                     /label="2b OH (AAGA)"
                      /note="Junction from TRBC-T2A constant fragment"
-     gene            128..460
+     gene            179..511
                      /label="TRAV (TRAV6N-6)"
                      /gene="TRAV6N-6"
                      /note="Full codon-optimised TRAV, includes signal peptide,
                      ends at Cys104"
-     misc_feature    461..502
+     misc_feature    512..553
                      /label="CDR3α (CALSRAGTGGYKVVF)"
                      /note="Codon-optimised CDR3α (aa: ALSRAGTGGYKVVF); excludes
                      leading C in TRAV"
-     protein_bind    517..532
+     protein_bind    568..583
                      /label="BbsI recognition (1b)"
                      /bound_moiety="BbsI"
                      /note="Step-1 GG site; 1b OH = GGAA"
-     misc_feature    517..520
+     misc_feature    568..571
                      /label="1b OH (GGAA)"
                      /note="Junction to TRAC-RH constant fragment"
 ORIGIN
-        1 acatgaagac ggaaacaagc gtgtacttct gcgcctccgg agatgcaggc cagcctaact
-       61 ccgattacac cttcgaggac ctgaggaagg agacgacata catcgtctcc aggagaaccc
-      121 cggccccatg gacagcagcc ccggcttcgt ggccgtgatc ctgctgatcc tgggcaggac
-      181 ccacggcgac agcgtgaccc agaccgaggg ccaggtgacc gtgagcgaga gcaagagcct
-      241 gatcatcaac tgcacctaca gcgccaccag catcggctac cccaacctgt tctggtacgt
-      301 gaggtacccc ggcgagggcc tgcagctgct gctgaaggtg atcaccgccg gccagaaggg
-      361 cagcagcagg ggcttcgagg ccacctacaa caaggaggcc accagcttcc acctgcagaa
-      421 ggccagcgtg caggagagcg acagcgccgt gtactactgc gccctgtcta gggctgggac
-      481 aggagggtac aaggtggtgt tcgatataca aaatccggaa aggtcttcac at
+        1 acatgaagac ggaaacaagc gtgtacttct gcgcctctgg agatgctggc cagccaaatt
+       61 ctgactatac cttcgaagat ctaagaagga gacgacatac atcgtctcca agaggggcag
+      121 cggcgagggc agaggcagcc tgctgacctg cggcgacgtg gaggagaacc ccggccccat
+      181 ggacagcagc cccggcttcg tggccgtgat cctgctgatc ctgggcagga cccacggcga
+      241 cagcgtgacc cagaccgagg gccaggtgac cgtgagcgag agcaagagcc tgatcatcaa
+      301 ctgcacctac agcgccacca gcatcggcta ccccaacctg ttctggtacg tgaggtaccc
+      361 cggcgagggc ctgcagctgc tgctgaaggt gatcaccgcc ggccagaagg gcagcagcag
+      421 gggcttcgag gccacctaca acaaggaggc caccagcttc cacctgcaga aggccagcgt
+      481 gcaggagagc gacagcgccg tgtactactg cgccctctct cgcgcaggca ctggtgggta
+      541 caaggttgtc tttgatatac aaaatccgga aaggtcttca cat
 //

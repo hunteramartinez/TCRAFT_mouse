@@ -1,5 +1,5 @@
-LOCUS       LH-TRBV4                 710 bp    DNA              UNK 01-JAN-1980
-DEFINITION  LH-TRBV4 gene block | 1a=ATAA.
+LOCUS       LH-TRBV4                 684 bp    DNA              UNK 01-JAN-1980
+DEFINITION  LH-TRBV4 gene block | TRAC | 1a=GAGC.
 ACCESSION   LH-TRBV4
 VERSION     LH-TRBV4
 KEYWORDS    .
@@ -16,20 +16,20 @@ FEATURES             Location/Qualifiers
                      complete TCT (Ser) codon so P2A starts on a clean codon
                      boundary with GSG. Do NOT codon-optimise or alter this
                      sequence."
-     gene            369..694
+     gene            369..668
                      /label="TRBV (TRBV4)"
                      /gene="TRBV4"
                      /note="Codon-optimised, includes signal peptide; ends at
                      BbsI 1a junction"
-     misc_feature    695..698
-                     /label="1a OH (ATAA)"
+     misc_feature    669..672
+                     /label="1a OH (GAGC)"
                      /note="TRBV-specific BbsI overhang for step-1 pooled
                      assembly"
-     protein_bind    699..706
+     protein_bind    673..680
                      /label="BbsI recognition (1a)"
                      /bound_moiety="BbsI"
                      /note="Step-1 golden gate site (inverted — recognition on
-                     waste); 1a overhang = ATAA"
+                     waste); 1a overhang = GAGC"
 ORIGIN
         1 tgccagaaag gaccccgtgg agagggacta ctgaaagcta gagatcttgg ctggcactca
        61 tgacttgtgc ctgtccctaa gcctgtgtcc atcatgggca gctagatcct aggctgtcat
@@ -42,5 +42,5 @@ ORIGIN
       481 tgagcttcaa ctgcaagcag accctgggcc acgacaccat gtactggtac aagcaggaca
       541 gcaagaagct gctgaagatc atgttcagct acaacaacaa gcagctgatc gtaaacgaaa
       601 cagtaccaag aagattcagc ccacaaagca gcgacaaggc ccacctgaac ctgaggatca
-      661 agagcgtgga gcccgaggac agcgccgtgt acctataaag gtcttcacat
+      661 agagcgtgga gcaggtcttc acat
 //

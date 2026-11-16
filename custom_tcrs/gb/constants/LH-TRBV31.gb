@@ -1,5 +1,5 @@
 LOCUS       LH-TRBV31                704 bp    DNA              UNK 01-JAN-1980
-DEFINITION  LH-TRBV31 gene block | 1a=ATGA.
+DEFINITION  LH-TRBV31 gene block | TRAC | 1a=TAAA.
 ACCESSION   LH-TRBV31
 VERSION     LH-TRBV31
 KEYWORDS    .
@@ -22,14 +22,14 @@ FEATURES             Location/Qualifiers
                      /note="Codon-optimised, includes signal peptide; ends at
                      BbsI 1a junction"
      misc_feature    689..692
-                     /label="1a OH (ATGA)"
+                     /label="1a OH (TAAA)"
                      /note="TRBV-specific BbsI overhang for step-1 pooled
                      assembly"
      protein_bind    693..700
                      /label="BbsI recognition (1a)"
                      /bound_moiety="BbsI"
                      /note="Step-1 golden gate site (inverted — recognition on
-                     waste); 1a overhang = ATGA"
+                     waste); 1a overhang = TAAA"
 ORIGIN
         1 tgccagaaag gaccccgtgg agagggacta ctgaaagcta gagatcttgg ctggcactca
        61 tgacttgtgc ctgtccctaa gcctgtgtcc atcatgggca gctagatcct aggctgtcat
@@ -42,5 +42,5 @@ ORIGIN
       481 taggctgcac catcaagggc aagagcagcc ccaacctgta ctggtactgg caggccaccg
       541 gcggcaccct gcagcagctg ttctacagca tcaccgtggg ccaggtggag agcgtggtgc
       601 agctgaacct gagcgccagc aggcccaagg acgaccagtt catcctgagc accgagaagc
-      661 tgctgctgag ccacagcggc ttctacctat gaaggtcttc acat
+      661 tgctgctgag ccacagcggc ttctacctta aaaggtcttc acat
 //

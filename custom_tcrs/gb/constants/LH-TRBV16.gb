@@ -1,5 +1,5 @@
-LOCUS       LH-TRBV16                692 bp    DNA              UNK 01-JAN-1980
-DEFINITION  LH-TRBV16 gene block | 1a=CCAG.
+LOCUS       LH-TRBV16                701 bp    DNA              UNK 01-JAN-1980
+DEFINITION  LH-TRBV16 gene block | TRAC | 1a=CGCA.
 ACCESSION   LH-TRBV16
 VERSION     LH-TRBV16
 KEYWORDS    .
@@ -16,20 +16,20 @@ FEATURES             Location/Qualifiers
                      complete TCT (Ser) codon so P2A starts on a clean codon
                      boundary with GSG. Do NOT codon-optimise or alter this
                      sequence."
-     gene            369..676
+     gene            369..685
                      /label="TRBV (TRBV16)"
                      /gene="TRBV16"
                      /note="Codon-optimised, includes signal peptide; ends at
                      BbsI 1a junction"
-     misc_feature    677..680
-                     /label="1a OH (CCAG)"
+     misc_feature    686..689
+                     /label="1a OH (CGCA)"
                      /note="TRBV-specific BbsI overhang for step-1 pooled
                      assembly"
-     protein_bind    681..688
+     protein_bind    690..697
                      /label="BbsI recognition (1a)"
                      /bound_moiety="BbsI"
                      /note="Step-1 golden gate site (inverted — recognition on
-                     waste); 1a overhang = CCAG"
+                     waste); 1a overhang = CGCA"
 ORIGIN
         1 tgccagaaag gaccccgtgg agagggacta ctgaaagcta gagatcttgg ctggcactca
        61 tgacttgtgc ctgtccctaa gcctgtgtcc atcatgggca gctagatcct aggctgtcat
@@ -42,5 +42,5 @@ ORIGIN
       481 ccaccctgtg gtgcgagccc atcagcggcc acagcgccgt gttctggtac aggcagacca
       541 tcgtgcaggg cctggagttc ctgacctact tcaggaacca agcaccaata gacgacagcg
       601 gcatgcccaa ggagaggttc agcgcccaga tgcccaacca gagccacagc accctgaaga
-      661 tccagagcac ccagccccag aggtcttcac at
+      661 tccagagcac ccagccacaa gacagcgcaa ggtcttcaca t
 //

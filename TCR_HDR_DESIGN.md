@@ -18,10 +18,18 @@ Two target loci are supported, selected with the `locus=` API parameter or `--lo
 The final HDR template (5'→3') after two-step golden gate assembly:
 
 ```
-[TRAC-LH] [P2A] [TRBV] [CDR3β] [TRBC-Cys] [T2A] [TRAV] [CDR3α] [TRAC-LVL-Cys] [BGH polyA] [TRAC-RH]
+[TRAC-LH] [P2A] [TRBV] [CDR3β+FR4] [TRBC-Cys] [T2A] [TRAV] [CDR3α+FR4] [TRAC-LVL-Cys] [BGH polyA] [TRAC-RH]
 ```
 
-- **Beta chain:** TRBV · CDR3β · TRBC-Cys
+- **Beta chain:** TRBV · CDR3β · TRBJ FR4 · TRBC-Cys
+
+> **FR4.** AIRR `junction_aa` runs from Cys104 to the conserved F/W at IMGT position 118.
+> The J segment continues past 118 with FR4 — the final β-strand of the V domain, which
+> connects it to the constant region (9 aa on β, 10–11 on α). Each chain is therefore built
+> as `V(..Cys104) + junction_aa[1:] + FR4 + C-region`. Per-gene FR4 comes from
+> `references/mouse/mouse_J_FR4.csv`; see `scripts/build_j_fr4_table.py` for how the
+> position-118 anchor is derived (the canonical FGXG motif is degenerate in the IMGT ORF
+> genes TRAJ7, TRAJ44 and TRBJ1-6, so a motif regex alone is not sufficient).
 - **Linker:** furin-GSG-T2A (self-cleaving)
 - **Alpha chain:** TRAV · CDR3α · TRAC-LVL-Cys
 - **LVL-Cys mutations** in both constant regions promote TCRαβ pairing over mispairing with endogenous chains.
@@ -29,7 +37,7 @@ The final HDR template (5'→3') after two-step golden gate assembly:
 ### TRBC1 locus (DN3 thymocytes)
 
 ```
-[TRBC1-LH] [Kozak] [TRBV] [CDR3β] [TRBC-Cys] [T2A] [TRAV] [CDR3α] [TRAC-LVL-Cys] [BGH polyA] [TRBC1-RH]
+[TRBC1-LH] [Kozak] [TRBV] [CDR3β+FR4] [TRBC-Cys] [T2A] [TRAV] [CDR3α+FR4] [TRAC-LVL-Cys] [BGH polyA] [TRBC1-RH]
 ```
 
 The insert is identical from TRBV onward. Only the flanking elements differ:

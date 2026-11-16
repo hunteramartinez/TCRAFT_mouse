@@ -1,5 +1,5 @@
 LOCUS       TRBC-T2A                 620 bp    DNA              UNK 01-JAN-1980
-DEFINITION  TRBC-T2A gene block | 2a=GGAA 2b=AGGA.
+DEFINITION  TRBC-T2A gene block | 2a=AGAA 2b=AAGA.
 ACCESSION   TRBC-T2A
 VERSION     TRBC-T2A
 KEYWORDS    .
@@ -11,9 +11,9 @@ FEATURES             Location/Qualifiers
                      /label="BsmBI recognition (2a)"
                      /bound_moiety="BsmBI"
                      /note="Step-2 GG site (recognition on waste); 2a overhang =
-                     GGAA"
+                     AGAA"
      misc_feature    12..15
-                     /label="2a OH (GGAA)"
+                     /label="2a OH (AGAA)"
                      /note="Constant BsmBI overhang at CDR3β/TRBC junction"
      CDS             16..530
                      /label="TRBC1 (Cys)"
@@ -24,23 +24,23 @@ FEATURES             Location/Qualifiers
                      /note="Self-cleaving T2A peptide separating beta and alpha
                      chains"
      misc_feature    606..609
-                     /label="2b OH (AGGA)"
+                     /label="2b OH (AAGA)"
                      /note="Constant BsmBI overhang at T2A/TRAV junction"
      protein_bind    610..616
                      /label="BsmBI recognition (2b)"
                      /bound_moiety="BsmBI"
                      /note="Step-2 GG site (recognition on waste); 2b overhang =
-                     AGGA"
+                     AAGA"
 ORIGIN
-        1 acatcgtctc cggaaacctg aggaacgtaa caccaccaaa agtaagcctg ttcgagccca
-       61 gcaaggccga gatcgccaac aagcagaagg ccaccctggt gtgcctggcc aggggcttct
-      121 tccccgacca cgtggagctg agctggtggg tgaacggcaa ggaggtgcac agcggcgtgt
-      181 gcacagaccc acaagcatac aaggagagca actacagcta ctgcctgagc agcaggctga
-      241 gggtgagcgc caccttctgg cacaacccca ggaaccactt caggtgccag gtgcagttcc
-      301 acggcctgag cgaggaggac aagtggcccg agggcagccc caagcccgtg acccagaaca
-      361 tcagcgccga ggcctggggc agggccgact gcggcatcac cagcgccagc taccagcagg
-      421 gcgtgctgag cgccaccatc ctgtacgaga tcctgctggg caaggccacc ctgtacgccg
-      481 tgctggtgag caccctggtg gtgatggcca tggtgaagag gaagaacagc agggccaaga
+        1 acatcgtctc cagaaatcta agaaacgtga cccctcctaa ggtgtccctc ttcgagcctt
+       61 ccaaggccga gattgcaaat aagcagaagg caactctcgt ttgcctggcc cgcggcttct
+      121 ttcctgacca tgtcgaactg tcctggtggg tgaacgggaa ggaggtgcac tctggcgtct
+      181 gcacagaccc acaagcatac aaagagtcca actactctta ttgtctgtcc agcagactcc
+      241 gcgtgtctgc caccttctgg cacaatcctc ggaaccactt ccgctgccag gtgcagttcc
+      301 acggactcag cgaagaagat aaatggccag aaggcagccc aaagcccgtg acccagaaca
+      361 ttagcgctga ggcatgggga cgggctgatt gtggcatcac ctctgcttct taccaacaag
+      421 gggtgctgtc cgctaccatt ctctacgaga tcctcctggg caaagctact ctatacgcag
+      481 tactagtaag cacactcgtg gtgatggcta tggttaaaag aaagaacagc agggccaaga
       541 ggggcagcgg cgagggcaga ggcagcctgc tgacctgcgg cgacgtggag gagaaccccg
-      601 gccccaggag gagacgacat
+      601 gccccaagag gagacgacat
 //

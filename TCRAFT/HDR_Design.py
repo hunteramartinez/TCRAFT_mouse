@@ -54,11 +54,13 @@ Usage:
 """
 
 import argparse
+import functools
 import json
 import os
 import random
 import sys
 import textwrap
+import zlib
 from pathlib import Path
 
 import importlib.resources as pkg_resources
@@ -86,6 +88,7 @@ _PATHS = {
     'trbc_lvlcys': _MOUSE / 'imgt_genes_aa' / 'IMGT_TRBC1_Cys_aa.fa',
     'hdr_seqs':       _MOUSE / 'mm_trac_HDR_sequences.fa',
     'hdr_seqs_trbc':  _MOUSE / 'mm_trbc_HDR_sequences.fa',
+    'j_fr4':     _MOUSE / 'mouse_J_FR4.csv',
     'codon_table': _MOUSE / 'mouse_codon_usage.json',
     'linkers':   _REF_ROOT / 'linkers_P2A_T2A.txt',
     'neb_bbsi':  _REF_ROOT / 'neb_tables' / 'BbsI_ligation_efficiency.csv',
@@ -230,6 +233,17 @@ _trbv_aa_dict = _load_fasta_dict(_PATHS['trbv_aa'])
 _trav_aa_dict = _load_fasta_dict(_PATHS['trav_aa'])
 _trbj_aa_dict = _load_fasta_dict(_PATHS['trbj_aa'])
 _traj_aa_dict = _load_fasta_dict(_PATHS['traj_aa'])
+
+# J-gene FR4 table: {J_gene: FR4_aa} for genes whose FR4 is usable.
+# IMGT's junction_aa stops at the conserved F/W (position 118); FR4 is the remainder of the
+# J segment -- the final beta-strand of the V domain, which connects it to the constant
+# region.  Joining junction_aa straight to the constant region drops FR4 (9 aa on beta,
+# 10-11 on alpha) and yields a V domain that cannot fold.  Built by
+# TCRAFT/scripts/build_j_fr4_table.py; see that file for how anchors are derived.
+_j_fr4_table = pd.read_csv(_PATHS['j_fr4'])
+_j_fr4 = dict(zip(_j_fr4_table.loc[_j_fr4_table.usable, 'J_gene'],
+                  _j_fr4_table.loc[_j_fr4_table.usable, 'FR4_aa']))
+_j_fr4_unusable = set(_j_fr4_table.loc[~_j_fr4_table.usable, 'J_gene'])
 
 # LVL-Cys constant regions (strip leading X = J-C junction residue)
 _trac_lvlcys_aa = _parse_fasta(_PATHS['trac_lvlcys'])[0][1].lstrip('X').upper()
@@ -407,6 +421,46 @@ def check_homopolymer(seq, min_len=5):
     return -1, None
 
 
+def check_gc_window(seq, window=20, max_gc=0.90):
+    """Return (position, fraction) of first window exceeding max_gc GC content, or (-1, None)."""
+    seq_u = seq.upper()
+    for i in range(len(seq_u) - window + 1):
+        w = seq_u[i:i + window]
+        gc = (w.count('G') + w.count('C')) / window
+        if gc > max_gc:
+            return i, gc
+    return -1, None
+
+
+def check_direct_repeat(seq, min_len=10):
+    """Return (position, kmer) of the first direct repeat >= min_len bp, or (-1, None)."""
+    seq_u = seq.upper()
+    n = len(seq_u)
+    for i in range(n - min_len):
+        kmer = seq_u[i:i + min_len]
+        if seq_u.find(kmer, i + 1) != -1:
+            return i, kmer
+    return -1, None
+
+
+def check_hairpin(seq, min_stem=10, max_loop=60):
+    """
+    Return (pos1, pos2, stem) of the first inverted repeat that could form a hairpin,
+    or (-1, -1, None).  pos1/pos2 are the start positions of the forward and RC stem copies.
+    """
+    seq_u = seq.upper()
+    n = len(seq_u)
+    for i in range(n - min_stem):
+        stem = seq_u[i:i + min_stem]
+        stem_rc = rev_comp(stem)
+        lo = i + min_stem
+        hi = lo + max_loop
+        idx = seq_u.find(stem_rc, lo, hi + min_stem)
+        if idx != -1:
+            return i, idx, stem
+    return -1, -1, None
+
+
 def _remove_re_sites(seq, aa, sites=None):
     if sites is None:
         sites = _FORBIDDEN_RE_SITES
@@ -447,6 +501,79 @@ def _remove_homopolymers(seq, aa, sites=None):
     return seq
 
 
+def _remove_gc_windows(seq, aa, sites=None, window=20, max_gc=0.90):
+    if sites is None:
+        sites = _FORBIDDEN_RE_SITES
+    iters = 0
+    while check_gc_window(seq, window, max_gc)[0] != -1:
+        pos, _ = check_gc_window(seq, window, max_gc)
+        start = max(0, pos // 3 - 2)
+        end   = min((pos + window) // 3 + 2, len(aa) - 1)
+        replace = None
+        for opt in _dfs_seq_builder(aa[start:end + 1]):
+            candidate = seq[:start * 3] + opt + seq[(end + 1) * 3:]
+            if (check_re_sites(opt, sites)[0] == -1
+                    and check_homopolymer(opt)[0] == -1
+                    and check_gc_window(candidate, window, max_gc)[0] == -1):
+                replace = opt
+                break
+        if replace is None or iters >= 20:
+            raise ValueError(f'Could not remove GC window in: {seq}')
+        seq = seq[:start * 3] + replace + seq[(end + 1) * 3:]
+        iters += 1
+    return seq
+
+
+def _remove_direct_repeats(seq, aa, sites=None, min_len=10):
+    if sites is None:
+        sites = _FORBIDDEN_RE_SITES
+    iters = 0
+    while check_direct_repeat(seq, min_len)[0] != -1:
+        pos, kmer = check_direct_repeat(seq, min_len)
+        second = seq.upper().find(kmer, pos + 1)
+        target = second if second != -1 else pos
+        start = max(0, target // 3 - 2)
+        end   = min((target + len(kmer)) // 3 + 2, len(aa) - 1)
+        replace = None
+        for opt in _dfs_seq_builder(aa[start:end + 1]):
+            candidate = seq[:start * 3] + opt + seq[(end + 1) * 3:]
+            if (check_re_sites(opt, sites)[0] == -1
+                    and check_homopolymer(opt)[0] == -1
+                    and check_direct_repeat(candidate, min_len)[0] == -1):
+                replace = opt
+                break
+        if replace is None or iters >= 20:
+            raise ValueError(f'Could not remove direct repeat in: {seq}')
+        seq = seq[:start * 3] + replace + seq[(end + 1) * 3:]
+        iters += 1
+    return seq
+
+
+def _remove_hairpins(seq, aa, sites=None, min_stem=10, max_loop=60):
+    if sites is None:
+        sites = _FORBIDDEN_RE_SITES
+    iters = 0
+    while check_hairpin(seq, min_stem, max_loop)[0] != -1:
+        _, pos2, _ = check_hairpin(seq, min_stem, max_loop)
+        _, _, stem  = check_hairpin(seq, min_stem, max_loop)
+        target = pos2
+        start = max(0, target // 3 - 2)
+        end   = min((target + len(stem)) // 3 + 2, len(aa) - 1)
+        replace = None
+        for opt in _dfs_seq_builder(aa[start:end + 1]):
+            candidate = seq[:start * 3] + opt + seq[(end + 1) * 3:]
+            if (check_re_sites(opt, sites)[0] == -1
+                    and check_homopolymer(opt)[0] == -1
+                    and check_hairpin(candidate, min_stem, max_loop)[0] == -1):
+                replace = opt
+                break
+        if replace is None or iters >= 20:
+            raise ValueError(f'Could not remove hairpin in: {seq}')
+        seq = seq[:start * 3] + replace + seq[(end + 1) * 3:]
+        iters += 1
+    return seq
+
+
 def _dfs_seq_builder(aa_seq):
     """Yield all NT sequences that translate to aa_seq (uses all codons, no freq cutoff)."""
     def _rec(pos, current):
@@ -458,33 +585,59 @@ def _dfs_seq_builder(aa_seq):
     yield from _rec(0, '')
 
 
-def clean_nt_sequence(nt_seq, aa_seq, label='sequence'):
-    """Remove RE sites and homopolymers from a codon-optimized sequence."""
+def clean_nt_sequence(nt_seq, aa_seq, label='sequence', sites=None):
+    """
+    Remove synthesis-unfriendly elements from a codon-optimised sequence.
+    Steps run in order: RE sites → homopolymers → high-GC windows → direct repeats → hairpins.
+    Each step uses DFS over synonymous codons in a local window, touching the minimum
+    number of codons needed to resolve each issue.
+
+    sites: list of recognition sequences to screen out.  Defaults to _FORBIDDEN_RE_SITES.
+           Callers targeting a specific vector pass an extended list so the vector's own
+           unique cutters stay unique in the designed parts.
+    """
     try:
-        nt_seq = _remove_re_sites(nt_seq, aa_seq)
-        nt_seq = _remove_homopolymers(nt_seq, aa_seq)
+        nt_seq = _remove_re_sites(nt_seq, aa_seq, sites=sites)
+        nt_seq = _remove_homopolymers(nt_seq, aa_seq, sites=sites)
+        nt_seq = _remove_gc_windows(nt_seq, aa_seq, sites=sites)
+        nt_seq = _remove_direct_repeats(nt_seq, aa_seq, sites=sites)
+        nt_seq = _remove_hairpins(nt_seq, aa_seq, sites=sites)
         assert Seq(nt_seq).translate() == aa_seq, 'Translation mismatch after cleaning'
     except Exception as e:
         raise ValueError(f'Failed to clean {label}: {e}')
     return nt_seq
 
 
-def generate_clean_nt(aa_seq, label='', max_tries=30, freq_cutoff=0.15):
+def generate_clean_nt(aa_seq, label='', max_tries=30, freq_cutoff=0.15, sites=None, seed=None):
     """
     Generate a codon-optimized, restriction-site-free, homopolymer-free NT sequence.
     Uses random sampling; retries up to max_tries times.
+
+    Reproducibility: the sampler is seeded deterministically from (label, aa_seq) unless an
+    explicit `seed` is given, and the caller's global RNG state is restored on exit.  Without
+    this, any sequence that falls through to random sampling — e.g. a constant gene block that
+    becomes un-cleanable deterministically after a reference edit — would differ between runs,
+    silently invalidating an already-ordered plasmid.
     """
-    for attempt in range(max_tries):
-        try:
-            seq = back_translate_random(aa_seq, freq_cutoff)
-            seq = clean_nt_sequence(seq, aa_seq, label)
-            assert check_re_sites(seq)[0] == -1
-            assert check_homopolymer(seq)[0] == -1
-            return seq
-        except Exception:
-            if attempt == max_tries - 1:
-                raise ValueError(f'generate_clean_nt failed for {label!r} after {max_tries} tries')
-    raise ValueError(f'generate_clean_nt failed for {label!r}')
+    if seed is None:
+        seed = zlib.crc32(f'{label}|{aa_seq}'.encode())
+    rng_state = random.getstate()
+    random.seed(seed)
+    try:
+        for attempt in range(max_tries):
+            try:
+                seq = back_translate_random(aa_seq, freq_cutoff)
+                seq = clean_nt_sequence(seq, aa_seq, label, sites=sites)
+                assert check_re_sites(seq, sites)[0] == -1
+                assert check_homopolymer(seq)[0] == -1
+                return seq
+            except Exception:
+                if attempt == max_tries - 1:
+                    raise ValueError(
+                        f'generate_clean_nt failed for {label!r} after {max_tries} tries')
+        raise ValueError(f'generate_clean_nt failed for {label!r}')
+    finally:
+        random.setstate(rng_state)
 
 
 # ── V-gene trimming at CDR3 boundary ────────────────────────────────────────
@@ -516,6 +669,27 @@ def trim_vgene_to_cys104(aa_seq, gene_name=''):
     if last_c_idx is None:
         raise ValueError(f'Could not find conserved Cys104 in {gene_name}: {aa}')
     return aa[:last_c_idx + 1]   # include the C
+
+
+# ── J-segment FR4 ────────────────────────────────────────────────────────────
+
+def get_fr4(j_call):
+    """
+    Return the FR4 amino acids for a J gene — the part of the J segment that follows the
+    conserved F/W at IMGT position 118, i.e. everything AIRR's `junction_aa` stops short of.
+
+    The assembled chain must be  V(..Cys104) + junction_aa[1:] + FR4 + C-region.
+    Omitting FR4 removes the strand that joins the V domain to the constant region.
+
+    Raises ValueError for an unknown J gene, or one whose FR4 is not usable (IMGT
+    pseudogene / frame-shifted entries); callers route those clones to invalid_clones.csv.
+    """
+    gene = _normalise_gene(j_call)
+    if gene in _j_fr4:
+        return _j_fr4[gene]
+    if gene in _j_fr4_unusable:
+        raise ValueError(f'J gene {gene!r} has no usable FR4 (IMGT pseudogene/ORF)')
+    raise ValueError(f'J gene {gene!r} not found in the FR4 table')
 
 
 # ── NEB overhang utilities ───────────────────────────────────────────────────
@@ -893,32 +1067,46 @@ def design_1a_overhangs(trbv_nt_dict, reserved_ohs=(), min_hamming=2):
 
 # ── Gene sequence builders ───────────────────────────────────────────────────
 
+# Pure functions of the gene name, called once per clonotype but constant per gene.
+# Caching turns an O(clonotypes) codon optimisation into O(genes): with 89 TRAV genes
+# across ~4k clonotypes this is the dominant cost in a full library run.
+@functools.lru_cache(maxsize=None)
 def build_trbv_gene_nt(trbv_name):
     """
     Return the deterministically codon-optimised NT sequence for the TRBV
-    gene up to and including Cys104.
+    gene up to and including Cys104.  Falls back to random codon sampling if
+    the deterministic sequence cannot be made synthesis-feasible by clean_nt_sequence.
     """
     aa_full = _trbv_aa_dict.get(trbv_name)
     if aa_full is None:
         raise ValueError(f'TRBV gene not found in references: {trbv_name}')
     aa_trimmed = trim_vgene_to_cys104(aa_full, trbv_name)
     nt = back_translate_deterministic(aa_trimmed)
-    nt = clean_nt_sequence(nt, aa_trimmed, label=trbv_name)
-    return nt
+    try:
+        return clean_nt_sequence(nt, aa_trimmed, label=trbv_name)
+    except ValueError:
+        return generate_clean_nt(aa_trimmed, label=trbv_name)
 
 
+# Pure functions of the gene name, called once per clonotype but constant per gene.
+# Caching turns an O(clonotypes) codon optimisation into O(genes): with 89 TRAV genes
+# across ~4k clonotypes this is the dominant cost in a full library run.
+@functools.lru_cache(maxsize=None)
 def build_trav_gene_nt(trav_name):
     """
     Return the deterministically codon-optimised full TRAV NT sequence (with leader)
-    up to and including Cys104.
+    up to and including Cys104.  Falls back to random codon sampling if the
+    deterministic sequence cannot be made synthesis-feasible by clean_nt_sequence.
     """
     aa_full = _trav_aa_dict.get(trav_name)
     if aa_full is None:
         raise ValueError(f'TRAV gene not found in references: {trav_name}')
     aa_trimmed = trim_vgene_to_cys104(aa_full, trav_name)
     nt = back_translate_deterministic(aa_trimmed)
-    nt = clean_nt_sequence(nt, aa_trimmed, label=trav_name)
-    return nt
+    try:
+        return clean_nt_sequence(nt, aa_trimmed, label=trav_name)
+    except ValueError:
+        return generate_clean_nt(aa_trimmed, label=trav_name)
 
 
 def build_trac_nt(junc_residue=''):
@@ -950,10 +1138,16 @@ def build_trbc_nt(junc_residue=''):
     This residue's codon is split at the J/C exon boundary — 1 nt from TRBJ, 2 nt from TRBC.
     In the synthetic intron-free construct we encode it as a complete codon at the start.
     If empty the split codon residue is omitted (legacy behaviour).
+
+    Falls back to random codon sampling if the deterministic sequence cannot be made
+    synthesis-feasible by clean_nt_sequence.
     """
     aa = junc_residue + _trbc_lvlcys_aa if junc_residue else _trbc_lvlcys_aa
     nt = back_translate_deterministic(aa)
-    return clean_nt_sequence(nt, aa, label='TRBC-LVL-Cys')
+    try:
+        return clean_nt_sequence(nt, aa, label='TRBC-LVL-Cys')
+    except ValueError:
+        return generate_clean_nt(aa, label='TRBC-LVL-Cys')
 
 
 # ── Fragment assemblers ──────────────────────────────────────────────────────
@@ -1049,21 +1243,37 @@ def _generate_variable_parts(trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
                                oh_1b, trac_bridge,
                                oh_2a, trbc_bridge,
                                oh_2b, t2a_tail,
-                               max_tries=30):
+                               trbj_name=None, traj_name=None,
+                               max_tries=30, sites=None):
     """
     Internal: generate and return all nucleotide components of the variable fragment.
     Returns a dict with keys:
-      cdr3b_nt, cdr3a_nt, trav_nt, gene_block
+      cdr3b_nt, cdr3a_nt, trav_nt, cdr3b_body, cdr3a_body, gene_block
     Raises ValueError if restriction sites or homopolymers cannot be resolved.
+
+    trbj_name/traj_name supply the FR4 remainder appended after each junction (see get_fr4).
+    They are required: AIRR junction_aa ends at the conserved F/W, so without FR4 the
+    V domain is truncated short of the strand that reaches the constant region.
     """
+    if trbj_name is None or traj_name is None:
+        raise ValueError('_generate_variable_parts requires trbj_name and traj_name so the '
+                         'J-segment FR4 can be appended after each junction')
     trav_nt = build_trav_gene_nt(trav_name)
-    cdr3b_body = cdr3b_aa[1:]
-    cdr3a_body = cdr3a_aa[1:]
+    # junction_aa[1:] drops the leading Cys104 (already supplied by the V gene);
+    # FR4 restores the J residues that follow the conserved F/W.
+    cdr3b_body = cdr3b_aa[1:] + get_fr4(trbj_name)
+    cdr3a_body = cdr3a_aa[1:] + get_fr4(traj_name)
 
     for attempt in range(max_tries):
         try:
-            cdr3b_nt = generate_clean_nt(cdr3b_body, label=f'CDR3b({trbv_name})')
-            cdr3a_nt = generate_clean_nt(cdr3a_body, label=f'CDR3a({trav_name})')
+            # seed=attempt: generate_clean_nt is otherwise deterministic for a given
+            # (label, aa_seq), which would make this retry loop return the same sequence
+            # forever.  Seeding on the attempt number varies the draw across retries while
+            # keeping the whole design reproducible run-to-run.
+            cdr3b_nt = generate_clean_nt(cdr3b_body, label=f'CDR3b({trbv_name})',
+                                         sites=sites, seed=attempt)
+            cdr3a_nt = generate_clean_nt(cdr3a_body, label=f'CDR3a({trav_name})',
+                                         sites=sites, seed=attempt)
             # t2a_tail: T2A[split_2b+4:] — the remaining T2A after the 2b OH window.
             #   Placed before TRAV so the assembled product reconstitutes full T2A
             #   (TRBC-T2A fragment holds T2A[:split_2b]; variable holds T2A[split_2b+4:]).
@@ -1087,6 +1297,8 @@ def _generate_variable_parts(trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
                 'cdr3b_nt':   cdr3b_nt,
                 'cdr3a_nt':   cdr3a_nt,
                 'trav_nt':    trav_nt,
+                'cdr3b_body': cdr3b_body,   # junction[1:] + FR4, for annotation
+                'cdr3a_body': cdr3a_body,
             }
         except ValueError:
             if attempt == max_tries - 1:
@@ -1099,19 +1311,20 @@ def build_variable_fragment(trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
                               oh_1b, trac_bridge,
                               oh_2a, trbc_bridge,
                               oh_2b, t2a_tail,
-                              max_tries=30):
+                              trbj_name=None, traj_name=None,
+                              max_tries=30, sites=None):
     """
     Build the per-TCR variable gene block.
 
     Gene-block layout (5'→3'):
       ACAT [oh_1a] A GTCTTC           ← BbsI 5' site exposing oh_1a
       [trbv_bridge]                   ← TRBV tail after oh_1a window (may be empty)
-      [CDR3β_nt]                      ← codon-optimised CDR3β (minus leading C)
+      [CDR3β_nt]                      ← CDR3β (minus leading C) + TRBJ FR4
       [trbc_bridge]                   ← TRBC prefix before oh_2a (may be empty)
       CGTCTCCA [oh_2a] ACAT           ← BsmBI 3' site: CDR3β/TRBC junction
       ACAT CGTCTCCA [oh_2b]           ← BsmBI 5' site: T2A/TRAV junction
       [TRAV_nt]                       ← full TRAV with leader, codon-optimised
-      [CDR3α_nt]                      ← codon-optimised CDR3α (minus leading C)
+      [CDR3α_nt]                      ← CDR3α (minus leading C) + TRAJ FR4
       [trac_bridge]                   ← TRAC prefix before oh_1b (may be empty)
       GAAGACGGA [oh_1b] ACAT          ← BbsI 3' site exposing oh_1b
 
@@ -1128,7 +1341,9 @@ def build_variable_fragment(trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
                                      oh_1a, trbv_bridge,
                                      oh_1b, trac_bridge,
                                      oh_2a, trbc_bridge,
-                                     oh_2b, t2a_tail, max_tries)
+                                     oh_2b, t2a_tail,
+                                     trbj_name=trbj_name, traj_name=traj_name,
+                                     max_tries=max_tries, sites=sites)
     return parts['gene_block']
 
 
@@ -1424,8 +1639,9 @@ def _annotate_variable_gb(trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
                   note=['Germline TRBV tail after the 1a overhang, before CDR3β'])
         )
     features += [
-        _feat(p_cdr3b,   p_cdr3b_e,  'misc_feature', label=[f'CDR3β ({cdr3b_aa})'],
-              note=[f'Codon-optimised CDR3β (aa: {cdr3b_aa[1:]}); excludes leading C in TRBV']),
+        _feat(p_cdr3b,   p_cdr3b_e,  'misc_feature', label=[f'CDR3β+FR4 ({cdr3b_aa})'],
+              note=[f'Codon-optimised CDR3β (aa: {cdr3b_aa[1:]}) followed by the TRBJ FR4 '
+                    f'remainder; excludes leading C in TRBV']),
         _feat(p_bsmbi3,  p_bsmbi3_e, 'protein_bind', label=['BsmBI recognition (2a)'],
               bound_moiety=['BsmBI'],
               note=[f'Step-2 GG site; 2a OH = {oh_2a}']),
@@ -1439,8 +1655,9 @@ def _annotate_variable_gb(trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
         _feat(p_trav,    p_trav_e,   'gene',         label=[f'TRAV ({trav_name})'],
               gene=[trav_name],
               note=['Full codon-optimised TRAV, includes signal peptide, ends at Cys104']),
-        _feat(p_cdr3a,   p_cdr3a_e,  'misc_feature', label=[f'CDR3α ({cdr3a_aa})'],
-              note=[f'Codon-optimised CDR3α (aa: {cdr3a_aa[1:]}); excludes leading C in TRAV']),
+        _feat(p_cdr3a,   p_cdr3a_e,  'misc_feature', label=[f'CDR3α+FR4 ({cdr3a_aa})'],
+              note=[f'Codon-optimised CDR3α (aa: {cdr3a_aa[1:]}) followed by the TRAJ FR4 '
+                    f'remainder; excludes leading C in TRAV']),
         _feat(p_bbsi3,   p_bbsi3_e,  'protein_bind', label=['BbsI recognition (1b)'],
               bound_moiety=['BbsI'],
               note=[f'Step-1 GG site; 1b OH = {oh_1b}']),
@@ -1456,7 +1673,8 @@ def _annotate_variable_gb(trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
 def _annotate_assembled_gb(trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
                             trbv_nt, cdr3b_nt, trav_nt, cdr3a_nt,
                             trac_nt, trbc_nt, t2a_nt, lh_nt, rh_nt,
-                            oh_2b, clone_id, filepath, locus='TRAC'):
+                            oh_2b, clone_id, filepath, locus='TRAC',
+                            gblocks=False):
     """
     Write the fully assembled HDR template as an annotated GenBank record.
     This represents the DNA that integrates into the genome after HDR.
@@ -1517,8 +1735,9 @@ def _annotate_assembled_gb(trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
                 else '~300bp homology for Cas9-RNP HDR at mTRAC locus')
 
     features += [
-        _feat(*pos['cdr3b'],'misc_feature', label=[f'CDR3β'],
-              note=[f'aa: {cdr3b_aa} | codon-optimised | {len(cdr3b_nt)//3} codons']),
+        _feat(*pos['cdr3b'],'misc_feature', label=['CDR3β+TRBJ FR4'],
+              note=[f'junction aa: {cdr3b_aa} + TRBJ FR4 | codon-optimised | '
+                    f'{len(cdr3b_nt)//3} codons']),
         _feat(*pos['trbc'], 'CDS',          label=['TRBC1 (Cys)'],
               gene=['Trbc1'],
               note=['TRBC1 Cys-mutant constant region']),
@@ -1529,22 +1748,41 @@ def _annotate_assembled_gb(trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
         _feat(*pos['trav'], 'gene',         label=[f'TRAV ({trav_name})'],
               gene=[trav_name],
               note=[f'Codon-optimised {trav_name}; includes signal peptide']),
-        _feat(*pos['cdr3a'],'misc_feature', label=[f'CDR3α'],
-              note=[f'aa: {cdr3a_aa} | codon-optimised | {len(cdr3a_nt)//3} codons']),
+        _feat(*pos['cdr3a'],'misc_feature', label=['CDR3α+TRAJ FR4'],
+              note=[f'junction aa: {cdr3a_aa} + TRAJ FR4 | codon-optimised | '
+                    f'{len(cdr3a_nt)//3} codons']),
         _feat(*pos['trac'], 'CDS',          label=['TRAC (LVL-Cys)'],
               gene=['Trac'],
               note=['LVL-Cys engineered constant region for improved TCRαβ pairing']),
         _feat(*pos['rh'],   'misc_feature', label=[rh_label], note=[rh_note]),
     ]
 
+    gb_result = None
+    if gblocks:
+        from TCRAFT.OE_PCR import design_gblocks
+        gb_result = design_gblocks(seq)
+        os = gb_result['overlap_start']
+        oe = gb_result['overlap_end']
+        tm = gb_result['overlap_tm']
+        ol = gb_result['overlap_len']
+        features += [
+            _feat(0,   oe, 'misc_feature', label=['gBlock 1'],
+                  note=[f'OE-PCR gBlock 1 of 2 | {oe} nt | overlap {ol} nt at Tm={tm:.1f}°C']),
+            _feat(os,  oe, 'misc_feature', label=[f'OE-PCR overlap ({ol} nt, {tm:.1f}°C)'],
+                  note=[f'Shared overlap region; GC-clamped; Tm={tm:.1f}°C (SantaLucia 1998, 50 mM NaCl)']),
+            _feat(os,  len(seq), 'misc_feature', label=['gBlock 2'],
+                  note=[f'OE-PCR gBlock 2 of 2 | {len(seq) - os} nt | overlap {ol} nt at Tm={tm:.1f}°C']),
+        ]
+
     desc = (f'HDR template | {clone_id} | {trbv_name}/{trav_name} | '
             f'CDR3b={cdr3b_aa} CDR3a={cdr3a_aa} | {locus} | {len(seq)} bp')
     _write_gb(seq, clone_id[:16], desc, features, filepath)
+    return seq, gb_result
 
 
 def write_gb_outputs(output_dir, constant_df, variable_df, oh_1a_map,
                      trbv_nt_cache, oh_2b, trac_nt, trbc_nt, t2a_nt,
-                     lh_nt, rh_nt, verbose=True, locus='TRAC'):
+                     lh_nt, rh_nt, verbose=True, locus='TRAC', gblocks=False):
     """
     Write GenBank files for all constant and variable fragments.
 
@@ -1643,14 +1881,24 @@ def write_gb_outputs(output_dir, constant_df, variable_df, oh_1a_map,
                 oh_1a, oh_1b_row, oh_2a_row, oh_2b,
                 cdir / 'variable.gb',
             )
-            _annotate_assembled_gb(
+            assembled_seq, gb_result = _annotate_assembled_gb(
                 trbv_name, trav_name, cdr3b_aa, cdr3a_aa,
                 trbv_nt_full, cdr3b_nt, trav_nt, cdr3a_nt,
                 trac_nt, trbc_nt, t2a_nt, lh_nt, rh_nt,
                 oh_2b, clone_id,
                 cdir / 'assembled.gb',
                 locus=locus,
+                gblocks=gblocks,
             )
+            if gblocks:
+                from TCRAFT.OE_PCR import write_gblocks_fasta, write_gblocks_tsv
+                write_gblocks_fasta(gb_result, cdir / 'oe_pcr_gblocks.fa',
+                                    clone_id=clone_id)
+                write_gblocks_tsv(gb_result, cdir / 'oe_pcr_gblocks.tsv',
+                                  clone_id=clone_id)
+                if verbose:
+                    print(f'    [OE-PCR] {clone_id}: overlap {gb_result["overlap_len"]} nt, '
+                          f'Tm={gb_result["overlap_tm"]:.1f}°C → oe_pcr_gblocks.fa')
         except ValueError as e:
             if verbose:
                 print(f'  [SKIP GB] {clone_id}: {e}')
@@ -1723,13 +1971,62 @@ def load_airr(path):
     return df
 
 
-def pair_airr_records(df):
+def _collapse_duplicate_chains(rows, count_col='consensus_count'):
     """
-    Group AIRR records into alpha/beta pairs by clone_id.
-    Returns list of dicts with keys: clone_id, tra_row, trb_row.
-    Only fully paired (one TRA + one TRB, both productive) clones are returned.
+    Collapse rows describing the SAME rearrangement, summing their support.
+
+    clone_id groups cells, not sequences: a clone observed in 18 cells contributes 18
+    near-identical rows.  Counting rows would call that a doublet and discard it.  The unit
+    that matters is the distinct rearrangement, with read/UMI support summed over the cells
+    carrying it — which is also the right basis for ranking a dual-alpha cell's two chains.
     """
-    pairs = []
+    if rows.empty:
+        return rows
+    key = ['v_call', 'junction_aa']
+    if count_col in rows.columns:
+        rows = rows.assign(**{count_col: rows.groupby(key, dropna=False)[count_col]
+                              .transform('sum')})
+    return rows.drop_duplicates(subset=key)
+
+
+def _dominant_chain(rows, count_col='consensus_count'):
+    """
+    Pick the dominant chain from several productive rearrangements of one locus.
+
+    Returns (row, note) when one chain strictly outranks the rest by UMI/read support,
+    or (None, reason) on a tie — a tie means the cell genuinely expresses both and we
+    have no basis to choose, so the caller should drop it rather than guess.
+    """
+    if count_col not in rows.columns or rows[count_col].isna().all():
+        return None, f'{len(rows)} productive chains and no {count_col} to rank them'
+    counts = rows[count_col].fillna(0).astype(float)
+    order = counts.sort_values(ascending=False)
+    if len(order) > 1 and order.iloc[0] == order.iloc[1]:
+        return None, f'{len(rows)} productive chains tied at {count_col}={order.iloc[0]:.0f}'
+    best = rows.loc[order.index[0]]
+    runner = order.iloc[1] if len(order) > 1 else 0
+    return best, f'kept {count_col}={order.iloc[0]:.0f} over {runner:.0f}'
+
+
+def pair_airr_records(df, resolve_multi=True, return_dropped=False):
+    """
+    Group AIRR records into alpha/beta pairs by clone_id (or cell_id).
+
+    Chains are first collapsed to distinct rearrangements (see _collapse_duplicate_chains),
+    because a clone_id spans every cell carrying that clone.
+
+    Dual-alpha expression is normal in 25-30%% of T cells, and dual-beta occurs too, so a
+    strict one-TRA-one-TRB rule discards a large, designable fraction of a real repertoire.
+    With resolve_multi=True a locus with several distinct productive chains is resolved to
+    the dominant one by summed `consensus_count`, but ONLY when the other locus is
+    unambiguous: two alphas AND two betas is the signature of a cell doublet, not of one
+    T cell, so those are dropped rather than guessed at.
+
+    Returns `pairs`, or `(pairs, dropped)` when return_dropped=True.  `dropped` accounts for
+    every group that did not yield a pair — without it, groups vanish with no trace in any
+    output, and a run can silently design far fewer TCRs than the input contains.
+    """
+    pairs, dropped = [], []
     required_cols = {'v_call', 'j_call', 'junction_aa', 'productive'}
     if not required_cols.issubset(df.columns):
         missing = required_cols - set(df.columns)
@@ -1737,22 +2034,52 @@ def pair_airr_records(df):
 
     group_col = 'clone_id' if 'clone_id' in df.columns else 'cell_id'
     for clone_id, grp in df.groupby(group_col, dropna=False):
-        prod = grp[grp['productive'].astype(str).str.upper() == 'T']
-        tra = prod[prod['v_call'].str.contains('TRAV', na=False)]
-        trb = prod[prod['v_call'].str.contains('TRBV', na=False)]
-        if len(tra) == 1 and len(trb) == 1:
-            pairs.append({
-                'clone_id': clone_id,
-                'tra': tra.iloc[0],
-                'trb': trb.iloc[0],
-            })
-    return pairs
+        prod = grp[grp['productive'].astype(str).str.upper().isin(('T', 'TRUE'))]
+        tra = _collapse_duplicate_chains(prod[prod['v_call'].str.contains('TRAV', na=False)])
+        trb = _collapse_duplicate_chains(prod[prod['v_call'].str.contains('TRBV', na=False)])
+
+        def _record(reason):
+            dropped.append({'clone_id': clone_id, 'n_TRA': len(tra), 'n_TRB': len(trb),
+                            'Issue': reason})
+
+        if len(tra) == 0 or len(trb) == 0:
+            _record(f'unpaired: {len(tra)} productive TRA, {len(trb)} productive TRB')
+            continue
+        if len(tra) > 1 and len(trb) > 1:
+            _record(f'probable doublet: {len(tra)} TRA and {len(trb)} TRB both ambiguous')
+            continue
+
+        notes = []
+        tra_row, trb_row = tra.iloc[0], trb.iloc[0]
+        if len(tra) > 1:
+            if not resolve_multi:
+                _record(f'dual-alpha: {len(tra)} productive TRA (resolve_multi disabled)')
+                continue
+            tra_row, note = _dominant_chain(tra)
+            if tra_row is None:
+                _record(f'dual-alpha unresolved: {note}')
+                continue
+            notes.append(f'TRA {note}')
+        if len(trb) > 1:
+            if not resolve_multi:
+                _record(f'dual-beta: {len(trb)} productive TRB (resolve_multi disabled)')
+                continue
+            trb_row, note = _dominant_chain(trb)
+            if trb_row is None:
+                _record(f'dual-beta unresolved: {note}')
+                continue
+            notes.append(f'TRB {note}')
+
+        pairs.append({'clone_id': clone_id, 'tra': tra_row, 'trb': trb_row,
+                      'resolution': '; '.join(notes)})
+
+    return (pairs, dropped) if return_dropped else pairs
 
 
 # ── Top-level design function ────────────────────────────────────────────────
 
 def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None,
-                        verbose=True, locus='TRAC'):
+                        verbose=True, locus='TRAC', gblocks=False):
     """
     Main entry point: design all HDR fragments for TCRs in an AIRR file.
 
@@ -1775,6 +2102,10 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None,
                             immediately 5' of the TRBV's own ATG so the cassette
                             drives its own translation from the endogenous Vβ
                             promoter/Eβ enhancer at the TRBC1 locus.
+    gblocks : bool
+        If True, write oe_pcr_gblocks.fa alongside each assembled.gb.
+        Each file contains two overlapping gBlock sequences for OE-PCR
+        assembly (overlap Tm target ~65°C, GC-clamped at both ends).
 
     Returns
     -------
@@ -1809,7 +2140,10 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None,
     else:
         df = airr_path_or_df
 
-    pairs = pair_airr_records(df)
+    pairs, unpaired = pair_airr_records(df, return_dropped=True)
+    if verbose and unpaired:
+        where = 'not listed under a --trbv filter' if trbv_filter else 'in invalid_clones.csv'
+        print(f'  {len(pairs)} paired clones; {len(unpaired)} groups yielded no pair ({where})')
     if verbose:
         print(f'Found {len(pairs)} productive paired clonotypes in AIRR file.')
     if trbv_filter:
@@ -1933,7 +2267,14 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None,
     # ── Build per-TCR variable gene blocks ────────────────────────────────
     if verbose:
         print(f'\nBuilding variable gene blocks for {len(pairs)} TCRs...')
-    var_rows, invalid_rows = [], []
+    var_rows = []
+    # start from the groups that never produced a pair, so the outputs account for
+    # every group in the input rather than only the ones that reached fragment design
+    # When a --trbv filter is active the unpaired groups cannot be attributed to that
+    # gene (they have no usable TRBV call), so listing them would misreport the pool.
+    invalid_rows = [] if trbv_filter else [
+        {'clone_id': u['clone_id'], 'TRBV': '', 'TRAV': '',
+         'CDR3b': '', 'CDR3a': '', 'Issue': u['Issue']} for u in unpaired]
 
     for pair in tqdm(pairs, desc='Variable fragments', disable=not verbose):
         trb = pair['trb']
@@ -1942,6 +2283,8 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None,
 
         trbv = _normalise_gene(trb.get('v_call', ''))
         trav = _normalise_gene(tra.get('v_call', ''))
+        trbj = _normalise_gene(trb.get('j_call', ''))
+        traj = _normalise_gene(tra.get('j_call', ''))
         cdr3b = str(trb.get('junction_aa', '')).upper().strip()
         cdr3a = str(tra.get('junction_aa', '')).upper().strip()
 
@@ -1955,6 +2298,12 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None,
             issues.append(f'CDR3b {cdr3b!r} does not start with C')
         if not cdr3a or not cdr3a.startswith('C'):
             issues.append(f'CDR3a {cdr3a!r} does not start with C')
+        # FR4 must be resolvable for both J genes, else the V domains are truncated
+        for label, j in (('TRBJ', trbj), ('TRAJ', traj)):
+            try:
+                get_fr4(j)
+            except ValueError as e:
+                issues.append(f'{label}: {e}')
         if issues:
             invalid_rows.append({'clone_id': clone_id, 'TRBV': trbv, 'TRAV': trav,
                                   'CDR3b': cdr3b, 'CDR3a': cdr3a, 'Issue': '; '.join(issues)})
@@ -1971,12 +2320,15 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None,
                                               oh_1a, trbv_bridge,
                                               oh_1b, trac_bridge,
                                               oh_2a, trbc_bridge,
-                                              oh_2b, t2a_tail)
+                                              oh_2b, t2a_tail,
+                                              trbj_name=trbj, traj_name=traj)
             gb = vparts['gene_block']
             var_rows.append({
                 'Clone': clone_id,
                 'TRBV': trbv,
                 'TRAV': trav,
+                'TRBJ': trbj,
+                'TRAJ': traj,
                 'CDR3b': cdr3b,
                 'CDR3a': cdr3a,
                 'OH_1a': oh_1a,
@@ -1989,6 +2341,8 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None,
                 '_cdr3b_nt': vparts['cdr3b_nt'],
                 '_cdr3a_nt': vparts['cdr3a_nt'],
                 '_trav_nt':  vparts['trav_nt'],
+                '_cdr3b_aa': vparts['cdr3b_body'],   # junction[1:] + FR4
+                '_cdr3a_aa': vparts['cdr3a_body'],
             })
         except ValueError as e:
             invalid_rows.append({'clone_id': clone_id, 'TRBV': trbv, 'TRAV': trav,
@@ -2007,7 +2361,8 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None,
 
     constant_df.to_csv(output_dir / 'constant_gene_blocks.csv', index=False)
     if not var_df.empty:
-        _nt_cols = [c for c in ('_cdr3b_nt', '_cdr3a_nt', '_trav_nt') if c in var_df.columns]
+        # internal columns are '_'-prefixed; keep them out of the ordering sheet
+        _nt_cols = [c for c in var_df.columns if c.startswith('_')]
         var_df.drop(columns=_nt_cols).to_csv(output_dir / 'variable_gene_blocks.csv', index=False)
     if not invalid_df.empty:
         invalid_df.to_csv(output_dir / 'invalid_clones.csv', index=False)
@@ -2027,6 +2382,7 @@ def generate_hdr_design(airr_path_or_df, trbv_filter=None, output_dir=None,
             lh_out, rh_out,
             verbose=verbose,
             locus=locus,
+            gblocks=gblocks,
         )
 
     # Plate-file output (xlsx)
@@ -2193,9 +2549,16 @@ def run_CLI():
                         help=('Target locus for HDR knock-in.  '
                               'TRAC (default): mature T cells.  '
                               'TRBC1: DN3 double-negative thymocytes.'))
+    parser.add_argument('--gblocks', action='store_true',
+                        help=('Write oe_pcr_gblocks.fa alongside each assembled.gb. '
+                              'Each file contains two overlapping gBlock sequences for '
+                              'OE-PCR assembly (overlap Tm ~65°C, GC-clamped at both ends). '
+                              'Use when building a small number of constructs without '
+                              'Golden Gate assembly.'))
     args = parser.parse_args()
     generate_hdr_design(args.airr, trbv_filter=args.trbv,
-                        output_dir=args.output_dir, locus=args.locus)
+                        output_dir=args.output_dir, locus=args.locus,
+                        gblocks=args.gblocks)
 
 
 if __name__ == '__main__':

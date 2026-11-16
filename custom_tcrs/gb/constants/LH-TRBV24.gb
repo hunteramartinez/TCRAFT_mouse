@@ -1,5 +1,5 @@
 LOCUS       LH-TRBV24                694 bp    DNA              UNK 01-JAN-1980
-DEFINITION  LH-TRBV24 gene block | 1a=ACGA.
+DEFINITION  LH-TRBV24 gene block | TRAC | 1a=ACGA.
 ACCESSION   LH-TRBV24
 VERSION     LH-TRBV24
 KEYWORDS    .
@@ -39,7 +39,7 @@ ORIGIN
       301 ctggaagtgg agcaaccaat ttctccttgc tgaagcaggc cggtgacgtt gaggaaaacc
       361 caggaccaat gggcgccagg ctgctgtgct gcgtggccct gtgcctgctg ggcgccggca
       421 gcttcgtggc cggcgtgaca caaacaccaa gatacctagt gaaggagaag ggccagaagg
-      481 cccacatgag ctgcagcccc gagaagggcc acaccgcctt ctactggtac cagcagaacc
+      481 cccacatgag ctgcagccca gaaaagggac acacagcatt ctactggtac cagcagaacc
       541 agaagcagga gctgaccttc ctgatcagct tcaggaacga ggagatcatg gagcagaccg
       601 acctggtgaa gaagaggttc agcgccaagt gcagcagcaa cagcaggtgc atcctggaga
       661 tcctgagcag cgaggaggac gaaggtcttc acat

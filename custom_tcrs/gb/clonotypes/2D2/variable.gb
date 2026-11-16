@@ -1,4 +1,4 @@
-LOCUS       variable                 504 bp    DNA              UNK 01-JAN-1980
+LOCUS       variable                 546 bp    DNA              UNK 01-JAN-1980
 DEFINITION  Variable fragment | TRBV16/TRAV9N-3 | CDR3b=CASSLDCGANP
             CDR3a=CALRSYNFG.
 ACCESSION   variable
@@ -11,57 +11,58 @@ FEATURES             Location/Qualifiers
      protein_bind    1..16
                      /label="BbsI recognition (1a)"
                      /bound_moiety="BbsI"
-                     /note="Step-1 GG site (recognition on waste); 1a OH = CCAG
+                     /note="Step-1 GG site (recognition on waste); 1a OH = CGCA
                      (TRBV-specific)"
      misc_feature    13..16
-                     /label="1a OH (CCAG)"
+                     /label="1a OH (CGCA)"
                      /note="Pairs with LH-TRBV16 gene block"
-     misc_feature    17..37
+     misc_feature    17..28
                      /label="TRBV bridge (TRBV16)"
                      /note="Germline TRBV tail after the 1a overhang, before
                      CDR3β"
-     misc_feature    38..67
+     misc_feature    29..58
                      /label="CDR3β (CASSLDCGANP)"
                      /note="Codon-optimised CDR3β (aa: ASSLDCGANP); excludes
                      leading C in TRBV"
-     protein_bind    78..92
+     protein_bind    68..82
                      /label="BsmBI recognition (2a)"
                      /bound_moiety="BsmBI"
-                     /note="Step-2 GG site; 2a OH = GGAA"
-     misc_feature    78..81
-                     /label="2a OH (GGAA)"
+                     /note="Step-2 GG site; 2a OH = AGAA"
+     misc_feature    68..71
+                     /label="2a OH (AGAA)"
                      /note="Junction to TRBC-T2A constant fragment"
-     protein_bind    93..107
+     protein_bind    83..97
                      /label="BsmBI recognition (2b)"
                      /bound_moiety="BsmBI"
-                     /note="Step-2 GG site; 2b OH = AGGA"
-     misc_feature    104..107
-                     /label="2b OH (AGGA)"
+                     /note="Step-2 GG site; 2b OH = AAGA"
+     misc_feature    94..97
+                     /label="2b OH (AAGA)"
                      /note="Junction from TRBC-T2A constant fragment"
-     gene            121..450
+     gene            163..492
                      /label="TRAV (TRAV9N-3)"
                      /gene="TRAV9N-3"
                      /note="Full codon-optimised TRAV, includes signal peptide,
                      ends at Cys104"
-     misc_feature    451..474
+     misc_feature    493..516
                      /label="CDR3α (CALRSYNFG)"
                      /note="Codon-optimised CDR3α (aa: ALRSYNFG); excludes
                      leading C in TRAV"
-     protein_bind    489..504
+     protein_bind    531..546
                      /label="BbsI recognition (1b)"
                      /bound_moiety="BbsI"
                      /note="Step-1 GG site; 1b OH = GGAA"
-     misc_feature    489..492
+     misc_feature    531..534
                      /label="1b OH (GGAA)"
                      /note="Junction to TRAC-RH constant fragment"
 ORIGIN
-        1 acatgaagac ggccaggaca gcgccgtgta cctgtgcgct tcctccctgg actgcggagc
-       61 taaccccgag gacctgagga aggagacgac atacatcgtc tccaggagaa ccccggcccc
-      121 atgctgctgg ccctgctgcc cgtgctgggc atccacttcc tgctgaggga cgcccaggcc
-      181 cagagcgtga cccagcccga cgccagggtg accgtgagcg agggcgccag cctgcagctg
-      241 aggtgcaagt acagctactt cggaacacca tacctattct ggtacgtgca gtaccccagg
-      301 cagggcctgc agctgctgct gaagtactac cccggcgacc ccgtggtgca gggcgtgaac
-      361 ggcttcgagg ccgagttcag caagagcaac agcagcttcc acctgaggaa ggccagcgtg
-      421 cactggagcg actgggccgt gtacttctgc gccctgaggt cttataattt tggcgatata
-      481 caaaatccgg aaaggtcttc acat
+        1 acatgaagac ggcgcagtat acctatgcgc ctccagcctc gattgtggag ccaaccctga
+       61 agatctaaga aggagacgac atacatcgtc tccaagaggg gcagcggcga gggcagaggc
+      121 agcctgctga cctgcggcga cgtggaggag aaccccggcc ccatgctgct ggccctgctg
+      181 cccgtgctgg gcatccactt cctgctgagg gacgcccagg cccagagcgt gacccagccc
+      241 gacgccaggg tgaccgtgag cgagggcgcc agcctgcagc tgaggtgcaa gtacagctac
+      301 ttcggaacac catacctatt ctggtacgtg cagtacccca gacaaggact acaactacta
+      361 ctaaagtact accccggcga ccccgtggtg cagggcgtga acggcttcga ggccgagttc
+      421 agcaagagca acagcagctt ccacctgagg aaggccagcg tgcactggag cgactgggcc
+      481 gtgtacttct gcgctctccg gtcttacaac ttcggagata tacaaaatcc ggaaaggtct
+      541 tcacat
 //

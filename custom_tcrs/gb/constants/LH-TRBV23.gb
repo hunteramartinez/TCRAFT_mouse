@@ -1,5 +1,5 @@
-LOCUS       LH-TRBV23                688 bp    DNA              UNK 01-JAN-1980
-DEFINITION  LH-TRBV23 gene block | 1a=AGGC.
+LOCUS       LH-TRBV23                711 bp    DNA              UNK 01-JAN-1980
+DEFINITION  LH-TRBV23 gene block | TRAC | 1a=CTGT.
 ACCESSION   LH-TRBV23
 VERSION     LH-TRBV23
 KEYWORDS    .
@@ -16,20 +16,20 @@ FEATURES             Location/Qualifiers
                      complete TCT (Ser) codon so P2A starts on a clean codon
                      boundary with GSG. Do NOT codon-optimise or alter this
                      sequence."
-     gene            369..672
+     gene            369..695
                      /label="TRBV (TRBV23)"
                      /gene="TRBV23"
                      /note="Codon-optimised, includes signal peptide; ends at
                      BbsI 1a junction"
-     misc_feature    673..676
-                     /label="1a OH (AGGC)"
+     misc_feature    696..699
+                     /label="1a OH (CTGT)"
                      /note="TRBV-specific BbsI overhang for step-1 pooled
                      assembly"
-     protein_bind    677..684
+     protein_bind    700..707
                      /label="BbsI recognition (1a)"
                      /bound_moiety="BbsI"
                      /note="Step-1 golden gate site (inverted — recognition on
-                     waste); 1a overhang = AGGC"
+                     waste); 1a overhang = CTGT"
 ORIGIN
         1 tgccagaaag gaccccgtgg agagggacta ctgaaagcta gagatcttgg ctggcactca
        61 tgacttgtgc ctgtccctaa gcctgtgtcc atcatgggca gctagatcct aggctgtcat
@@ -42,5 +42,5 @@ ORIGIN
       481 ccgagatgaa gtgcatcccc gagaagggcc acaccgccgt gttctggtac cagcagaagc
       541 agagcaagga gctgaagttc ctgatctact tccagaacca gcagcccctg gaccagatcg
       601 acatggtgaa ggagaggttc agcgccgtgt gccccagcag cagcctgtgc agcctgggca
-      661 tcaggacctg cgaggcaggt cttcacat
+      661 tcaggacctg cgaggccgag gacagcgccc tgtacctgta ggtcttcaca t
 //

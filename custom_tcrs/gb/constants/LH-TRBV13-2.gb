@@ -1,5 +1,5 @@
-LOCUS       LH-TRBV13-2              707 bp    DNA              UNK 01-JAN-1980
-DEFINITION  LH-TRBV13-2 gene block | 1a=CTTA.
+LOCUS       LH-TRBV13-2              682 bp    DNA              UNK 01-JAN-1980
+DEFINITION  LH-TRBV13-2 gene block | TRAC | 1a=CACC.
 ACCESSION   LH-TRBV13-2
 VERSION     LH-TRBV13-2
 KEYWORDS    .
@@ -16,20 +16,20 @@ FEATURES             Location/Qualifiers
                      complete TCT (Ser) codon so P2A starts on a clean codon
                      boundary with GSG. Do NOT codon-optimise or alter this
                      sequence."
-     gene            369..691
+     gene            369..666
                      /label="TRBV (TRBV13-2)"
                      /gene="TRBV13-2"
                      /note="Codon-optimised, includes signal peptide; ends at
                      BbsI 1a junction"
-     misc_feature    692..695
-                     /label="1a OH (CTTA)"
+     misc_feature    667..670
+                     /label="1a OH (CACC)"
                      /note="TRBV-specific BbsI overhang for step-1 pooled
                      assembly"
-     protein_bind    696..703
+     protein_bind    671..678
                      /label="BbsI recognition (1a)"
                      /bound_moiety="BbsI"
                      /note="Step-1 golden gate site (inverted — recognition on
-                     waste); 1a overhang = CTTA"
+                     waste); 1a overhang = CACC"
 ORIGIN
         1 tgccagaaag gaccccgtgg agagggacta ctgaaagcta gagatcttgg ctggcactca
        61 tgacttgtgc ctgtccctaa gcctgtgtcc atcatgggca gctagatcct aggctgtcat
@@ -37,10 +37,10 @@ ORIGIN
       181 actggcatct gagttctgac ctaagttagg acccccaaaa aatcttctaa catcagtcct
       241 cttggcccac agacatccag aacccagaac ctgctgtgta ccagttaaaa gatcctcggt
       301 ctggaagtgg agcaaccaat ttctccttgc tgaagcaggc cggtgacgtt gaggaaaacc
-      361 caggaccaat gggcagcagg ctgttcttcg tgctgagcag cctgctgtgc agcaagcaca
+      361 caggaccaat gggcagcagg ctgttcttcg tactaagcag cctactatgc agcaaacaca
       421 tggaggccgc cgtgacccag agccccagga acaaggtggc cgtgaccggc ggcaaggtga
       481 ccctgagctg caaccagacc aacaaccaca acaacatgta ctggtacagg caggacaccg
       541 gccacggcct gaggctgatc cactacagct acggcgccgg cagcaccgag aagggcgaca
       601 tccccgacgg ctacaaggcc agcaggccca gccaggagaa cttcagcctg atcctggagc
-      661 tagcaacacc aagccaaaca agcgtgtact tcttaaggtc ttcacat
+      661 tagcaacacc aggtcttcac at
 //

@@ -19,9 +19,9 @@
 ### Enzymes
 | Reagent | Vendor | Cat # | Notes |
 |---------|--------|-------|-------|
-| BbsI-HF | NEB | R3539 | 10,000 U/mL; active at 37°C |
+| BbsI | NEB | R0539 | 10,000 U/mL; active at 37°C |
 | BsmBI-v2 | NEB | R0580 | 10,000 U/mL; active at 42°C |
-| T4 DNA Ligase, HC | NEB | M0202T | 2,000,000 U/mL |
+| T4 DNA Ligase | NEB | M0202 | 400,000 U/mL |
 | 10× T4 DNA Ligase Buffer | NEB | (with M0202) | Contains 10 mM ATP; keep frozen |
 | Q5 Hot Start 2× Master Mix | NEB | M0494 | Or KAPA HiFi HotStart |
 | Nuclease-free water | any | — | |
@@ -74,22 +74,23 @@ Run TCRAFT (`TCRAFT-hdr your_airr.tsv`) to generate all sequences. Order as dsDN
 | LH-TRBV[N] gene block (25 nM) | 4.0 µL | **100 fmol** |
 | Variable gene block (25 nM) | 4.0 µL | **100 fmol** |
 | TRAC-RH gene block (25 nM) | 4.0 µL | **100 fmol** |
-| BbsI-HF (10,000 U/mL) | 1.0 µL | 10 U |
-| T4 DNA Ligase HC (2,000,000 U/mL) | 0.5 µL | 1,000 U |
+| BbsI (10,000 U/mL) | 1.0 µL | 10 U |
+| T4 DNA Ligase (400,000 U/mL) | 2.5 µL | 1,000 U |
 
 Mix gently by pipetting; spin briefly to collect. Keep on ice until thermocycler is ready.
 
 ### 1.2 Thermocycler Program
 
 ```
-Step          Temp    Time    Cycles
-─────────────────────────────────────
-Digest        37°C    5 min   ┐
-Ligate        16°C    5 min   ┘ × 25
-Ligase kill   60°C    10 min
-BbsI kill     80°C    20 min
-Hold           4°C    ∞
+Step            Temp    Time    Cycles
+───────────────────────────────────────
+Digest          37°C    1 min   ┐
+Ligate          16°C    1 min   ┘ × 25
+Final ligate    16°C    10 min
+Hold             4°C    ∞
 ```
+
+> No heat inactivation after Step 1. BbsI has no recognition sites remaining in the assembled product (they were on the cut-away waste stubs) and is therefore inert in Step 2. T4 ligase and ATP remain active and carry directly into Step 2 — adding heat kill here would only destroy them unnecessarily. Proceed immediately to Step 2 setup.
 
 ### 1.3 Gel Verification (optional, recommended for first runs)
 
@@ -110,7 +111,7 @@ No cleanup is needed. Why:
 - The internal BsmBI sites on the Variable gene block are intact inside the assembled product and ready for Step 2.
 - Unligated LH-TRBV and TRAC-RH fragments have **zero BsmBI sites** — BsmBI ignores them entirely.
 - Any unligated Variable gene blocks do carry BsmBI sites, but truncated mis-ligation products they could form lack the LH/RH primer-binding sequences and are filtered out by the PCR in Part 3.
-- ATP is not significantly depleted (100 fmol × 2 junctions consumed ~200 fmol vs. ~20,000 fmol available from the buffer); no replenishment needed.
+- ATP is preserved — no heat kill means no thermal degradation. T4 ligase and ATP carry over intact into Step 2; no replenishment needed.
 
 Keep the tube on ice and proceed immediately.
 
@@ -123,15 +124,14 @@ Keep the tube on ice and proceed immediately.
 
 ### 2.1 Add to Existing Step 1 Reaction (on ice)
 
-To the ~18 µL of heat-killed Step 1 reaction, add directly:
+To the Step 1 reaction (cooled to 4°C), add directly:
 
 | Component | Volume | Amount |
 |-----------|--------|--------|
 | TRBC-T2A gene block (25 nM) | 4.0 µL | **100 fmol** |
 | BsmBI-v2 (10,000 U/mL) | 1.0 µL | 10 U |
-| T4 DNA Ligase HC (2,000,000 U/mL) | 0.5 µL | 1,000 U |
 
-**Total Step 2 volume: ~23.5 µL.** No water or additional buffer needed — T4 Ligase Buffer from Step 1 is carried over at sufficient concentration, and the T4 Ligase from Step 1 is inactivated by the 80°C heat kill so fresh enzyme is required.
+**Total Step 2 volume: ~25 µL** (or ~23 µL if 2 µL was removed for the Step 1 gel check). No fresh T4 Ligase Buffer or T4 ligase is needed — both carry over intact from Step 1. BbsI from Step 1 is still present but has no recognition sites in the assembled product or TRBC-T2A and is inert.
 
 Mix gently by pipetting. Spin briefly to collect.
 
@@ -140,24 +140,26 @@ Mix gently by pipetting. Spin briefly to collect.
 ### 2.2 Thermocycler Program
 
 ```
-Step          Temp    Time    Cycles
-─────────────────────────────────────
-Digest        42°C    5 min   ┐
-Ligate        16°C    5 min   ┘ × 25
-Ligase kill   60°C    10 min
-BsmBI kill    80°C    20 min
-Hold           4°C    ∞
+Step              Temp    Time    Cycles
+──────────────────────────────────────────
+Digest            42°C    1 min   ┐
+Ligate            16°C    1 min   ┘ × 25
+Final ligate      16°C    10 min
+T4 ligase kill    65°C    10 min
+BsmBI cleanup     55°C    20 min
+Hold               4°C    ∞
 ```
 
-> BsmBI-v2 is optimally active at 55°C but 42°C gives a better balance with T4 ligase activity and reduces star activity. If you have access to a gradient block, 50°C/16°C cycling is also a reasonable option.
+> The T4 ligase kill (65°C) is the only heat inactivation required — it stops re-ligation so that BsmBI (still active, no sites remaining in the 2.5 kb full product) can cut any residual uninserted 2.1 kb intermediate at 55°C. BsmBI does not need a dedicated kill step; residual enzyme at 1:20 dilution is denatured by the 98°C PCR initial denaturation. 1 min/1 min cycling is sufficient — same rationale as Step 1.
 
 ### 2.3 Gel Verification
 
 Remove **2 µL** and run on a 1% agarose gel. Load the saved Step 1 gel image (or a fresh 2 µL of a Step 1 reaction run in parallel) for size comparison.
 
 - **Expected band:** ~2.5 kb — a clear upward shift from the 2.1 kb Step 1 product.
-- Some residual 2.1 kb band is normal if insertion was incomplete; the PCR step will amplify only the full-length product.
-- If the 2.1 kb band dominates with no 2.5 kb shift, see Troubleshooting.
+- **Do not proceed to PCR if any visible 2.1 kb band remains.** Both the 2.1 kb intermediate and the 2.5 kb full product carry the outer HDR_F/HDR_R primer sites and will be co-amplified exponentially. Shorter templates amplify more efficiently, so residual 2.1 kb can be enriched in the final PCR product — 2.1 kb template integrating at TRAC disrupts the locus but produces no functional TCR. If 2.1 kb remains visible, add an additional 50–100 fmol TRBC-T2A and run a further 10 cycles of the Step 2 program before re-checking.
+- If no 2.5 kb band is visible at all, see Troubleshooting.
+
 
 ---
 
@@ -210,7 +212,9 @@ Pool all replicate reactions. Remove **5 µL** for gel:
 
 1. Run on 1% agarose alongside a 1 kb ladder. Expect a band at ~2.5 kb; the ssDNA product may appear as a faint, slightly diffuse band just above the expected dsDNA position due to secondary structure.
 2. A doublet (tight dsDNA + diffuse ssDNA above) is normal and confirms asymmetric amplification.
-3. No substantial lower bands should be present — their absence confirms golden gate assembly was complete.
+3. **If a band at ~2.1 kb is present alongside the 2.5 kb product**, this indicates residual uninserted Step 1 intermediate was co-amplified (see Section 2.3). Gel-purify the 2.5 kb band before electroporation — do not use the mixed product.
+
+> **Gel purification is recommended as a routine step** for the first assembly of any new clonotype to confirm complete Step 2 insertion. Once you have established that Step 2 runs to completion reliably with your reagent stocks, you may skip it in routine runs. Use a Zymo Gel DNA Recovery kit; elute in 15–20 µL nuclease-free water pre-warmed to 50°C. Requantify by Qubit ssDNA HS Assay after gel purification.
 
 ### 3.4 Cleanup — NEB Monarch 5 µg PCR Cleanup Kit
 
@@ -238,6 +242,31 @@ Before freezing aliquots, run 100 ng on a 1% gel:
 
 ---
 
+## Part 3 (Alternative — Future) — IVT + Reverse Transcription for Pure ssDNA Template
+
+> **Not yet implemented.** This section is a placeholder for a future alternative to asymmetric PCR. IVT + RT produces truly pure ssDNA rather than the predominantly ssDNA mixture from asymmetric PCR, and scales more efficiently to large quantities.
+
+**Strategy:** A T7 promoter is appended to the 5′ end of HDR_F. Standard symmetric PCR generates a dsDNA template carrying the T7 promoter. T7 IVT transcribes the sense strand RNA, which is then reverse-transcribed with HDR_R to produce antisense ssDNA — the same strand orientation as asymmetric PCR.
+
+**Key design note — T7 +1 G requirement:** T7 RNA polymerase requires a G at the +1 transcription start position. The current HDR_F begins with T (`TGCCAGAAAGGACCCCGTGG`), so the T7-modified primer must include a G spacer:
+
+```
+T7-HDR_F: 5'-TAATACGACTCACTATA-G-TGCCAGAAAGGACCCCGTGG-3'
+```
+
+The extra G is incorporated into the PCR product, transcribed into the RNA, and becomes a C at the 3′ tail of the final ssDNA — outside the LH arm and inert for HDR.
+
+**Workflow outline (to be developed into a full protocol):**
+1. Symmetric PCR with T7-HDR_F + HDR_R → dsDNA template
+2. DNase I treatment → remove dsDNA template before IVT
+3. T7 IVT → sense strand RNA
+4. RNA cleanup (e.g., Zymo RNA Clean & Concentrator)
+5. RT with HDR_R primer → antisense ssDNA (RNA:DNA hybrid)
+6. RNase H or NaOH hydrolysis → degrade RNA template
+7. ssDNA cleanup and Qubit ssDNA HS Assay quantification
+
+---
+
 ## Electroporation Notes
 
 - Typical input for mouse primary T cell RNP electroporation: **1–3 µg linear HDR template** in ≤ 3 µL.
@@ -254,7 +283,7 @@ Before freezing aliquots, run 100 ng on a 1% gel:
 | No upward shift to ~2.5 kb after Step 2 | Incomplete Step 1 product; or BsmBI not active | Verify Step 1 worked first; try 35 Step 2 cycles; confirm BsmBI-v2 stock is active (use a control digest) |
 | Persistent 2.1 kb band with weak 2.5 kb | Partial TRBC-T2A insertion | Normal if minor; PCR selects for full-length product. If dominant, increase TRBC-T2A to 150–200 fmol (6–8 µL of 25 nM stock) relative to Step 1 product |
 | PCR gives correct 2.5 kb band + extra lower bands | Residual unligated Variable gene blocks amplified off-target | Dilute Step 2 reaction further (1:50) before PCR; both HDR_F and HDR_R must bind for amplification so true off-targets are unlikely — more likely a primer-dimer artifact; check a no-template control |
-| PCR product smaller than expected | Incomplete assembly amplified via internal primer sites | Run gel of Step 2 reaction before PCR to confirm 2.5 kb band is present; do not proceed if only 2.1 kb is visible |
+| 2.1 kb band present in PCR product alongside 2.5 kb | Residual uninserted Step 1 intermediate co-amplified — both products share outer primer sites | Gel-purify the 2.5 kb band before electroporation; trace back to Step 2 and increase TRBC-T2A or cycling rounds |
 | PCR yield < 50 ng/µL | Too little template; sub-optimal annealing; HDR_F working stock too dilute | Try 1:10 template dilution (more template); run gradient PCR 60–65°C; verify HDR_F 1 µM working stock is correctly prepared |
 | Low 260/280 after Monarch cleanup | Residual binding buffer | Ensure two full wash steps; increase spin time to 2 min on final wash |
 
@@ -300,29 +329,28 @@ In practice, set a base amount of **50 fmol per Variable gene block** and scale 
 | Each Variable (×12) | 50 fmol each | 2 µL each = 24 µL total |
 | TRAC-RH | 12 × 50 fmol = 600 fmol (or round to 500) | 20 µL |
 | 10× T4 Ligase Buffer | — | 5 µL |
-| BbsI-HF | — | 2.5 µL |
-| T4 Ligase HC | — | 1.0 µL |
+| BbsI | — | 2.5 µL |
+| T4 Ligase | — | 5.0 µL |
 | Water | to 50 µL | ~3.5 µL |
 
 > Scale the reaction volume up (50–100 µL) proportionally to the number of TCRs and the total DNA input. DNA amounts above show the proportional logic; adjust to fit your available stocks and pipetting precision. For very large pools (> 48 TCRs), use a 100 µL reaction with the same proportional ratios.
 
 ### Step 1: Pooled BbsI Assembly
 
-Use the same thermocycler program as Part 1.2 (37°C/16°C × 25 cycles, then 60°C + 80°C heat kills).
+Use the same thermocycler program as Part 1.2 (37°C/16°C × 25 cycles + final ligation hold, no heat kill).
 
-**For TRBV14 TCRs:** run a parallel, smaller Step 1 reaction containing only LH-TRBV14 + the TRBV14 Variable gene blocks + TRAC-RH (scaled as above). After both Step 1 reactions complete and are heat-killed, **combine them in a single tube** before Step 2.
+**For TRBV14 TCRs:** run a parallel, smaller Step 1 reaction containing only LH-TRBV14 + the TRBV14 Variable gene blocks + TRAC-RH (scaled as above). After both Step 1 reactions complete and cool to 4°C, **combine them in a single tube** before Step 2.
 
 ### Step 2: One-Pot BsmBI Insertion
 
-Add directly to the combined, heat-killed Step 1 pool:
+Add directly to the combined Step 1 pool (cooled to 4°C, no heat kill):
 
 | Component | Amount |
 |-----------|--------|
 | TRBC-T2A (25 nM) | 1× moles per Variable fragment total (e.g., 12 × 50 fmol = 600 fmol = 24 µL) |
 | BsmBI-v2 | 1 µL per 20 µL reaction volume (scale proportionally) |
-| T4 Ligase HC | 0.5 µL per 20 µL reaction volume |
 
-Run the same BsmBI thermocycler program (42°C/16°C × 25 cycles, then 60°C + 80°C heat kills).
+No fresh T4 Ligase Buffer or T4 ligase needed — both carry over intact from Step 1. Run the same Step 2 thermocycler program as Section 2.2 (42°C/16°C × 25 cycles + final hold, then 65°C T4 kill + 55°C BsmBI cleanup).
 
 ### PCR Amplification — Asymmetric PCR with Reduced Cycles to Preserve Pool Balance
 

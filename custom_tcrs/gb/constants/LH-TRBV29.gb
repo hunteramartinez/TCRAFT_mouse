@@ -1,5 +1,5 @@
 LOCUS       LH-TRBV29                710 bp    DNA              UNK 01-JAN-1980
-DEFINITION  LH-TRBV29 gene block | 1a=GAGA.
+DEFINITION  LH-TRBV29 gene block | TRAC | 1a=GTGA.
 ACCESSION   LH-TRBV29
 VERSION     LH-TRBV29
 KEYWORDS    .
@@ -22,14 +22,14 @@ FEATURES             Location/Qualifiers
                      /note="Codon-optimised, includes signal peptide; ends at
                      BbsI 1a junction"
      misc_feature    695..698
-                     /label="1a OH (GAGA)"
+                     /label="1a OH (GTGA)"
                      /note="TRBV-specific BbsI overhang for step-1 pooled
                      assembly"
      protein_bind    699..706
                      /label="BbsI recognition (1a)"
                      /bound_moiety="BbsI"
                      /note="Step-1 golden gate site (inverted — recognition on
-                     waste); 1a overhang = GAGA"
+                     waste); 1a overhang = GTGA"
 ORIGIN
         1 tgccagaaag gaccccgtgg agagggacta ctgaaagcta gagatcttgg ctggcactca
        61 tgacttgtgc ctgtccctaa gcctgtgtcc atcatgggca gctagatcct aggctgtcat
@@ -42,5 +42,5 @@ ORIGIN
       481 tgctgctgga gtgcggccag gacatgagcc acgaaacaat gtactggtac aggcaggacc
       541 ccggcctggg cctgcagctg atctacatca gctacgacgt ggacagcaac agcgagggcg
       601 acatccccaa gggctacagg gtgagcagga agaagaggga gcacttcagc ctgatcctgg
-      661 acagcgccaa gaccaaccag accagcgtgt acttgagaag gtcttcacat
+      661 acagcgccaa gaccaaccag accagcgtgt acttgtgaag gtcttcacat
 //

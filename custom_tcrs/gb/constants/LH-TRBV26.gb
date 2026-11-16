@@ -1,5 +1,5 @@
-LOCUS       LH-TRBV26                687 bp    DNA              UNK 01-JAN-1980
-DEFINITION  LH-TRBV26 gene block | 1a=GAGG.
+LOCUS       LH-TRBV26                688 bp    DNA              UNK 01-JAN-1980
+DEFINITION  LH-TRBV26 gene block | TRAC | 1a=AGGC.
 ACCESSION   LH-TRBV26
 VERSION     LH-TRBV26
 KEYWORDS    .
@@ -16,20 +16,20 @@ FEATURES             Location/Qualifiers
                      complete TCT (Ser) codon so P2A starts on a clean codon
                      boundary with GSG. Do NOT codon-optimise or alter this
                      sequence."
-     gene            369..671
+     gene            369..672
                      /label="TRBV (TRBV26)"
                      /gene="TRBV26"
                      /note="Codon-optimised, includes signal peptide; ends at
                      BbsI 1a junction"
-     misc_feature    672..675
-                     /label="1a OH (GAGG)"
+     misc_feature    673..676
+                     /label="1a OH (AGGC)"
                      /note="TRBV-specific BbsI overhang for step-1 pooled
                      assembly"
-     protein_bind    676..683
+     protein_bind    677..684
                      /label="BbsI recognition (1a)"
                      /bound_moiety="BbsI"
                      /note="Step-1 golden gate site (inverted — recognition on
-                     waste); 1a overhang = GAGG"
+                     waste); 1a overhang = AGGC"
 ORIGIN
         1 tgccagaaag gaccccgtgg agagggacta ctgaaagcta gagatcttgg ctggcactca
        61 tgacttgtgc ctgtccctaa gcctgtgtcc atcatgggca gctagatcct aggctgtcat
@@ -42,5 +42,5 @@ ORIGIN
       481 ccaagatgag gtgcatcccc gagaagggcc accccgtggt gttctggtac cagcagaaca
       541 agaacaacga gttcaagttc ctgatcaact tccagaacca ggaggtgctg cagcagatcg
       601 acatgaccga gaagaggttc agcgccgagt gccccagcaa cagcccctgc agcctggaga
-      661 tccagagcag cgaggaggtc ttcacat
+      661 tccagagcag cgaggcaggt cttcacat
 //

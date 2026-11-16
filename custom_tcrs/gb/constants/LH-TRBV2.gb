@@ -1,5 +1,5 @@
 LOCUS       LH-TRBV2                 710 bp    DNA              UNK 01-JAN-1980
-DEFINITION  LH-TRBV2 gene block | 1a=GCTA.
+DEFINITION  LH-TRBV2 gene block | TRAC | 1a=AATG.
 ACCESSION   LH-TRBV2
 VERSION     LH-TRBV2
 KEYWORDS    .
@@ -22,14 +22,14 @@ FEATURES             Location/Qualifiers
                      /note="Codon-optimised, includes signal peptide; ends at
                      BbsI 1a junction"
      misc_feature    695..698
-                     /label="1a OH (GCTA)"
+                     /label="1a OH (AATG)"
                      /note="TRBV-specific BbsI overhang for step-1 pooled
                      assembly"
      protein_bind    699..706
                      /label="BbsI recognition (1a)"
                      /bound_moiety="BbsI"
                      /note="Step-1 golden gate site (inverted — recognition on
-                     waste); 1a overhang = GCTA"
+                     waste); 1a overhang = AATG"
 ORIGIN
         1 tgccagaaag gaccccgtgg agagggacta ctgaaagcta gagatcttgg ctggcactca
        61 tgacttgtgc ctgtccctaa gcctgtgtcc atcatgggca gctagatcct aggctgtcat
@@ -38,9 +38,9 @@ ORIGIN
       241 cttggcccac agacatccag aacccagaac ctgctgtgta ccagttaaaa gatcctcggt
       301 ctggaagtgg agcaaccaat ttctccttgc tgaagcaggc cggtgacgtt gaggaaaacc
       361 caggaccaat gggcagcatc ttcctgagct gcctggccgt gtgcctgctg gtggccggcc
-      421 ccgtggaccc caagatcatc cagaagccca agtacctggt ggccgtgacc ggcagcgaga
+      421 ccgtggaccc caagatcatc cagaagccca aatacctagt agcagtaaca ggaagcgaga
       481 agatcctgat ctgcgagcag tacctgggcc acaacgccat gtactggtac aggcagagcg
       541 ccaagaagcc cctggagttc atgttcagct acagctacca gaagctgatg gacaaccaga
       601 ccgccagcag caggttccag ccccagagca gcaagaagaa ccacctggac ctgcagatca
-      661 ccgccctgaa gcccgacgac agcgccacct acttgctaag gtcttcacat
+      661 ccgccctgaa gcccgacgac agcgccacct acttaatgag gtcttcacat
 //

@@ -1,5 +1,5 @@
 LOCUS       LH-TRBV12-1              736 bp    DNA              UNK 01-JAN-1980
-DEFINITION  LH-TRBV12-1 gene block | 1a=ACTT.
+DEFINITION  LH-TRBV12-1 gene block | TRAC | 1a=ACTT.
 ACCESSION   LH-TRBV12-1
 VERSION     LH-TRBV12-1
 KEYWORDS    .
@@ -38,7 +38,7 @@ ORIGIN
       241 cttggcccac agacatccag aacccagaac ctgctgtgta ccagttaaaa gatcctcggt
       301 ctggaagtgg agcaaccaat ttctccttgc tgaagcaggc cggtgacgtt gaggaaaacc
       361 caggaccaat gagcaacacc gtgctggccg acagcgcctg gggcatcacc ctgctgagct
-      421 gggtgaccgt gttcctgctg ggcaccagca gcgccgacag cggcgtggtg cagagcccca
+      421 gggtgaccgt gttcctgctg ggcaccagca gcgcagacag cggagtagta cagagcccca
       481 ggcacatcat caaggagaag ggcggcagga gcgtgctgac ctgcatcccc atcagcggcc
       541 acagcaacgt ggtgtggtac cagcagaccc tgggcaagga gctgaagttc ctgatccagc
       601 actacgagaa ggtggagagg gacaagggct tcctgcccag caggttcagc gtgcagcagt

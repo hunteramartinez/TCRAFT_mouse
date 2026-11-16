@@ -1,6 +1,6 @@
 LOCUS       watanabe_isc_bra        2387 bp    DNA              UNK 01-JAN-1980
 DEFINITION  HDR template | watanabe_isc_brain_clonotype4 | TRBV26/TRAV13N-1 |
-            CDR3b=CASSLNEQYF CDR3a=CALSNYNVLYF | 2387 bp.
+            CDR3b=CASSLNEQYF CDR3a=CALSNYNVLYF | TRAC | 2387 bp.
 ACCESSION   watanabe_isc_bra
 VERSION     watanabe_isc_bra
 KEYWORDS    .
@@ -48,6 +48,18 @@ FEATURES             Location/Qualifiers
      misc_feature    2088..2387
                      /label="Right Homology Arm"
                      /note="~300bp homology for Cas9-RNP HDR at mTRAC locus"
+     misc_feature    1..1164
+                     /label="gBlock 1"
+                     /note="OE-PCR gBlock 1 of 2 | 1164 nt | overlap 35 nt at
+                     Tm=63.2°C"
+     misc_feature    1130..1164
+                     /label="OE-PCR overlap (35 nt, 63.2°C)"
+                     /note="Shared overlap region; GC-clamped; Tm=63.2°C
+                     (SantaLucia 1998, 50 mM NaCl)"
+     misc_feature    1130..2387
+                     /label="gBlock 2"
+                     /note="OE-PCR gBlock 2 of 2 | 1258 nt | overlap 35 nt at
+                     Tm=63.2°C"
 ORIGIN
         1 tgccagaaag gaccccgtgg agagggacta ctgaaagcta gagatcttgg ctggcactca
        61 tgacttgtgc ctgtccctaa gcctgtgtcc atcatgggca gctagatcct aggctgtcat
@@ -60,23 +72,23 @@ ORIGIN
       481 ccaagatgag gtgcatcccc gagaagggcc accccgtggt gttctggtac cagcagaaca
       541 agaacaacga gttcaagttc ctgatcaact tccagaacca ggaggtgctg cagcagatcg
       601 acatgaccga gaagaggttc agcgccgagt gccccagcaa cagcccctgc agcctggaga
-      661 tccagagcag cgaggccggc gacagcgccc tgtacctgtg cgccagcagc ctgaacgaac
-      721 agtacttcga ggacctgagg aacgtaacac caccaaaagt aagcctgttc gagcccagca
-      781 aggccgagat cgccaacaag cagaaggcca ccctggtgtg cctggccagg ggcttcttcc
-      841 ccgaccacgt ggagctgagc tggtgggtga acggcaagga ggtgcacagc ggcgtgtgca
-      901 cagacccaca agcatacaag gagagcaact acagctactg cctgagcagc aggctgaggg
-      961 tgagcgccac cttctggcac aaccccagga accacttcag gtgccaggtg cagttccacg
-     1021 gcctgagcga ggaggacaag tggcccgagg gcagccccaa gcccgtgacc cagaacatca
-     1081 gcgccgaggc ctggggcagg gccgactgcg gcatcaccag cgccagctac cagcagggcg
-     1141 tgctgagcgc caccatcctg tacgagatcc tgctgggcaa ggccaccctg tacgccgtgc
-     1201 tggtgagcac cctggtggtg atggccatgg tgaagaggaa gaacagcagg gccaagaggg
+      661 tccagagcag cgaggccggc gacagcgccc tgtacctgtg cgcttctagc ctgaatgagc
+      721 aatactttga agatctaaga aacgtgaccc ctcctaaggt gtccctcttc gagccttcca
+      781 aggccgagat tgcaaataag cagaaggcaa ctctcgtttg cctggcccgc ggcttctttc
+      841 ctgaccatgt cgaactgtcc tggtgggtga acgggaagga ggtgcactct ggcgtctgca
+      901 cagacccaca agcatacaaa gagtccaact actcttattg tctgtccagc agactccgcg
+      961 tgtctgccac cttctggcac aatcctcgga accacttccg ctgccaggtg cagttccacg
+     1021 gactcagcga agaagataaa tggccagaag gcagcccaaa gcccgtgacc cagaacatta
+     1081 gcgctgaggc atggggacgg gctgattgtg gcatcacctc tgcttcttac caacaagggg
+     1141 tgctgtccgc taccattctc tacgagatcc tcctgggcaa agctactcta tacgcagtac
+     1201 tagtaagcac actcgtggtg atggctatgg ttaaaagaaa gaacagcagg gccaagaggg
      1261 gcagcggcga gggcagaggc agcctgctga cctgcggcga cgtggaggag aaccccggcc
-     1321 ccatgaagag gctgctgtgc agcctgctgg gcctgctgtg cacccaggtg tgctgggtga
-     1381 agggccagca ggtgcagcag agccccacca gcctggtgct gcaggagggc gagaacgccg
-     1441 agctgcagtg caacttcagc accagcctga acagcatgca gtggttctac cagaggcccg
-     1501 gcggcagcct gatcagcgtg ttctacaacc ccagcggcac caagcagagc ggcaggctga
-     1561 ccagcaccac cgtgatcaag gagaggagga gcagcctgca catcagcagc agccagatca
-     1621 ccgacagcgg cacctacctg tgcgccctgt ccaactacaa cgtgctgtat ttcgatatac
+     1321 ccatgaaacg cctcctgtgt tctctactag gactactatg cacacaggtg tgttgggtta
+     1381 agggccagca ggttcagcag agcccaactt ctctggttct ccaagagggt gaaaatgctg
+     1441 aactccagtg caatttcagc acaagcctaa acagcatgca atggttttat caacggcccg
+     1501 gcgggagcct gatttccgtg ttttataacc cctccggaac taagcagagc ggtcggctga
+     1561 catctactac cgtgatcaaa gagagaagga gctctctgca catttcctct tctcagatca
+     1621 ctgattccgg gacctatctg tgcgccctct ccaactacaa cgttctctat ttcgatatac
      1681 aaaatccgga accggcggta tatcaattaa aagatccgcg ttcgcaagat tcgacgttat
      1741 gtttatttac ggatttcgat agtcagataa acgtaccaaa gacgatggag agcggtactt
      1801 ttataacgga taagtgcgta ttagatatga aggcgatgga cagtaaatcg aacggtgcga

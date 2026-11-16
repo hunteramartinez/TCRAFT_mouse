@@ -1,4 +1,4 @@
-LOCUS       variable                 498 bp    DNA              UNK 01-JAN-1980
+LOCUS       variable                 549 bp    DNA              UNK 01-JAN-1980
 DEFINITION  Variable fragment | TRBV13-1/TRAV14D-3-DV8 | CDR3b=CASGYEQYF
             CDR3a=CAVNNRIFF.
 ACCESSION   variable
@@ -11,53 +11,54 @@ FEATURES             Location/Qualifiers
      protein_bind    1..16
                      /label="BbsI recognition (1a)"
                      /bound_moiety="BbsI"
-                     /note="Step-1 GG site (recognition on waste); 1a OH = ATTC
+                     /note="Step-1 GG site (recognition on waste); 1a OH = ATAA
                      (TRBV-specific)"
      misc_feature    13..16
-                     /label="1a OH (ATTC)"
+                     /label="1a OH (ATAA)"
                      /note="Pairs with LH-TRBV13-1 gene block"
      misc_feature    17..40
                      /label="CDR3β (CASGYEQYF)"
                      /note="Codon-optimised CDR3β (aa: ASGYEQYF); excludes
                      leading C in TRBV"
-     protein_bind    51..65
+     protein_bind    50..64
                      /label="BsmBI recognition (2a)"
                      /bound_moiety="BsmBI"
-                     /note="Step-2 GG site; 2a OH = GGAA"
-     misc_feature    51..54
-                     /label="2a OH (GGAA)"
+                     /note="Step-2 GG site; 2a OH = AGAA"
+     misc_feature    50..53
+                     /label="2a OH (AGAA)"
                      /note="Junction to TRBC-T2A constant fragment"
-     protein_bind    66..80
+     protein_bind    65..79
                      /label="BsmBI recognition (2b)"
                      /bound_moiety="BsmBI"
-                     /note="Step-2 GG site; 2b OH = AGGA"
-     misc_feature    77..80
-                     /label="2b OH (AGGA)"
+                     /note="Step-2 GG site; 2b OH = AAGA"
+     misc_feature    76..79
+                     /label="2b OH (AAGA)"
                      /note="Junction from TRBC-T2A constant fragment"
-     gene            94..444
+     gene            145..495
                      /label="TRAV (TRAV14D-3-DV8)"
                      /gene="TRAV14D-3-DV8"
                      /note="Full codon-optimised TRAV, includes signal peptide,
                      ends at Cys104"
-     misc_feature    445..468
+     misc_feature    496..519
                      /label="CDR3α (CAVNNRIFF)"
                      /note="Codon-optimised CDR3α (aa: AVNNRIFF); excludes
                      leading C in TRAV"
-     protein_bind    483..498
+     protein_bind    534..549
                      /label="BbsI recognition (1b)"
                      /bound_moiety="BbsI"
                      /note="Step-1 GG site; 1b OH = GGAA"
-     misc_feature    483..486
+     misc_feature    534..537
                      /label="1b OH (GGAA)"
                      /note="Junction to TRAC-RH constant fragment"
 ORIGIN
-        1 acatgaagac ggattcgcct ctggttacga gcagtatttc gaggacctga ggaaggagac
-       61 gacatacatc gtctccagga gaaccccggc cccatggaca agatcctgac cgccagcttc
-      121 ctgctgctgg gcctgcacct ggccggcgtg agcggccagc aggagaagag ggaccagcag
-      181 caggtgagac aaagcccaca aagcctaacc gtgtgggaag gagaaacagc aatactaaac
-      241 tgcagctacg agaacagcgc cttcgactac ttcccctggt accagcagtt ccccggcgag
-      301 ggccccgccc tgctgatcag catcctgagc gtgagcgaca agaaggagga cggcaggttc
-      361 accatcttct tcaacaagag ggagaagaag ctgagcctgc acatcgccga cagccagccc
-      421 ggcgacagcg ccacctactt ctgcgctgtg aacaatagaa tattcttcga tatacaaaat
-      481 ccggaaaggt cttcacat
+        1 acatgaagac ggataagcaa gcggatacga gcagtatttc gaagatctaa gaaggagacg
+       61 acatacatcg tctccaagag gggcagcggc gagggcagag gcagcctgct gacctgcggc
+      121 gacgtggagg agaaccccgg ccccatggac aagatcctga ccgccagctt cctgctgctg
+      181 ggcctgcacc tggccggcgt gagcggccag caggagaaga gagatcaaca acaagtaaga
+      241 caaagcccac aaagcctaac cgtgtgggaa ggagaaacag caatactaaa ctgcagctac
+      301 gagaacagcg ccttcgacta cttcccctgg taccaacaat tcccaggaga aggaccagca
+      361 ctactaataa gcatcctgag cgtgagcgac aagaaggagg acggcaggtt caccatcttc
+      421 ttcaacaaga gggagaagaa gctgagcctg cacatcgccg acagccagcc cggcgacagc
+      481 gccacctact tctgcgcagt caacaacaga atattcttcg atatacaaaa tccggaaagg
+      541 tcttcacat
 //
