@@ -37,8 +37,12 @@ This section loads the reference files needed for the assembly validation.
 ref_dir = pkg_resources.files('TCRAFT.references.mouse')  # mouse implementation: all tables live in references/mouse
 trbv_trac_ohset = pd.read_csv(ref_dir.joinpath('TRBV_TRAC_OHset.csv'), index_col='N')
 trbc_trav_ohset = pd.read_csv(ref_dir.joinpath('TRBC_TRAV_OHset.csv'), index_col='N')
-trbv_trac_vectors = pd.read_csv(ref_dir.joinpath('TRBV_vector_inserts.csv'))
-trbc_trav_vectors = pd.read_csv(ref_dir.joinpath('TRAV_vector_inserts.csv'))
+# Complete cloning-vector plasmids (skeleton + insert) built by scripts/build_mouse_vectors.py
+vec_dir = ref_dir.joinpath('vectors')
+trbv_trac_vectors = pd.read_csv(vec_dir.joinpath('Step1_TRBV_plasmids.csv'))   # Step 1 vectors (KanR)
+trbc_trav_vectors = pd.read_csv(vec_dir.joinpath('Step2_TRAV_plasmids.csv'))    # Step 2 donor vectors (CamR)
+with open(vec_dir.joinpath('pMSCV_destination_SapI.fa'), 'r') as infile:        # Step 3 destination (pMSCV, AmpR)
+    destination_vector = ''.join(l.strip() for l in infile if not l.startswith('>')).upper()
 trj_seqs = pd.read_csv(ref_dir.joinpath('TRJ_seqs.csv'), index_col='TRJ').to_dict()['seq']
 
 # Ground-truth V proteins (leader -> Cys104): per-gene consensus from the clonotype data (see scripts/build_v_consensus.py)
@@ -68,7 +72,7 @@ def rev_comp(seq):
     return ''.join([mapper[nt] for nt in seq[::-1]])
 
 
-def golden_gate_assembly(vector, insert, rec_site, left_oh, right_oh, space):
+def golden_gate_assembly(vector, insert, rec_site, left_oh, right_oh, space, oh_len=4):
     """
     Simulates the Golden Gate assembly process by finding the appropriate
     Type IIs restriction sites and ligating the insert sequence into the vector sequence.
@@ -81,6 +85,7 @@ def golden_gate_assembly(vector, insert, rec_site, left_oh, right_oh, space):
         right_oh: The right overhang sequence.
         space: The number of offset nucleotides between the cut site (overhang) and the restriction site
         for this particular enzyme.
+        oh_len: Overhang length in nt (4 for BbsI/BsmBI/BsaI, 3 for SapI).
 
     return
         The assembled sequence after Golden Gate Assembly.
@@ -96,7 +101,7 @@ def golden_gate_assembly(vector, insert, rec_site, left_oh, right_oh, space):
     insert_left_idx = re.search(f'{rec_site}{spacer}{left_oh}', insert).span()[1]
     vector_right_idx = re.search(f'{rec_site}{spacer}{right_oh}', vector).span()[1]
     insert_right_idx = re.search(f'{right_oh}{spacer}{rev_comp(rec_site)}', insert).span()[0] #include OH
-    return vector[:vector_left_idx+4] + insert[insert_left_idx:insert_right_idx+4] + vector[vector_right_idx:]
+    return vector[:vector_left_idx+oh_len] + insert[insert_left_idx:insert_right_idx+oh_len] + vector[vector_right_idx:]
 
 
 def prepare_native_trbv_seq(trbv_name): 
@@ -189,6 +194,7 @@ def validate_cdr3_oligos(input_csv_path, output_dir=None):
     step1b_lengths = []
     step2a_lengths = []
     step2b_lengths = []
+    step3_lengths = []
     TCR_vectors = []
     failed_assemblies = []
 
@@ -197,7 +203,7 @@ def validate_cdr3_oligos(input_csv_path, output_dir=None):
         cdr3_oligo = params['Sequence']
 
         #Step 1 - BbsI TRBV TRAC ligation
-        trbv_trac_vector = trbv_trac_vectors['Sequence'].loc[trbv_trac_vectors['TRBV'] == params['TRBV']].values[0] + trac_nt_conserved
+        trbv_trac_vector = trbv_trac_vectors['Sequence'].loc[trbv_trac_vectors['TRBV'] == params['TRBV']].values[0]
         left_oh = trbv_trac_ohset['TRBV'].loc[trbv_trac_ohset['TRBV_name'] == params['TRBV']].values[0]
         right_oh = trbv_trac_ohset['TRAC'].loc[trbv_trac_ohset['TRBV_name'] == params['TRBV']].values[0]
         step1_pool = trbv_trac_ohset['set'].loc[trbv_trac_ohset['TRBV_name'] == params['TRBV']].values[0]
@@ -215,7 +221,13 @@ def validate_cdr3_oligos(input_csv_path, output_dir=None):
             rec_site = BsaI.site
 
         step2_vector = golden_gate_assembly(step1_vector, trbc_trav_insert, rec_site, left_oh, right_oh, 1)
-        gg_tcr_assembly = str(Seq(step2_vector).translate())
+
+        #Step 3 - SapI transfer of the finished cassette (ATG ... TGA) into the pMSCV destination vector
+        final_vector = golden_gate_assembly(destination_vector, step2_vector, SapI.site, 'ATG', 'TGA', 1, oh_len=3)
+        orf_start = final_vector.index('GCCGCCACCATG') + 9  # Kozak retained from the destination vector
+        prot_full = str(Seq(final_vector[orf_start:orf_start + 3 * ((len(final_vector) - orf_start) // 3)]).translate())
+        gg_tcr_assembly = prot_full[:prot_full.index('*') + 1]
+        cassette_nt = final_vector[orf_start:orf_start + 3 * len(gg_tcr_assembly)]
 
         #Validation: Build Reference TCR from building blocks.
         trbv_seq = prepare_native_trbv_seq(params['TRBV'])
@@ -238,12 +250,12 @@ def validate_cdr3_oligos(input_csv_path, output_dir=None):
             issue += 'Mismatch with reference TCR sequence;'
 
         try:
-            assert check_re_sites(step2_vector, all_re_sites)[0] == -1
+            assert check_re_sites(cassette_nt, all_re_sites)[0] == -1 and check_re_sites(final_vector, [SapI.site])[0] == -1
         except AssertionError:
             print(f'Extra restriction site found for TCR # {i+1}:')
-            print(step2_vector)
+            print(cassette_nt)
             print('Restriction Site Analysis:')
-            print(check_re_sites(step2_vector, all_re_sites))
+            print(check_re_sites(cassette_nt, all_re_sites), check_re_sites(final_vector, [SapI.site]))
             assembly_success = False
             issue += 'Extra restriction site found'
         
@@ -251,7 +263,8 @@ def validate_cdr3_oligos(input_csv_path, output_dir=None):
             correctly_assembled += 1
             TCR_vector_entry = params.copy()
             TCR_vector_entry.drop('Sequence', inplace=True)
-            TCR_vector_entry['Full_TCR_Sequence'] = step2_vector
+            TCR_vector_entry['Full_TCR_Sequence'] = cassette_nt  # ATG ... TGA cassette as it sits in the final pMSCV vector
+            TCR_vector_entry['Final_Plasmid_Length'] = len(final_vector)
             TCR_vectors.append(TCR_vector_entry)
 
             if step1_pool == 'A':
@@ -259,6 +272,7 @@ def validate_cdr3_oligos(input_csv_path, output_dir=None):
             else:
                 step1b_lengths.append(len(step1_vector))
 
+            step3_lengths.append(len(final_vector))
             if step2_pool == 'A':
                 step2a_lengths.append(len(step2_vector))
             else:
@@ -271,7 +285,7 @@ def validate_cdr3_oligos(input_csv_path, output_dir=None):
             TCR_vector_entry['Oligo_Sequence'] = cdr3_oligo
             TCR_vector_entry['Assembled_TCR_protein'] = gg_tcr_assembly
             TCR_vector_entry['Reference_TCR_protein'] = real_TCR_assembly
-            TCR_vector_entry['Assembled_TCR_Sequence'] = step2_vector
+            TCR_vector_entry['Assembled_TCR_Sequence'] = cassette_nt
             failed_assemblies.append(TCR_vector_entry)
 
     print('Completed assembly validation.')
@@ -302,6 +316,9 @@ def validate_cdr3_oligos(input_csv_path, output_dir=None):
         out.write(f'Num Vectors: Step 2B Product,{len(step2b_lengths)}\n')
         out.write(f'Avg TCRb-P2A-TRAC Size: Step 2A Product,{np.mean(step2a_lengths)}\n')
         out.write(f'Avg TCRb-P2A-TRAC Size: Step 2B Product,{np.mean(step2b_lengths)}\n')
+
+        out.write(f'Num Vectors: Step 3 Product (pMSCV),{len(step3_lengths)}\n')
+        out.write(f'Avg Final pMSCV-TCR Plasmid Size,{np.mean(step3_lengths)}\n')
 
 def run_CLI():
     parser = argparse.ArgumentParser(description='TCRAFT-validate: Validate that TCRAFT CDR3 oligos are error-free and assemble via Golden Gate into the desired TCR sequence.')

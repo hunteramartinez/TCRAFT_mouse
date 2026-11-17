@@ -25,7 +25,7 @@ TRBV ─ CDR3β ─ TRBJ ─ TRBC1(Cys) ─ GSG-P2A ─ TRAV ─ CDR3α ─ TRAJ
 - **Oligo layout** (identical to human): `fwd primer | BbsI | TRBV-right | CDR3β-J | TRBC-left | BsmBI-or-BsaI middle
   site | TRAV-right | CDR3α-J | TRAC-left | BbsI | rev primer`.
 - **Three Golden Gate steps:** (1) the oligo is ligated into TRBV–TRAC vectors with BbsI; (2) a TRBC1-P2A-TRAV insert is
-  placed between the two CDR3s with BsmBI (TRAV pool A) or BsaI (pool B); (3) transfer to the expression vector (pMIGR).
+  placed between the two CDR3s with BsmBI (TRAV pool A) or BsaI (pool B); (3) the finished cassette is cut out with SapI and moved into the pMSCV retroviral destination vector.
 - **Overhangs:** each V-gene vector carries a unique pair of 4-nt overhangs written into the gene by synonymous
   recoding only (never changing the protein; Cys104 is always preserved).
 - **J–C junction:** the residue between TRAJ and TRAC is encoded by `(last J nucleotide) + AC` and is N, D, Y or H
@@ -108,9 +108,11 @@ repeated runs give different (equivalent) DNA; seed `random`/`numpy` for reprodu
 uv run TCRAFT-validate out/generate/All_<N>_CDR3_oligos.csv --output_dir out/validate
 ```
 
-Simulates Steps 1 and 2 for every oligo, translates the final vector and requires (a) the exact intended protein and
-(b) no stray BsmBI/BsaI/BbsI/SapI/XbaI/XhoI/EcoRI/EcoRV/NotI sites. Outputs
-`Reference_Assembled_TCR_Sequences.csv` (full sequences of passing TCRs), `Failed_Assemblies.csv` and
+Simulates all three Golden Gate steps for every oligo on the real cloning plasmids (Step 1 BbsI into the TRBV–TRAC
+vector, Step 2 BsmBI/BsaI with the TRBC1-P2A-TRAV donor, Step 3 SapI into the pMSCV destination), translates the ORF in
+the final plasmid and requires (a) the exact intended protein, (b) no stray BsmBI/BsaI/BbsI/SapI/XbaI/XhoI/EcoRI/EcoRV/NotI
+sites in the cassette and (c) no SapI site left in the final plasmid. Outputs
+`Reference_Assembled_TCR_Sequences.csv` (the ATG…TGA cassette of each passing TCR, plus the final plasmid length), `Failed_Assemblies.csv` and
 `Assembly_Metadata.csv`.
 
 > Note: the protein check uses the same reference tables as generation, so it tests the assembly mechanics, not
@@ -129,6 +131,27 @@ The files below mirror the human files one-to-one (same schemas):
 (`cellranger_genes*`, `imgt_genes_*`, `mm_*_HDR_sequences.fa`, `mouse_J_FR4.csv` and `tcr_antibodies/` are inputs or
 leftovers from the HDR work and are not read by the pipeline.)
 
+## Cloning vectors (`TCRAFT/references/mouse/vectors/`)
+
+Complete plasmid sequences, intended to be synthesized directly (no platform part workflow needed):
+
+| Step | Plasmids | Backbone / marker | Insert |
+|---|---|---|---|
+| 1 | `Step1_TRBV_plasmids.csv` (22) | Kan + pUC ori (1,763 bp from the platform KanR plasmid) | `GCTCTTC·a·ATG-TRBV…OH` – BbsI stuffer – `OH…TRAC…TGA·a·GAAGAGC` |
+| 2 | `Step2_TRAV_plasmids.csv` (85 unique, 89 gene rows) | Cam + pUC ori (1,642 bp: cat + ori; EcoRV site removed) | pool-specific flank – `OH…TRBC1-P2A-TRAV…OH` – flank |
+| 3 | `pMSCV_destination_SapI.fa/.gb` | pMSCV (AmpR) | `…GCCGCCACC·ATG·a·GAAGAGC`–[J23119-RBS-GFP dropout]–`GCTCTTC·a·TGA·GGAATT…` |
+
+- Markers: Step 1 recipient = Kan, Step 2 donors = Cam, Step 3 destination = Amp, so each step's carry-over is counter-selected.
+- Step 3 uses SapI with **ATG / TGA** as the 3-nt overhangs; the destination keeps its Kozak (`GCCGCCACC`) and the
+  downstream IRES-CD8 marker. GFP-dropout colonies (green) are unrecombined vector.
+- The destination differs from the supplied `pMSCV_TCR` vector by (i) removal of the SapI site in the pUC origin
+  (`GCTCTTCC`→`GCTCTTTC`, as Gaglione *et al.* did by mutagenesis; **confirm copy number**) and (ii) replacement of the
+  existing TCR ORF with the dropout. Grow LTR-containing plasmids in a recombination-deficient strain.
+- GenBank maps are in `vectors/gb/`; `vector_QC.csv` lists restriction-site counts per plasmid; `vectors/source/` holds the
+  supplied source plasmids.
+- The E. coli promoter/RBS of the GFP dropout (BBa_J23119, BBa_B0034) were typed from standard parts, not from a supplied
+  sequence: verify by sequencing.
+
 ### Rebuilding the tables
 
 Run in this order (`clonotypes.csv` is the paired clonotype table):
@@ -139,6 +162,7 @@ uv run python TCRAFT/scripts/build_j_from_data.py clonotypes.csv     # J segment
 uv run python TCRAFT/scripts/build_mouse_constants.py                # Cys constants, domesticated, checked vs IMGT
 uv run python TCRAFT/scripts/design_overhangs.py                     # overhang-set search → overhang_sets.json
 uv run python TCRAFT/scripts/build_mouse_tables.py                   # all CSV/TXT tables above
+uv run python TCRAFT/scripts/build_mouse_vectors.py                  # complete plasmids, destination vector, GenBank maps
 ```
 
 `TCRAFT/overhang_tools.py` holds the fidelity scoring (NEB tables in `references/neb_tables/`), the Metropolis
@@ -151,10 +175,10 @@ Full run on all **164,646** paired clones of HAM-07-007-012 (97% singletons; eve
 
 - **Generate:** 164,646 / 164,646 valid oligos, 0 invalid. 296 (0.18%) are >300 bp (mean 262 bp; mean of the >300 bp
   group 304 bp). About 650 oligos needed resampling to clear a junction restriction site.
-- **Validate (simulated assembly):** 164,646 / 164,646 assembled to the intended protein with no stray restriction
-  sites; 0 failures. Final vectors are 1,752-1,875 nt (TRBV-CDR3-TRAC step-1 products average 935 nt).
-  Step 2 splits 90,379 TCRs into the TRAV A / BsmBI reaction and 74,267 into B / BsaI (set by the TRAV genes the
-  clones use).
+- **Validate (simulated assembly, all three steps on the real cloning plasmids):** 164,646 / 164,646 assembled through
+  Step 1 (BbsI, Kan vectors), Step 2 (90,379 via BsmBI pool A, 74,267 via BsaI pool B, Cam donors) and Step 3 (SapI into
+  the pMSCV destination) to the intended protein, with no stray restriction sites and no SapI left in the final plasmid;
+  0 failures. Final pMSCV-TCR plasmids average 7,326 bp. (Run time 223 s.)
 - **Independent check against the source data:** the translated V+CDR3+J of each assembled TCR was compared with that
   clone's own `sequence_aa` in the input file (164,086 unique TCRs): identical for **99.69% of β chains and 98.31% of
   α chains**. The differences are mostly single residues where a clone deviates from its gene's consensus. This
@@ -164,9 +188,9 @@ Full run on all **164,646** paired clones of HAM-07-007-012 (97% singletons; eve
 
 ## Known placeholders and limitations
 
-- The **vector-insert flanks** (XhoI/NotI ends, BsaI/BsmBI/BbsI sites, `TAAT`/`AAAC`/`GTCA`/`GGGT`), the **BbsI stuffer
-  cassette** and the **TRAC remainder in the Step-1 backbone** are copied from the human design until the mouse
-  intermediate vectors are designed.
+- The Step-2 **pool flanks** (XhoI/NotI ends, BsaI/BsmBI sites, `TAAT`/`AAAC`/`GTCA`/`GGGT`) and the Step-1 **BbsI stuffer
+  cassette** are still copied unchanged from the human design (they are inside the new cloning plasmids). The plasmids
+  themselves are untested; the GFP-dropout promoter/RBS and the origin SapI point mutation need experimental confirmation.
 - Only genes seen in the source clonotype table are supported (10 further J genes in IMGT have no data and are omitted).
 - Overhang fidelity numbers are model predictions.
 

@@ -24,4 +24,4 @@ include = ["TCRAFT*"]
 
 [tool.setuptools.package-data]
 "TCRAFT.references" = ["*"]
-"TCRAFT.references.mouse" = ["*"]
+"TCRAFT.references.mouse" = ["*", "vectors/*.csv", "vectors/*.fa"]

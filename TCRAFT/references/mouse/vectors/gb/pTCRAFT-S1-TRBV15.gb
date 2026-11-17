@@ -1,0 +1,71 @@
+LOCUS       pTCRAFT_S1_13           2576 bp    DNA     circular UNK 01-JAN-1980
+DEFINITION  TCRAFT step-1 vector TRBV15 (set A); KanR.
+ACCESSION   pTCRAFT-S1-TRBV15
+VERSION     pTCRAFT-S1-TRBV15
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    1..1763
+                     /label="Kan+ori backbone"
+     CDS             917..1732
+                     /label="KanR"
+     misc_feature    1764..1771
+                     /label="TRBV15: SapI site (step-3 cut, fwd) + spacer"
+     misc_feature    1772..2102
+                     /label="TRBV15: TRBV leader->Cys104-side (ATG..OH)"
+     misc_feature    2103..2176
+                     /label="TRBV15: BbsI stuffer (+BsmBI/BsaI/EcoRV
+                     remnant-kill sites)"
+     misc_feature    2177..2187
+                     /label="TRBV15: TRAC first 30 nt (OH..)"
+     misc_feature    2188..2568
+                     /label="TRBV15: TRAC remainder + stop (TGA)"
+     misc_feature    2569..2576
+                     /label="TRBV15: spacer + SapI site (step-3 cut, rev)"
+ORIGIN
+        1 ccgaacggtt atccacagaa tcaggggata acgcaggaaa gaacatgtga gcaaaaggcc
+       61 agcaaaaggc caggaaccgt aaaaaggccg cgttgctggc gtttttccat aggctccgcc
+      121 cccctgacga gcatcacaaa aatcgacgct caagtcagag gtggcgaaac ccgacaggac
+      181 tataaagata ccaggcgttt ccccctggaa gctccctcgt gcgctctcct gttccgaccc
+      241 tgccgcttac cggatacctg tccgcctttc tcccttcggg aagcgtggcg ctttctcata
+      301 gctcacgctg taggtatctc agttcggtgt aggtcgttcg ctccaagctg ggctgtgtgc
+      361 acgaaccccc cgttcagccc gaccgctgcg ccttatccgg taactatcgt cttgagtcca
+      421 acccggtaag acacgactta tcgccactgg cagcagccac tggtaacagg attagcagag
+      481 cgaggtatgt aggcggtgct acagagttct tgaagtggtg gcctaactac ggctacacta
+      541 gaagaacagt atttggtatc tgcgctctgc tgaagccagt taccttcgga aaaagagttg
+      601 gtagctcttg atccggcaaa caaaccaccg ctggtagcgg tggttttttt gtttgcaagc
+      661 agcagattac gcgcagaaaa aaaggatctc aagaagatcc tttgatcttt tctacggggt
+      721 ctgacgctca gtggaacgaa aactcacgtt aagggatttt ggtcatgact gatccttcaa
+      781 ctcagcaaaa gttcgattta ttcaacaaag ccacgttgtg tctcaaaatc tctgatgtta
+      841 cattgcacaa gataaaaata tatcatcatg aacaataaaa ctgtctgctt acataaacag
+      901 taatacaagg ggtgttatga gccatattca acgggaaacg tcttgctcca ggccgcgatt
+      961 aaattccaac atggatgctg atttatatgg gtataaatgg gctcgcgata atgtcgggca
+     1021 atcaggtgcg acaatctatc gattgtatgg gaagcccgat gcgccagagt tgtttctgaa
+     1081 acatggcaaa ggtagcgttg ccaatgatgt tacagatgag atggtcagac taaactggct
+     1141 gacggaattt atgcctcttc cgaccatcaa gcattttatc cgtactcctg atgatgcatg
+     1201 gttactcacc actgcgatcc ccgggaaaac agcattccag gtattagaag aatatcctga
+     1261 ttcaggtgaa aatattgttg atgcgctggc agtgttcctg cgccggttgc attcgattcc
+     1321 tgtttgtaat tgtcctttta acagcgatcg cgtatttcgc ctcgctcagg cgcaatcacg
+     1381 aatgaataac ggtttggttg atgcgagtga ctttgatgac gagcgtaatg gctggcctgt
+     1441 tgaacaagtc tggaaagaaa tgcataagct tttgccattc tcaccggatt cagtagtcac
+     1501 tcatggtgat ttctcacttg ataaccttat ttttgacgag gggaaattaa taggttgtat
+     1561 tgatgttgga cgagtcggaa tcgcagaccg ataccaggat cttgccatcc tatggaactg
+     1621 cctcggtgag ttttctcctt cattacagaa acggcttttt caaaaatatg gtattgataa
+     1681 tcctgatatg aataaattgc agtttcattt gatgctcgat gagtttttct aatcagaatt
+     1741 ggttaattgg ttgtaacacc cctgctcttc aatgggcatc cagaccctgt gctgcgtgat
+     1801 cttctacgtg ctgatcgcca accacaccga cgccggcgtg acccagaccc ctaggcacga
+     1861 ggtggccgag aagggccaga ccatcatcct gaagtgcgag cccgtgagcg gccacaacga
+     1921 cctgttctgg tacaggcaga ccaagatcca gggcctggag ctgctgagct acttcaggag
+     1981 caagagcctg atggaggacg gcggcgcctt caaggacagg ttcaaggccg agatgctgaa
+     2041 cagcagcttc agcaccctga agatccagcc caccgagccc aaggacagcg ccgtgtacct
+     2101 attagtcttc gtcacgagac gtaatggaga ccatgcgata tccgtaggtc tcgaaaccgt
+     2161 ctcggggtga agacatcagt gtaccagtta aaagatcctc ggagccagga cagcaccctc
+     2221 tgcctgttca ccgactttga ctcccaaatc aatgtgccga aaaccatgga atctggaacg
+     2281 ttcatcactg acaaatgcgt gctggacatg aaagctatgg attccaagag caatggggcc
+     2341 attgcctgga gcaaccagac aagcttcacc tgccaagaca tcttcaaaga aaccaacgcc
+     2401 acctacccca gttcagacgt tccctgtgat gccacgttga ctgagaaaag ctttgaaaca
+     2461 gatatgaacc taaactttca aaacctgtca gttatgggac tccgaatcct cctgctgaaa
+     2521 gtagccggat ttaacctgct catgacgctg aggctgtggt ccagttgaag aagagc
+//

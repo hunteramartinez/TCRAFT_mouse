@@ -1,0 +1,67 @@
+LOCUS       pTCRAFT_S2_065          2595 bp    DNA     circular UNK 01-JAN-1980
+DEFINITION  TCRAFT step-2 donor TRAV13N-1 (set B; genes: TRAV13N-1); CamR.
+ACCESSION   pTCRAFT-S2-TRAV13N-1
+VERSION     pTCRAFT-S2-TRAV13N-1
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    1..1642
+                     /label="Cam+ori backbone"
+     misc_feature    1643..1666
+                     /label="TRAV13N-1: pool flank (cloning sites)"
+     misc_feature    1667..2177
+                     /label="TRAV13N-1: TRBC1 from OH to end"
+     misc_feature    2178..2243
+                     /label="TRAV13N-1: GSG-P2A"
+     misc_feature    2244..2562
+                     /label="TRAV13N-1: TRAV leader->OH"
+     misc_feature    2563..2595
+                     /label="TRAV13N-1: pool flank (cloning sites)"
+ORIGIN
+        1 tcaccaataa aaaacgcccg gcggcaaccg agcgttctga acaaatccag atggagttct
+       61 gaggtcatta ctggatctat caacaggagt ccaagcgagc tcgatttcaa attacgcccc
+      121 gccctgccac tcatcgcagt actgttgtaa ttcattaagc attctgccga catggaagcc
+      181 atcacaaacg gcatgatgaa cctgaatcgc cagcggcatc agcaccttgt cgccttgcgt
+      241 ataatatttg cccatggtga aaacgggggc gaagaagttg tccatattgg ccacgtttaa
+      301 atcaaaactg gtgaaactca cccagggatt ggctgaaacg aaaaacatat tctcaataaa
+      361 ccctttaggg aaataggcca ggttttcacc gtaacacgcc acatcttgcg aatatatgtg
+      421 tagaaactgc cggaaatcgt cgtggtattc actccagagc gatgaaaacg tttcagtttg
+      481 ctcatggaaa acggtgtaac aagggtgaac actatcccat atcaccagct caccgtcttt
+      541 cattgccata cgaaattccg gatgagcatt catcaggcgg gcaagaatgt gaataaaggc
+      601 cggataaaac ttgtgcttat ttttctttac ggtctttaaa aaggccgtaa tatccagctg
+      661 aacggtctgg ttataggtac attgagcaac tgactgaaat gcctcaaaat gttctttacg
+      721 atgccattgg gatatatcaa cggtggtata tccagtgatt tttttctcca ttttagcttc
+      781 cttagctcct gaaaatctcg ataactcaaa aaatacgccc ggtagtgatc ttatttcatt
+      841 atggtgaaag ttggaacctc ttacgtgccc gatcaatcat gaccaaaatc ccttaacgtg
+      901 agttttcgtt ccactgagcg tcagaccccg tagaaaagat caaaggatct tcttgagatc
+      961 ctttttttct gcgcgtaatc tgctgcttgc aaacaaaaaa accaccgcta ccagcggtgg
+     1021 tttgtttgcc ggatcaagag ctaccaactc tttttccgaa ggtaactggc ttcagcagag
+     1081 cgcagatacc aaatactgtt cttctagtgt agccgtagtt aggccaccac ttcaagaact
+     1141 ctgtagcacc gcctacatac ctcgctctgc taatcctgtt accagtggct gctgccagtg
+     1201 gcgataagtc gtgtcttacc gggttggact caagacgata gttaccggat aaggcgcagc
+     1261 ggtcgggctg aacggggggt tcgtgcacac agcccagctt ggagcgaacg acctacaccg
+     1321 aactgagata cctacagcgt gagctatgag aaagcgccac gcttcccgaa gggagaaagg
+     1381 cggacaggta tccggtaagc ggcagggtcg gaacaggaga gcgcacgagg gagcttccag
+     1441 ggggaaacgc ctggtatctt tatagtcctg tcgggtttcg ccacctctga cttgagcgtc
+     1501 gatttttgtg atgctcgtca ggggggcgga gcctatggaa aaacgccagc aacgcggcct
+     1561 ttttacggtt cctggccttt tgctggcctt ttgctcacat gttctttcct gcgttatccc
+     1621 ctgattctgt ggataaccgt agctcgaggt caagagacgg gtctcatcgc aatgtgactc
+     1681 cacccaaggt gtccttgttt gagccatcaa aagcagagat tgcaaacaaa caaaaggcta
+     1741 ccctcgtgtg cttggccagg ggcttcttcc ctgaccacgt ggagctgagc tggtgggtga
+     1801 atggcaagga ggtccacagt ggggtctgca cggaccctca ggcctacaag gagagcaatt
+     1861 atagctactg cctgagcagc cgcctgaggg tgtctgctac cttctggcac aatcctcgca
+     1921 accacttccg ctgccaagtg cagttccatg ggctttcaga ggaggacaag tggccagagg
+     1981 gctcacccaa acctgtcaca cagaacatca gtgcagaggc ctggggccga gcagactgtg
+     2041 ggattacctc agcatcctat caacaagggg tcttgtctgc caccatcctc tatgagatcc
+     2101 tgctagggaa agccaccctg tatgctgtgc ttgtcagtac actggtggtg atggctatgg
+     2161 tcaaaagaaa gaactcagga agtggagcaa ccaatttctc cttgctgaag caggccggtg
+     2221 acgttgagga aaacccagga ccaatgaaga ggctgctgtg cagcctgctg ggcctgctgt
+     2281 gcacccaggt gtgctgggtg aagggccagc aggtgcagca gagccccacc agcctggtgc
+     2341 tgcaggaggg cgagaacgcc gagctgcagt gcaacttcag caccagcctg aacagcatgc
+     2401 agtggttcta ccagaggccc ggcggcagcc tgatcagcgt gttctacaac cccagcggca
+     2461 ccaagcagag cggcaggctg accagcacca ccgtgatcaa ggagaggagg agcagcctgc
+     2521 acatcagcag cagccagatc accgacagcg gcacctacct atagagaccc gtctcagggt
+     2581 actcgaggcg gccgc
+//
