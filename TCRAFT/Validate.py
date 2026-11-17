@@ -34,21 +34,24 @@ def parse_and_store_fasta(file_path, v_region_type):
 """
 This section loads the reference files needed for the assembly validation.
 """
-ref_dir = pkg_resources.files('TCRAFT.references')
+ref_dir = pkg_resources.files('TCRAFT.references.mouse')  # mouse implementation: all tables live in references/mouse
 trbv_trac_ohset = pd.read_csv(ref_dir.joinpath('TRBV_TRAC_OHset.csv'), index_col='N')
 trbc_trav_ohset = pd.read_csv(ref_dir.joinpath('TRBC_TRAV_OHset.csv'), index_col='N')
 trbv_trac_vectors = pd.read_csv(ref_dir.joinpath('TRBV_vector_inserts.csv'))
 trbc_trav_vectors = pd.read_csv(ref_dir.joinpath('TRAV_vector_inserts.csv'))
 trj_seqs = pd.read_csv(ref_dir.joinpath('TRJ_seqs.csv'), index_col='TRJ').to_dict()['seq']
-trav_seqs = parse_and_store_fasta(ref_dir.joinpath('IMGT_TRAV_download.fasta'), 'TRAV')
-trbv_seqs = parse_and_store_fasta(ref_dir.joinpath('IMGT_TRBV_download.fasta'), 'TRBV')
+
+# Ground-truth V proteins (leader -> Cys104): per-gene consensus from the clonotype data (see scripts/build_v_consensus.py)
+_v_ref = pd.read_csv(ref_dir.joinpath('V_reference_aa.csv'))
+trav_seqs = dict(zip(_v_ref.loc[_v_ref.chain == 'TRA', 'gene'], _v_ref.loc[_v_ref.chain == 'TRA', 'v_aa']))
+trbv_seqs = dict(zip(_v_ref.loc[_v_ref.chain == 'TRB', 'gene'], _v_ref.loc[_v_ref.chain == 'TRB', 'v_aa']))
 
 with open(ref_dir.joinpath('TRAC_protein.txt'), 'r') as infile:
     trac_protein = infile.read().strip()
 with open(ref_dir.joinpath('TRAC_nt_conserved.txt'), 'r') as infile:
     trac_nt_conserved = infile.read().strip()
-with open(ref_dir.joinpath('TRBC2_protein.txt'), 'r') as infile:
-    trbc2_protein = infile.read().strip()
+with open(ref_dir.joinpath('TRBC1_protein.txt'), 'r') as infile:
+    trbc2_protein = infile.read().strip()  # name kept from the human code; this is the Cys-engineered mouse TRBC1
 with open(ref_dir.joinpath('P2A.txt'), 'r') as infile:
     p2a_protein = infile.read().strip()
     p2a_protein = str(Seq(p2a_protein).translate())
@@ -105,10 +108,7 @@ def prepare_native_trbv_seq(trbv_name):
     return
         TRBV sequence up to and including the 'C' in the CDR3.
     """
-    trbv_aa = trbv_seqs[trbv_name]
-    cdr3_start_pos = trbv_aa.rfind('C') + 1
-    trimmed_seq = trbv_aa[:cdr3_start_pos]
-    return trimmed_seq
+    return trbv_seqs[trbv_name]  # mouse reference blocks already end at Cys104
 
 
 def prepare_native_trav_seq(trav_name):
@@ -120,10 +120,7 @@ def prepare_native_trav_seq(trav_name):
     return
         TRAV sequence up to and including the 'C' in the CDR3.
     """
-    trav_aa = trav_seqs[trav_name]
-    cdr3_start_pos = trav_aa.rfind('C') + 1
-    trimmed_seq = trav_aa[:cdr3_start_pos]
-    return trimmed_seq
+    return trav_seqs[trav_name]  # mouse reference blocks already end at Cys104
 
 
 def check_re_sites(seq, sites):

@@ -74,7 +74,9 @@ def main():
     usage = json.load(open(REF / "mouse_codon_usage.json"))
     freq = {c.lower(): f for lst in usage.values() for c, f in lst}
     cons = pd.read_csv(REF / "mouse_V_consensus.csv")
-    trac = read_fasta_seq(REF / "mouse_constants_cys_nt.fa", "TRAC_Cys")
+    # TRAC begins at I-Q-N: the first (D) codon of the Cys-constant file is the J/C split-codon residue,
+    # which is carried by the TRAJ sequence (see build_j_from_data.py), exactly as in the human design.
+    trac = read_fasta_seq(REF / "mouse_constants_cys_nt.fa", "TRAC_Cys")[3:]
     trbc = read_fasta_seq(REF / "mouse_constants_cys_nt.fa", "TRBC1_Cys")
 
     def filt(d):

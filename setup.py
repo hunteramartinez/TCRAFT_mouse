@@ -11,6 +11,7 @@ setup(
     include_package_data=True,
     package_data={
         "TCRAFT.references": ['*'],
+        "TCRAFT.references.mouse": ['*'],
     },
     install_requires=parse_requirements("requirements.txt"),
     entry_points={

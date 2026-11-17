@@ -34,8 +34,11 @@ MREF = REF / "mouse"
 C_WIN = 30
 
 # --- placeholders copied from the human vector inserts (see docstring) ---
-TRAV_HEAD = "CTCGAGTAATaGAGACCCGTCTCa"
-TRAV_TAIL = "gGAGACGCGGTCTCaAAACCTCGAGGCGGCCGC"
+# Step 2 flanks depend on the pool: A is cut with BsmBI (BsaI outer), B with BsaI (BsmBI outer)
+TRAV_FLANKS = {
+    "A": ("CTCGAGTAATaGAGACCCGTCTCa", "gGAGACGCGGTCTCaAAACCTCGAGGCGGCCGC"),
+    "B": ("CTCGAGGTCAaGAGACGGGTCTCa", "aGAGACCCGTCTCaGGGTaCTCGAGGCGGCCGC"),
+}
 TRBV_CASSETTE = "taGTCTTCGTCAcGAGACGTAATgGAGACCatgcGATATCcgtaGGTCTCgAAACCGTCTCgGGGTGAAGACat"
 
 
@@ -75,7 +78,8 @@ def design_v(aa, oh, info, usage):
 def main():
     usage = json.load(open(MREF / "mouse_codon_usage.json"))
     sets = json.load(open(MREF / "overhang_sets.json"))
-    trac = fasta_seq(MREF / "mouse_constants_cys_nt.fa", "TRAC_Cys")
+    # TRAC starts at I-Q-N (first codon = J/C split-codon residue, carried by the TRAJ sequence)
+    trac = fasta_seq(MREF / "mouse_constants_cys_nt.fa", "TRAC_Cys")[3:]
     trbc = fasta_seq(MREF / "mouse_constants_cys_nt.fa", "TRBC1_Cys")
     p2a = open(REF / "P2A.txt").read().strip()
     assert str(Seq(p2a).translate()).startswith("GSG"), "P2A must start with the GSG linker"
@@ -125,11 +129,12 @@ def main():
                 trav_left_frag=trav_left,
                 trav_right_frag=with_oh_upper(vnt[rs:], 0),
             ))
-            ins_a.append(dict(TRAV=gene, Sequence=TRAV_HEAD + trbc_right + p2a + trav_left + TRAV_TAIL))
+            head, tail = TRAV_FLANKS[d["set"]]
+            ins_a.append(dict(TRAV=gene, Sequence=head + trbc_right + p2a + trav_left + tail))
 
-    # ------------------------------------------------------------------ J segments (FR4)
-    j = pd.read_csv(MREF / "mouse_J_FR4.csv")
-    jj = j[j.usable.astype(str).str.lower() == "true"][["J_gene", "FR4_aa"]].rename(columns={"J_gene": "TRJ", "FR4_aa": "seq"})
+    # ------------------------------------------------------------------ J segments
+    # data-derived (build_j_from_data.py): TRAJ = FR4 + split-codon residue, TRBJ = FR4
+    jj = pd.read_csv(MREF / "mouse_J_from_data.csv")[["J_gene", "seq"]].rename(columns={"J_gene": "TRJ"})
 
     out = {
         "TRBV_TRAC_OHset.csv": pd.DataFrame(ohset_b),
@@ -145,6 +150,16 @@ def main():
         print(f"{name:28s} {len(df):3d} rows")
     shutil.copy(REF / "Oligo_Components.json", MREF / "Oligo_Components.json")
     shutil.copy(REF / "P2A.txt", MREF / "P2A.txt")
+
+    # constant-region references used by Validate.py (human equivalents: TRAC_protein.txt,
+    # TRBC2_protein.txt, TRAC_nt_conserved.txt). nt_conserved = TRAC downstream of the 30-nt
+    # overhang window + stop codon (the remainder that lives in the Step-1 backbone).
+    (MREF / "TRAC_protein.txt").write_text(str(Seq(trac).translate()) + "\n")
+    (MREF / "TRBC1_protein.txt").write_text(str(Seq(trbc).translate()) + "\n")
+    (MREF / "TRAC_nt_conserved.txt").write_text(trac[C_WIN:].upper() + "TGA\n")
+    # V-gene reference proteins (leader -> Cys104) used as ground truth by Validate.py
+    cons = pd.read_csv(MREF / "mouse_V_consensus.csv")[["chain", "gene", "v_aa"]]
+    cons.to_csv(MREF / "V_reference_aa.csv", index=False)
 
     L = pd.DataFrame(frags_a)
     print("TRAV oligo-side lengths (trbc_left + trav_right):",

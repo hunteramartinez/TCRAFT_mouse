@@ -2,275 +2,185 @@
  "TRBV": {
   "TRBV1": {
    "set": "A",
-   "left": "ACCC",
+   "left": "GACA",
    "left_info": [
-    324,
-    108,
-    "accctg"
+    323,
+    107,
+    "aggaca"
    ],
-   "right": "CCGC",
+   "right": "GGTT",
    "right_info": [
-    19,
+    20,
     6,
-    "cccgcc"
+    "gcggtt"
    ]
   },
   "TRBV2": {
    "set": "A",
-   "left": "CTAT",
+   "left": "ATTC",
    "left_info": [
-    320,
-    106,
-    "acctat"
+    310,
+    103,
+    "gattcc"
    ],
-   "right": "CCCA",
+   "right": "AGCG",
    "right_info": [
-    11,
-    3,
-    "aaccca"
+    17,
+    5,
+    "ccagcg"
    ]
   },
   "TRBV3": {
    "set": "A",
-   "left": "TATT",
+   "left": "TCTA",
    "left_info": [
-    324,
-    108,
-    "tatttc"
+    322,
+    107,
+    "gtctac"
    ],
-   "right": "ACCC",
+   "right": "AGCG",
    "right_info": [
-    10,
-    3,
-    "aacccc"
+    17,
+    5,
+    "ccagcg"
    ]
   },
   "TRBV5": {
    "set": "A",
-   "left": "CTAT",
+   "left": "TGTC",
    "left_info": [
-    317,
-    105,
-    "gtctat"
+    314,
+    104,
+    "gctgtc"
    ],
-   "right": "GCGG",
+   "right": "TCTA",
    "right_info": [
-    21,
+    22,
     7,
-    "gcggtg"
+    "gtctac"
    ]
   },
   "TRBV10": {
    "set": "A",
-   "left": "ATAG",
+   "left": "AGCG",
    "left_info": [
-    310,
-    103,
-    "gatagc"
+    314,
+    104,
+    "tcagcg"
    ],
-   "right": "ACAT",
+   "right": "ATTC",
    "right_info": [
-    1,
     0,
-    "gacatc"
+    0,
+    "attcag"
    ]
   },
   "TRBV12-1": {
    "set": "A",
-   "left": "ATGT",
+   "left": "TTTT",
    "left_info": [
-    348,
-    116,
-    "atgtac"
+    354,
+    118,
+    "ttttgc"
    ],
-   "right": "ACCC",
+   "right": "AACC",
    "right_info": [
-    10,
-    3,
+    6,
+    2,
     "aacccc"
    ]
   },
   "TRBV12-2": {
    "set": "A",
-   "left": "CTCG",
+   "left": "TTGC",
    "left_info": [
-    341,
-    113,
-    "gactcg"
+    356,
+    118,
+    "ttttgc"
    ],
-   "right": "TATT",
+   "right": "ACCT",
    "right_info": [
-    2,
-    0,
-    "gatatt"
+    14,
+    4,
+    "gaacct"
    ]
   },
   "TRBV12-2+TRBV13-2": {
    "set": "A",
-   "left": "GACC",
+   "left": "TCTA",
    "left_info": [
-    341,
-    113,
-    "cagacc"
+    349,
+    116,
+    "gtctac"
    ],
-   "right": "TGTA",
+   "right": "TGTC",
    "right_info": [
-    23,
-    7,
-    "gctgta"
+    20,
+    6,
+    "gctgtc"
    ]
   },
   "TRBV13-1": {
    "set": "A",
-   "left": "ACCC",
+   "left": "TTGC",
    "left_info": [
-    296,
-    98,
-    "tcaccc"
+    320,
+    106,
+    "ttttgc"
    ],
-   "right": "TTTA",
+   "right": "CTGA",
    "right_info": [
-    25,
-    8,
-    "gtttac"
+    10,
+    3,
+    "cctgag"
    ]
   },
   "TRBV13-2": {
    "set": "A",
-   "left": "ACCC",
+   "left": "GCAA",
    "left_info": [
-    299,
-    99,
-    "acaccc"
+    294,
+    98,
+    "gcaaca"
    ],
-   "right": "TTAC",
+   "right": "TGAA",
    "right_info": [
-    26,
-    8,
-    "gtttac"
+    11,
+    3,
+    "cctgaa"
    ]
   },
   "TRBV13-3": {
    "set": "A",
-   "left": "TCTC",
+   "left": "TTCA",
    "left_info": [
-    303,
-    101,
-    "tctcag"
+    302,
+    100,
+    "ctttca"
    ],
-   "right": "TTAC",
+   "right": "AAAA",
    "right_info": [
-    26,
-    8,
-    "gtttac"
+    4,
+    1,
+    "caaaac"
    ]
   },
   "TRBV14": {
    "set": "A",
-   "left": "GGGT",
+   "left": "CGCT",
    "left_info": [
-    308,
-    102,
-    "cagggt"
+    317,
+    105,
+    "accgct"
    ],
-   "right": "TTTA",
-   "right_info": [
-    25,
-    8,
-    "gtttac"
-   ]
-  },
-  "TRBV15": {
-   "set": "A",
-   "left": "TAAA",
-   "left_info": [
-    308,
-    102,
-    "cctaaa"
-   ],
-   "right": "AGTG",
-   "right_info": [
-    23,
-    7,
-    "gcagtg"
-   ]
-  },
-  "TRBV16": {
-   "set": "A",
-   "left": "ATAG",
-   "left_info": [
-    313,
-    104,
-    "gatagc"
-   ],
-   "right": "CCGC",
-   "right_info": [
-    19,
-    6,
-    "cccgcc"
-   ]
-  },
-  "TRBV17": {
-   "set": "A",
-   "left": "TGTA",
-   "left_info": [
-    319,
-    106,
-    "atgtac"
-   ],
-   "right": "ACCC",
-   "right_info": [
-    10,
-    3,
-    "aacccc"
-   ]
-  },
-  "TRBV19": {
-   "set": "A",
-   "left": "TTCT",
-   "left_info": [
-    331,
-    110,
-    "tttctg"
-   ],
-   "right": "TATT",
-   "right_info": [
-    2,
-    0,
-    "gatatt"
-   ]
-  },
-  "TRBV20": {
-   "set": "A",
-   "left": "ATGT",
-   "left_info": [
-    320,
-    106,
-    "ctatgt"
-   ],
-   "right": "TTTA",
-   "right_info": [
-    25,
-    8,
-    "gtttac"
-   ]
-  },
-  "TRBV23": {
-   "set": "A",
-   "left": "ATGT",
-   "left_info": [
-    329,
-    109,
-    "ctatgt"
-   ],
-   "right": "ACAT",
+   "right": "TTCA",
    "right_info": [
     1,
     0,
-    "gacatc"
+    "attcag"
    ]
   },
-  "TRBV26": {
+  "TRBV15": {
    "set": "A",
    "left": "CTAT",
    "left_info": [
@@ -278,55 +188,145 @@
     109,
     "ctatgc"
    ],
-   "right": "TTTA",
+   "right": "CAGT",
    "right_info": [
-    25,
-    8,
-    "gtttac"
+    19,
+    6,
+    "gcagtg"
+   ]
+  },
+  "TRBV16": {
+   "set": "A",
+   "left": "ACCT",
+   "left_info": [
+    325,
+    108,
+    "tacctg"
+   ],
+   "right": "CGAG",
+   "right_info": [
+    11,
+    3,
+    "cccgag"
+   ]
+  },
+  "TRBV17": {
+   "set": "A",
+   "left": "ATTC",
+   "left_info": [
+    310,
+    103,
+    "tattcc"
+   ],
+   "right": "TCTA",
+   "right_info": [
+    22,
+    7,
+    "gtctac"
+   ]
+  },
+  "TRBV19": {
+   "set": "A",
+   "left": "GAAT",
+   "left_info": [
+    314,
+    104,
+    "aagaat"
+   ],
+   "right": "ACCT",
+   "right_info": [
+    14,
+    4,
+    "gaacct"
+   ]
+  },
+  "TRBV20": {
+   "set": "A",
+   "left": "GTCT",
+   "left_info": [
+    310,
+    103,
+    "ggtctg"
+   ],
+   "right": "TCTA",
+   "right_info": [
+    22,
+    7,
+    "gtctac"
+   ]
+  },
+  "TRBV23": {
+   "set": "A",
+   "left": "CTGA",
+   "left_info": [
+    307,
+    102,
+    "gctgag"
+   ],
+   "right": "TTCA",
+   "right_info": [
+    1,
+    0,
+    "attcag"
+   ]
+  },
+  "TRBV26": {
+   "set": "A",
+   "left": "TTGC",
+   "left_info": [
+    329,
+    109,
+    "ctttgc"
+   ],
+   "right": "AACC",
+   "right_info": [
+    6,
+    2,
+    "aacccc"
    ]
   },
   "TRBV29": {
    "set": "A",
-   "left": "AAGC",
+   "left": "GTCT",
    "left_info": [
-    314,
-    104,
-    "acaagc"
+    318,
+    106,
+    "gtctac"
    ],
-   "right": "ACAT",
+   "right": "AAAA",
    "right_info": [
+    4,
     1,
-    0,
-    "gacatc"
+    "caaaac"
    ]
   },
   "TRBV30": {
    "set": "A",
-   "left": "CTCG",
+   "left": "AGAC",
    "left_info": [
-    308,
-    102,
-    "agctcg"
+    302,
+    100,
+    "ggagac"
    ],
-   "right": "TGTA",
+   "right": "TCTA",
    "right_info": [
-    23,
+    22,
     7,
-    "gctgta"
+    "gtctac"
    ]
   },
   "TRBV31": {
    "set": "A",
-   "left": "TTCT",
+   "left": "AGGT",
    "left_info": [
-    312,
-    104,
-    "ttctac"
+    308,
+    102,
+    "tcaggt"
    ],
-   "right": "ACCC",
+   "right": "CCCC",
    "right_info": [
-    10,
-    3,
+    8,
+    2,
     "aacccc"
    ]
   }

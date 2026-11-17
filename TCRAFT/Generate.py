@@ -18,8 +18,8 @@ import importlib.resources as pkg_resources
 """
 This section loads the reference files needed for oligo assembly.
 """
-ref_dir = pkg_resources.files('TCRAFT.references')
-with open(ref_dir.joinpath('H_sapiens_codon_usage.json'), 'r') as infile:
+ref_dir = pkg_resources.files('TCRAFT.references.mouse')  # mouse implementation: all tables live in references/mouse
+with open(ref_dir.joinpath('mouse_codon_usage.json'), 'r') as infile:
     codon_freq_dict = json.load(infile)
 
 trbv_trac_ohset = pd.read_csv(ref_dir.joinpath('TRBV_TRAC_OHset.csv'), index_col='N')
@@ -318,8 +318,10 @@ def create_CDR3_oligo(trav_name, trbv_name, cdr3a, cdr3b, traj_name, trbj_name):
     oligo_frags['cdr3bj_seq'] = generate_cleaned_DNA(cdr3b[1:] + trbj).lower()
 
     #patch frequent edge cases that occur in the J-C junction to prevent excessive resampling
+    #(mouse TRBC1 begins gag-gat-ctg and TRAC begins gac-atc-cag; the generic resampling loop below
+    # handles anything else that creates a site at the junction)
     if oligo_frags['cdr3bj_seq'][-3:] == 'ctc': #patch frequent CTCGAG edge case in TRBJ-TRBC junction
-        oligo_frags['cdr3bj_seq'] = oligo_frags['cdr3bj_seq'][:-3] + 'ctg' #another leucine codon 
+        oligo_frags['cdr3bj_seq'] = oligo_frags['cdr3bj_seq'][:-3] + 'ctg' #another leucine codon
     if oligo_frags['cdr3aj_seq'][-3:] == 'gat': #patch frequent GATATC edge case in TRAJ-TRAC junction
         oligo_frags['cdr3aj_seq'] = oligo_frags['cdr3aj_seq'][:-3] + 'gac' #another aspartate codon
 
