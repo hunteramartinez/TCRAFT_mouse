@@ -1,0 +1,2067 @@
+{
+ "TRBV": {
+  "TRBV1": {
+   "set": "A",
+   "left": "ACCC",
+   "left_info": [
+    324,
+    108,
+    "accctg"
+   ],
+   "right": "CCGC",
+   "right_info": [
+    19,
+    6,
+    "cccgcc"
+   ]
+  },
+  "TRBV2": {
+   "set": "A",
+   "left": "CTAT",
+   "left_info": [
+    320,
+    106,
+    "acctat"
+   ],
+   "right": "CCCA",
+   "right_info": [
+    11,
+    3,
+    "aaccca"
+   ]
+  },
+  "TRBV3": {
+   "set": "A",
+   "left": "TATT",
+   "left_info": [
+    324,
+    108,
+    "tatttc"
+   ],
+   "right": "ACCC",
+   "right_info": [
+    10,
+    3,
+    "aacccc"
+   ]
+  },
+  "TRBV5": {
+   "set": "A",
+   "left": "CTAT",
+   "left_info": [
+    317,
+    105,
+    "gtctat"
+   ],
+   "right": "GCGG",
+   "right_info": [
+    21,
+    7,
+    "gcggtg"
+   ]
+  },
+  "TRBV10": {
+   "set": "A",
+   "left": "ATAG",
+   "left_info": [
+    310,
+    103,
+    "gatagc"
+   ],
+   "right": "ACAT",
+   "right_info": [
+    1,
+    0,
+    "gacatc"
+   ]
+  },
+  "TRBV12-1": {
+   "set": "A",
+   "left": "ATGT",
+   "left_info": [
+    348,
+    116,
+    "atgtac"
+   ],
+   "right": "ACCC",
+   "right_info": [
+    10,
+    3,
+    "aacccc"
+   ]
+  },
+  "TRBV12-2": {
+   "set": "A",
+   "left": "CTCG",
+   "left_info": [
+    341,
+    113,
+    "gactcg"
+   ],
+   "right": "TATT",
+   "right_info": [
+    2,
+    0,
+    "gatatt"
+   ]
+  },
+  "TRBV12-2+TRBV13-2": {
+   "set": "A",
+   "left": "GACC",
+   "left_info": [
+    341,
+    113,
+    "cagacc"
+   ],
+   "right": "TGTA",
+   "right_info": [
+    23,
+    7,
+    "gctgta"
+   ]
+  },
+  "TRBV13-1": {
+   "set": "A",
+   "left": "ACCC",
+   "left_info": [
+    296,
+    98,
+    "tcaccc"
+   ],
+   "right": "TTTA",
+   "right_info": [
+    25,
+    8,
+    "gtttac"
+   ]
+  },
+  "TRBV13-2": {
+   "set": "A",
+   "left": "ACCC",
+   "left_info": [
+    299,
+    99,
+    "acaccc"
+   ],
+   "right": "TTAC",
+   "right_info": [
+    26,
+    8,
+    "gtttac"
+   ]
+  },
+  "TRBV13-3": {
+   "set": "A",
+   "left": "TCTC",
+   "left_info": [
+    303,
+    101,
+    "tctcag"
+   ],
+   "right": "TTAC",
+   "right_info": [
+    26,
+    8,
+    "gtttac"
+   ]
+  },
+  "TRBV14": {
+   "set": "A",
+   "left": "GGGT",
+   "left_info": [
+    308,
+    102,
+    "cagggt"
+   ],
+   "right": "TTTA",
+   "right_info": [
+    25,
+    8,
+    "gtttac"
+   ]
+  },
+  "TRBV15": {
+   "set": "A",
+   "left": "TAAA",
+   "left_info": [
+    308,
+    102,
+    "cctaaa"
+   ],
+   "right": "AGTG",
+   "right_info": [
+    23,
+    7,
+    "gcagtg"
+   ]
+  },
+  "TRBV16": {
+   "set": "A",
+   "left": "ATAG",
+   "left_info": [
+    313,
+    104,
+    "gatagc"
+   ],
+   "right": "CCGC",
+   "right_info": [
+    19,
+    6,
+    "cccgcc"
+   ]
+  },
+  "TRBV17": {
+   "set": "A",
+   "left": "TGTA",
+   "left_info": [
+    319,
+    106,
+    "atgtac"
+   ],
+   "right": "ACCC",
+   "right_info": [
+    10,
+    3,
+    "aacccc"
+   ]
+  },
+  "TRBV19": {
+   "set": "A",
+   "left": "TTCT",
+   "left_info": [
+    331,
+    110,
+    "tttctg"
+   ],
+   "right": "TATT",
+   "right_info": [
+    2,
+    0,
+    "gatatt"
+   ]
+  },
+  "TRBV20": {
+   "set": "A",
+   "left": "ATGT",
+   "left_info": [
+    320,
+    106,
+    "ctatgt"
+   ],
+   "right": "TTTA",
+   "right_info": [
+    25,
+    8,
+    "gtttac"
+   ]
+  },
+  "TRBV23": {
+   "set": "A",
+   "left": "ATGT",
+   "left_info": [
+    329,
+    109,
+    "ctatgt"
+   ],
+   "right": "ACAT",
+   "right_info": [
+    1,
+    0,
+    "gacatc"
+   ]
+  },
+  "TRBV26": {
+   "set": "A",
+   "left": "CTAT",
+   "left_info": [
+    327,
+    109,
+    "ctatgc"
+   ],
+   "right": "TTTA",
+   "right_info": [
+    25,
+    8,
+    "gtttac"
+   ]
+  },
+  "TRBV29": {
+   "set": "A",
+   "left": "AAGC",
+   "left_info": [
+    314,
+    104,
+    "acaagc"
+   ],
+   "right": "ACAT",
+   "right_info": [
+    1,
+    0,
+    "gacatc"
+   ]
+  },
+  "TRBV30": {
+   "set": "A",
+   "left": "CTCG",
+   "left_info": [
+    308,
+    102,
+    "agctcg"
+   ],
+   "right": "TGTA",
+   "right_info": [
+    23,
+    7,
+    "gctgta"
+   ]
+  },
+  "TRBV31": {
+   "set": "A",
+   "left": "TTCT",
+   "left_info": [
+    312,
+    104,
+    "ttctac"
+   ],
+   "right": "ACCC",
+   "right_info": [
+    10,
+    3,
+    "aacccc"
+   ]
+  }
+ },
+ "TRAV": {
+  "TRAV1": {
+   "set": "A",
+   "left": "TCGC",
+   "left_info": [
+    8,
+    2,
+    "cttcgc"
+   ],
+   "right": "TACT",
+   "right_info": [
+    312,
+    104,
+    "tacttg"
+   ]
+  },
+  "TRAV2": {
+   "set": "A",
+   "left": "GGAC",
+   "left_info": [
+    2,
+    0,
+    "gaggac"
+   ],
+   "right": "AGTA",
+   "right_info": [
+    302,
+    100,
+    "gcagta"
+   ]
+  },
+  "TRAV3-1": {
+   "set": "A",
+   "left": "GCGA",
+   "left_info": [
+    8,
+    2,
+    "ctgcga"
+   ],
+   "right": "AGTA",
+   "right_info": [
+    320,
+    106,
+    "gcagta"
+   ]
+  },
+  "TRAV3-3": {
+   "set": "A",
+   "left": "TCCG",
+   "left_info": [
+    7,
+    2,
+    "ctccgg"
+   ],
+   "right": "TCCG",
+   "right_info": [
+    315,
+    105,
+    "tccgcc"
+   ]
+  },
+  "TRAV3-4": {
+   "set": "A",
+   "left": "TCCG",
+   "left_info": [
+    7,
+    2,
+    "ctccgg"
+   ],
+   "right": "GTGT",
+   "right_info": [
+    321,
+    107,
+    "gtgtac"
+   ]
+  },
+  "TRAV3N-3": {
+   "set": "A",
+   "left": "TCTA",
+   "left_info": [
+    5,
+    1,
+    "gatcta"
+   ],
+   "right": "GTGT",
+   "right_info": [
+    321,
+    107,
+    "gtgtac"
+   ]
+  },
+  "TRAV4-2": {
+   "set": "A",
+   "left": "TTAC",
+   "left_info": [
+    6,
+    2,
+    "ttacgg"
+   ],
+   "right": "GATA",
+   "right_info": [
+    300,
+    100,
+    "gatagc"
+   ]
+  },
+  "TRAV4-3": {
+   "set": "A",
+   "left": "CCAA",
+   "left_info": [
+    24,
+    8,
+    "ccaaag"
+   ],
+   "right": "ATAG",
+   "right_info": [
+    301,
+    100,
+    "gatagc"
+   ]
+  },
+  "TRAV4-4-DV10": {
+   "set": "A",
+   "left": "CTCA",
+   "left_info": [
+    6,
+    2,
+    "ctcagg"
+   ],
+   "right": "CAGT",
+   "right_info": [
+    302,
+    100,
+    "gacagt"
+   ]
+  },
+  "TRAV4N-3": {
+   "set": "A",
+   "left": "TCTA",
+   "left_info": [
+    5,
+    1,
+    "gatcta"
+   ],
+   "right": "GGAC",
+   "right_info": [
+    307,
+    102,
+    "gggacc"
+   ]
+  },
+  "TRAV4N-4": {
+   "set": "A",
+   "left": "ACCA",
+   "left_info": [
+    20,
+    6,
+    "acacca"
+   ],
+   "right": "GGCA",
+   "right_info": [
+    306,
+    102,
+    "ggcacc"
+   ]
+  },
+  "TRAV5-1": {
+   "set": "A",
+   "left": "TTAC",
+   "left_info": [
+    6,
+    2,
+    "ttacgg"
+   ],
+   "right": "TATC",
+   "right_info": [
+    320,
+    106,
+    "gctatc"
+   ]
+  },
+  "TRAV5-4": {
+   "set": "A",
+   "left": "TCGC",
+   "left_info": [
+    8,
+    2,
+    "cttcgc"
+   ],
+   "right": "ATAG",
+   "right_info": [
+    313,
+    104,
+    "gatagc"
+   ]
+  },
+  "TRAV5N-4": {
+   "set": "A",
+   "left": "AGAT",
+   "left_info": [
+    2,
+    0,
+    "gaagat"
+   ],
+   "right": "ATAG",
+   "right_info": [
+    313,
+    104,
+    "gatagc"
+   ]
+  },
+  "TRAV6-1": {
+   "set": "A",
+   "left": "TTAC",
+   "left_info": [
+    6,
+    2,
+    "ttacgg"
+   ],
+   "right": "ACTG",
+   "right_info": [
+    322,
+    107,
+    "tactgc"
+   ]
+  },
+  "TRAV6-2": {
+   "set": "A",
+   "left": "TTAC",
+   "left_info": [
+    6,
+    2,
+    "ttacgg"
+   ],
+   "right": "TGCC",
+   "right_info": [
+    314,
+    104,
+    "tctgcc"
+   ]
+  },
+  "TRAV6-3": {
+   "set": "A",
+   "left": "CTCA",
+   "left_info": [
+    6,
+    2,
+    "ctcagg"
+   ],
+   "right": "CTCA",
+   "right_info": [
+    308,
+    102,
+    "gactca"
+   ]
+  },
+  "TRAV6-4": {
+   "set": "A",
+   "left": "TCGC",
+   "left_info": [
+    8,
+    2,
+    "cttcgc"
+   ],
+   "right": "TGCC",
+   "right_info": [
+    320,
+    106,
+    "tctgcc"
+   ]
+  },
+  "TRAV6-5": {
+   "set": "A",
+   "left": "CCCC",
+   "left_info": [
+    19,
+    6,
+    "acccct"
+   ],
+   "right": "ATAG",
+   "right_info": [
+    307,
+    102,
+    "gatagc"
+   ]
+  },
+  "TRAV6-7-DV9": {
+   "set": "A",
+   "left": "TGAG",
+   "left_info": [
+    7,
+    2,
+    "ctgagg"
+   ],
+   "right": "CTCA",
+   "right_info": [
+    347,
+    115,
+    "gactca"
+   ]
+  },
+  "TRAV6D-4": {
+   "set": "A",
+   "left": "TCCG",
+   "left_info": [
+    7,
+    2,
+    "ctccgg"
+   ],
+   "right": "TTTA",
+   "right_info": [
+    325,
+    108,
+    "gtttac"
+   ]
+  },
+  "TRAV6D-5": {
+   "set": "A",
+   "left": "CTCA",
+   "left_info": [
+    6,
+    2,
+    "ctcagg"
+   ],
+   "right": "CTAT",
+   "right_info": [
+    320,
+    106,
+    "tactat"
+   ]
+  },
+  "TRAV6D-6": {
+   "set": "A",
+   "left": "GGAC",
+   "left_info": [
+    2,
+    0,
+    "gaggac"
+   ],
+   "right": "CTCA",
+   "right_info": [
+    314,
+    104,
+    "gactca"
+   ]
+  },
+  "TRAV6D-7": {
+   "set": "A",
+   "left": "ATCT",
+   "left_info": [
+    4,
+    1,
+    "gatctg"
+   ],
+   "right": "CTAT",
+   "right_info": [
+    320,
+    106,
+    "tactat"
+   ]
+  },
+  "TRAV6N-5": {
+   "set": "A",
+   "left": "GCGA",
+   "left_info": [
+    8,
+    2,
+    "ctgcga"
+   ],
+   "right": "GGCA",
+   "right_info": [
+    314,
+    104,
+    "tcggca"
+   ]
+  },
+  "TRAV6N-6": {
+   "set": "A",
+   "left": "TGAG",
+   "left_info": [
+    7,
+    2,
+    "ctgagg"
+   ],
+   "right": "TTTA",
+   "right_info": [
+    322,
+    107,
+    "gtttac"
+   ]
+  },
+  "TRAV6N-7": {
+   "set": "A",
+   "left": "CTCA",
+   "left_info": [
+    6,
+    2,
+    "ctcagg"
+   ],
+   "right": "TTTA",
+   "right_info": [
+    328,
+    109,
+    "gtttac"
+   ]
+  },
+  "TRAV7-1": {
+   "set": "A",
+   "left": "ACAC",
+   "left_info": [
+    18,
+    6,
+    "acacct"
+   ],
+   "right": "TTAC",
+   "right_info": [
+    317,
+    105,
+    "ctttac"
+   ]
+  },
+  "TRAV7-3": {
+   "set": "A",
+   "left": "CCCC",
+   "left_info": [
+    19,
+    6,
+    "acccct"
+   ],
+   "right": "TATC",
+   "right_info": [
+    318,
+    106,
+    "tatctg"
+   ]
+  },
+  "TRAV7-4": {
+   "set": "A",
+   "left": "TCTA",
+   "left_info": [
+    5,
+    1,
+    "gatcta"
+   ],
+   "right": "GCTC",
+   "right_info": [
+    314,
+    104,
+    "gcgctc"
+   ]
+  },
+  "TRAV7-5": {
+   "set": "A",
+   "left": "CCAA",
+   "left_info": [
+    24,
+    8,
+    "ccaaag"
+   ],
+   "right": "TTTA",
+   "right_info": [
+    320,
+    106,
+    "tattta"
+   ]
+  },
+  "TRAV7-6": {
+   "set": "A",
+   "left": "GAAG",
+   "left_info": [
+    0,
+    0,
+    "gaagat"
+   ],
+   "right": "GTGT",
+   "right_info": [
+    323,
+    107,
+    "ctgtgt"
+   ]
+  },
+  "TRAV7D-2": {
+   "set": "A",
+   "left": "CGGA",
+   "left_info": [
+    9,
+    3,
+    "cggaac"
+   ],
+   "right": "TTAC",
+   "right_info": [
+    317,
+    105,
+    "ctttac"
+   ]
+  },
+  "TRAV7D-4": {
+   "set": "A",
+   "left": "GGAC",
+   "left_info": [
+    2,
+    0,
+    "gaggac"
+   ],
+   "right": "TTAC",
+   "right_info": [
+    317,
+    105,
+    "ctttac"
+   ]
+  },
+  "TRAV7N-4": {
+   "set": "A",
+   "left": "CTCA",
+   "left_info": [
+    6,
+    2,
+    "ctcagg"
+   ],
+   "right": "ACTG",
+   "right_info": [
+    314,
+    104,
+    "gcactg"
+   ]
+  },
+  "TRAV7N-5": {
+   "set": "A",
+   "left": "GGAC",
+   "left_info": [
+    2,
+    0,
+    "gaggac"
+   ],
+   "right": "TCCG",
+   "right_info": [
+    309,
+    103,
+    "tccgcc"
+   ]
+  },
+  "TRAV7N-6": {
+   "set": "A",
+   "left": "ACAC",
+   "left_info": [
+    18,
+    6,
+    "acacct"
+   ],
+   "right": "ATAG",
+   "right_info": [
+    307,
+    102,
+    "gatagc"
+   ]
+  },
+  "TRAV8-1": {
+   "set": "A",
+   "left": "AGAT",
+   "left_info": [
+    2,
+    0,
+    "gaagat"
+   ],
+   "right": "TTAC",
+   "right_info": [
+    308,
+    102,
+    "gtttac"
+   ]
+  },
+  "TRAV8D-1": {
+   "set": "A",
+   "left": "TTAC",
+   "left_info": [
+    6,
+    2,
+    "ttacgg"
+   ],
+   "right": "TACT",
+   "right_info": [
+    318,
+    106,
+    "tacttc"
+   ]
+  },
+  "TRAV8D-2": {
+   "set": "A",
+   "left": "TGAG",
+   "left_info": [
+    7,
+    2,
+    "ctgagg"
+   ],
+   "right": "GGCA",
+   "right_info": [
+    311,
+    103,
+    "acggca"
+   ]
+  },
+  "TRAV8N-2": {
+   "set": "A",
+   "left": "CGGA",
+   "left_info": [
+    9,
+    3,
+    "cggaac"
+   ],
+   "right": "ACTG",
+   "right_info": [
+    309,
+    103,
+    "actgcc"
+   ]
+  },
+  "TRAV9-1": {
+   "set": "A",
+   "left": "TTAC",
+   "left_info": [
+    6,
+    2,
+    "ttacgg"
+   ],
+   "right": "CAGT",
+   "right_info": [
+    313,
+    104,
+    "gcagtg"
+   ]
+  },
+  "TRAV9-2": {
+   "set": "A",
+   "left": "TCCG",
+   "left_info": [
+    7,
+    2,
+    "ctccgg"
+   ],
+   "right": "TGCC",
+   "right_info": [
+    314,
+    104,
+    "tctgcc"
+   ]
+  },
+  "TRAV9-4": {
+   "set": "B",
+   "left": "GCGA",
+   "left_info": [
+    8,
+    2,
+    "ctgcga"
+   ],
+   "right": "GCTG",
+   "right_info": [
+    315,
+    105,
+    "gctgtg"
+   ]
+  },
+  "TRAV9D-1": {
+   "set": "B",
+   "left": "ATTT",
+   "left_info": [
+    4,
+    1,
+    "gatttg"
+   ],
+   "right": "CAGC",
+   "right_info": [
+    310,
+    103,
+    "tcagcc"
+   ]
+  },
+  "TRAV9D-4": {
+   "set": "B",
+   "left": "GATT",
+   "left_info": [
+    3,
+    1,
+    "gatttg"
+   ],
+   "right": "GTGC",
+   "right_info": [
+    283,
+    94,
+    "agtgcc"
+   ]
+  },
+  "TRAV9N-2": {
+   "set": "B",
+   "left": "TAGG",
+   "left_info": [
+    8,
+    2,
+    "cttagg"
+   ],
+   "right": "CTCA",
+   "right_info": [
+    311,
+    103,
+    "gactca"
+   ]
+  },
+  "TRAV9N-3": {
+   "set": "B",
+   "left": "AAGA",
+   "left_info": [
+    1,
+    0,
+    "gaagat"
+   ],
+   "right": "TTAC",
+   "right_info": [
+    320,
+    106,
+    "gtttac"
+   ]
+  },
+  "TRAV9N-4": {
+   "set": "B",
+   "left": "ATTT",
+   "left_info": [
+    4,
+    1,
+    "gatttg"
+   ],
+   "right": "ATAG",
+   "right_info": [
+    310,
+    103,
+    "gatagc"
+   ]
+  },
+  "TRAV10": {
+   "set": "B",
+   "left": "GCGA",
+   "left_info": [
+    8,
+    2,
+    "ctgcga"
+   ],
+   "right": "TTTA",
+   "right_info": [
+    322,
+    107,
+    "atttac"
+   ]
+  },
+  "TRAV10N": {
+   "set": "B",
+   "left": "CCCT",
+   "left_info": [
+    20,
+    6,
+    "acccct"
+   ],
+   "right": "CAGC",
+   "right_info": [
+    316,
+    105,
+    "tcagcc"
+   ]
+  },
+  "TRAV11": {
+   "set": "B",
+   "left": "GATT",
+   "left_info": [
+    3,
+    1,
+    "gatttg"
+   ],
+   "right": "GGCG",
+   "right_info": [
+    317,
+    105,
+    "acggcg"
+   ]
+  },
+  "TRAV12-1": {
+   "set": "B",
+   "left": "TAGG",
+   "left_info": [
+    8,
+    2,
+    "cttagg"
+   ],
+   "right": "CCTA",
+   "right_info": [
+    323,
+    107,
+    "gcccta"
+   ]
+  },
+  "TRAV12-2": {
+   "set": "B",
+   "left": "GCGA",
+   "left_info": [
+    8,
+    2,
+    "ctgcga"
+   ],
+   "right": "CAGC",
+   "right_info": [
+    316,
+    105,
+    "tcagcc"
+   ]
+  },
+  "TRAV12-3": {
+   "set": "B",
+   "left": "TTTA",
+   "left_info": [
+    5,
+    1,
+    "gattta"
+   ],
+   "right": "CTCA",
+   "right_info": [
+    317,
+    105,
+    "gactca"
+   ]
+  },
+  "TRAV12D-3": {
+   "set": "B",
+   "left": "CGTT",
+   "left_info": [
+    14,
+    4,
+    "aacgtt"
+   ],
+   "right": "GCAC",
+   "right_info": [
+    321,
+    107,
+    "gcactg"
+   ]
+  },
+  "TRAV12N-1": {
+   "set": "B",
+   "left": "AAGA",
+   "left_info": [
+    1,
+    0,
+    "gaagat"
+   ],
+   "right": "CAGC",
+   "right_info": [
+    319,
+    106,
+    "tcagcc"
+   ]
+  },
+  "TRAV12N-2": {
+   "set": "B",
+   "left": "TGTA",
+   "left_info": [
+    14,
+    4,
+    "aatgta"
+   ],
+   "right": "TCTT",
+   "right_info": [
+    314,
+    104,
+    "gctctt"
+   ]
+  },
+  "TRAV13-1": {
+   "set": "B",
+   "left": "GTAA",
+   "left_info": [
+    10,
+    3,
+    "cgtaac"
+   ],
+   "right": "CTCA",
+   "right_info": [
+    302,
+    100,
+    "gactca"
+   ]
+  },
+  "TRAV13-2": {
+   "set": "B",
+   "left": "TACA",
+   "left_info": [
+    17,
+    5,
+    "gttaca"
+   ],
+   "right": "TTAC",
+   "right_info": [
+    311,
+    103,
+    "acttac"
+   ]
+  },
+  "TRAV13-4-DV7": {
+   "set": "B",
+   "left": "CCCT",
+   "left_info": [
+    20,
+    6,
+    "acccct"
+   ],
+   "right": "TACA",
+   "right_info": [
+    308,
+    102,
+    "ggtaca"
+   ]
+  },
+  "TRAV13D-1": {
+   "set": "B",
+   "left": "TCTT",
+   "left_info": [
+    5,
+    1,
+    "gatctt"
+   ],
+   "right": "TGGT",
+   "right_info": [
+    305,
+    101,
+    "tctggt"
+   ]
+  },
+  "TRAV13D-3": {
+   "set": "B",
+   "left": "TTAC",
+   "left_info": [
+    6,
+    2,
+    "ttacgg"
+   ],
+   "right": "TTAC",
+   "right_info": [
+    317,
+    105,
+    "acttac"
+   ]
+  },
+  "TRAV13D-4": {
+   "set": "B",
+   "left": "TTAC",
+   "left_info": [
+    6,
+    2,
+    "ttacgg"
+   ],
+   "right": "TTCG",
+   "right_info": [
+    302,
+    100,
+    "gattcg"
+   ]
+  },
+  "TRAV13N-1": {
+   "set": "B",
+   "left": "TCGC",
+   "left_info": [
+    8,
+    2,
+    "cttcgc"
+   ],
+   "right": "CTAT",
+   "right_info": [
+    315,
+    105,
+    "ctatgc"
+   ]
+  },
+  "TRAV13N-2": {
+   "set": "B",
+   "left": "TCGC",
+   "left_info": [
+    8,
+    2,
+    "cttcgc"
+   ],
+   "right": "GATT",
+   "right_info": [
+    300,
+    100,
+    "gattcc"
+   ]
+  },
+  "TRAV13N-4": {
+   "set": "B",
+   "left": "ATTT",
+   "left_info": [
+    4,
+    1,
+    "gatttg"
+   ],
+   "right": "TTCG",
+   "right_info": [
+    317,
+    105,
+    "gattcg"
+   ]
+  },
+  "TRAV14-1": {
+   "set": "B",
+   "left": "AACG",
+   "left_info": [
+    12,
+    4,
+    "aacgtg"
+   ],
+   "right": "GCGA",
+   "right_info": [
+    339,
+    113,
+    "gcgacc"
+   ]
+  },
+  "TRAV14-2": {
+   "set": "B",
+   "left": "ACCA",
+   "left_info": [
+    20,
+    6,
+    "acacca"
+   ],
+   "right": "CAGC",
+   "right_info": [
+    337,
+    112,
+    "tcagcc"
+   ]
+  },
+  "TRAV14-3": {
+   "set": "B",
+   "left": "CGTT",
+   "left_info": [
+    14,
+    4,
+    "aacgtt"
+   ],
+   "right": "GGCG",
+   "right_info": [
+    335,
+    111,
+    "tcggcg"
+   ]
+  },
+  "TRAV14D-3-DV8": {
+   "set": "B",
+   "left": "ACCA",
+   "left_info": [
+    20,
+    6,
+    "acacca"
+   ],
+   "right": "GCGA",
+   "right_info": [
+    336,
+    112,
+    "gcgacc"
+   ]
+  },
+  "TRAV14N-1": {
+   "set": "B",
+   "left": "TCTT",
+   "left_info": [
+    5,
+    1,
+    "gatctt"
+   ],
+   "right": "CTCA",
+   "right_info": [
+    335,
+    111,
+    "gactca"
+   ]
+  },
+  "TRAV14N-2": {
+   "set": "B",
+   "left": "CGTT",
+   "left_info": [
+    14,
+    4,
+    "aacgtt"
+   ],
+   "right": "TTCG",
+   "right_info": [
+    335,
+    111,
+    "gattcg"
+   ]
+  },
+  "TRAV14N-3": {
+   "set": "B",
+   "left": "TAGG",
+   "left_info": [
+    8,
+    2,
+    "cttagg"
+   ],
+   "right": "ATAG",
+   "right_info": [
+    331,
+    110,
+    "gatagc"
+   ]
+  },
+  "TRAV15-1-DV6-1": {
+   "set": "B",
+   "left": "CGTT",
+   "left_info": [
+    14,
+    4,
+    "aacgtt"
+   ],
+   "right": "CAGC",
+   "right_info": [
+    317,
+    105,
+    "gacagc"
+   ]
+  },
+  "TRAV15-2-DV6-2": {
+   "set": "B",
+   "left": "TACA",
+   "left_info": [
+    17,
+    5,
+    "gttaca"
+   ],
+   "right": "TTCG",
+   "right_info": [
+    335,
+    111,
+    "gattcg"
+   ]
+  },
+  "TRAV15D-1-DV6D-1": {
+   "set": "B",
+   "left": "TGTA",
+   "left_info": [
+    14,
+    4,
+    "aatgta"
+   ],
+   "right": "AGGG",
+   "right_info": [
+    341,
+    113,
+    "tcaggg"
+   ]
+  },
+  "TRAV15N-2": {
+   "set": "B",
+   "left": "CCTA",
+   "left_info": [
+    5,
+    1,
+    "gaccta"
+   ],
+   "right": "TGGT",
+   "right_info": [
+    320,
+    106,
+    "tctggt"
+   ]
+  },
+  "TRAV16": {
+   "set": "B",
+   "left": "GATT",
+   "left_info": [
+    3,
+    1,
+    "gatttg"
+   ],
+   "right": "ATTT",
+   "right_info": [
+    328,
+    109,
+    "tatttc"
+   ]
+  },
+  "TRAV16D-DV11": {
+   "set": "B",
+   "left": "TAAA",
+   "left_info": [
+    26,
+    8,
+    "cctaaa"
+   ],
+   "right": "TTAC",
+   "right_info": [
+    329,
+    109,
+    "gtttac"
+   ]
+  },
+  "TRAV16N": {
+   "set": "B",
+   "left": "TAAA",
+   "left_info": [
+    26,
+    8,
+    "cctaaa"
+   ],
+   "right": "CTCA",
+   "right_info": [
+    320,
+    106,
+    "gactca"
+   ]
+  },
+  "TRAV17": {
+   "set": "B",
+   "left": "AAGA",
+   "left_info": [
+    1,
+    0,
+    "gaagat"
+   ],
+   "right": "TAAA",
+   "right_info": [
+    317,
+    105,
+    "gctaaa"
+   ]
+  },
+  "TRAV18": {
+   "set": "B",
+   "left": "ATTT",
+   "left_info": [
+    4,
+    1,
+    "gatttg"
+   ],
+   "right": "TGGT",
+   "right_info": [
+    305,
+    101,
+    "gctggt"
+   ]
+  },
+  "TRAV19": {
+   "set": "B",
+   "left": "ATTT",
+   "left_info": [
+    4,
+    1,
+    "gatttg"
+   ],
+   "right": "TACA",
+   "right_info": [
+    329,
+    109,
+    "gataca"
+   ]
+  },
+  "TRAV21-DV12": {
+   "set": "B",
+   "left": "TACA",
+   "left_info": [
+    17,
+    5,
+    "gttaca"
+   ],
+   "right": "TGTA",
+   "right_info": [
+    304,
+    101,
+    "gtgtac"
+   ]
+  }
+ },
+ "members": {
+  "TRBV1": [
+   "TRBV1"
+  ],
+  "TRBV2": [
+   "TRBV2"
+  ],
+  "TRBV3": [
+   "TRBV3"
+  ],
+  "TRBV5": [
+   "TRBV5"
+  ],
+  "TRBV10": [
+   "TRBV10"
+  ],
+  "TRBV12-1": [
+   "TRBV12-1"
+  ],
+  "TRBV12-2": [
+   "TRBV12-2"
+  ],
+  "TRBV12-2+TRBV13-2": [
+   "TRBV12-2+TRBV13-2"
+  ],
+  "TRBV13-1": [
+   "TRBV13-1"
+  ],
+  "TRBV13-2": [
+   "TRBV13-2"
+  ],
+  "TRBV13-3": [
+   "TRBV13-3"
+  ],
+  "TRBV14": [
+   "TRBV14"
+  ],
+  "TRBV15": [
+   "TRBV15"
+  ],
+  "TRBV16": [
+   "TRBV16"
+  ],
+  "TRBV17": [
+   "TRBV17"
+  ],
+  "TRBV19": [
+   "TRBV19"
+  ],
+  "TRBV20": [
+   "TRBV20"
+  ],
+  "TRBV23": [
+   "TRBV23"
+  ],
+  "TRBV26": [
+   "TRBV26"
+  ],
+  "TRBV29": [
+   "TRBV29"
+  ],
+  "TRBV30": [
+   "TRBV30"
+  ],
+  "TRBV31": [
+   "TRBV31"
+  ],
+  "TRAV1": [
+   "TRAV1"
+  ],
+  "TRAV2": [
+   "TRAV2"
+  ],
+  "TRAV3-1": [
+   "TRAV3-1"
+  ],
+  "TRAV3-3": [
+   "TRAV3-3"
+  ],
+  "TRAV3-4": [
+   "TRAV3-4"
+  ],
+  "TRAV3N-3": [
+   "TRAV3N-3"
+  ],
+  "TRAV4-2": [
+   "TRAV4-2"
+  ],
+  "TRAV4-3": [
+   "TRAV4-3"
+  ],
+  "TRAV4-4-DV10": [
+   "TRAV4-4-DV10"
+  ],
+  "TRAV4N-3": [
+   "TRAV4N-3"
+  ],
+  "TRAV4N-4": [
+   "TRAV4N-4"
+  ],
+  "TRAV5-1": [
+   "TRAV5-1"
+  ],
+  "TRAV5-4": [
+   "TRAV5-4"
+  ],
+  "TRAV5N-4": [
+   "TRAV5N-4"
+  ],
+  "TRAV6-1": [
+   "TRAV6-1"
+  ],
+  "TRAV6-2": [
+   "TRAV6-2"
+  ],
+  "TRAV6-3": [
+   "TRAV6-3",
+   "TRAV6D-3"
+  ],
+  "TRAV6-4": [
+   "TRAV6-4"
+  ],
+  "TRAV6-5": [
+   "TRAV6-5"
+  ],
+  "TRAV6-7-DV9": [
+   "TRAV6-7-DV9"
+  ],
+  "TRAV6D-4": [
+   "TRAV6D-4"
+  ],
+  "TRAV6D-5": [
+   "TRAV6D-5"
+  ],
+  "TRAV6D-6": [
+   "TRAV6D-6"
+  ],
+  "TRAV6D-7": [
+   "TRAV6D-7"
+  ],
+  "TRAV6N-5": [
+   "TRAV6N-5"
+  ],
+  "TRAV6N-6": [
+   "TRAV6N-6"
+  ],
+  "TRAV6N-7": [
+   "TRAV6N-7"
+  ],
+  "TRAV7-1": [
+   "TRAV7-1"
+  ],
+  "TRAV7-3": [
+   "TRAV7-3",
+   "TRAV7D-3"
+  ],
+  "TRAV7-4": [
+   "TRAV7-4"
+  ],
+  "TRAV7-5": [
+   "TRAV7-5"
+  ],
+  "TRAV7-6": [
+   "TRAV7-6"
+  ],
+  "TRAV7D-2": [
+   "TRAV7D-2"
+  ],
+  "TRAV7D-4": [
+   "TRAV7D-4"
+  ],
+  "TRAV7N-4": [
+   "TRAV7N-4"
+  ],
+  "TRAV7N-5": [
+   "TRAV7N-5"
+  ],
+  "TRAV7N-6": [
+   "TRAV7N-6"
+  ],
+  "TRAV8-1": [
+   "TRAV8-1"
+  ],
+  "TRAV8D-1": [
+   "TRAV8D-1"
+  ],
+  "TRAV8D-2": [
+   "TRAV8D-2"
+  ],
+  "TRAV8N-2": [
+   "TRAV8N-2"
+  ],
+  "TRAV9-1": [
+   "TRAV9-1"
+  ],
+  "TRAV9-2": [
+   "TRAV9-2"
+  ],
+  "TRAV9-4": [
+   "TRAV9-4"
+  ],
+  "TRAV9D-1": [
+   "TRAV9D-1"
+  ],
+  "TRAV9D-4": [
+   "TRAV9D-4"
+  ],
+  "TRAV9N-2": [
+   "TRAV9N-2"
+  ],
+  "TRAV9N-3": [
+   "TRAV9N-3"
+  ],
+  "TRAV9N-4": [
+   "TRAV9N-4"
+  ],
+  "TRAV10": [
+   "TRAV10",
+   "TRAV10D"
+  ],
+  "TRAV10N": [
+   "TRAV10N"
+  ],
+  "TRAV11": [
+   "TRAV11"
+  ],
+  "TRAV12-1": [
+   "TRAV12-1"
+  ],
+  "TRAV12-2": [
+   "TRAV12-2"
+  ],
+  "TRAV12-3": [
+   "TRAV12-3"
+  ],
+  "TRAV12D-3": [
+   "TRAV12D-3"
+  ],
+  "TRAV12N-1": [
+   "TRAV12N-1"
+  ],
+  "TRAV12N-2": [
+   "TRAV12N-2"
+  ],
+  "TRAV13-1": [
+   "TRAV13-1"
+  ],
+  "TRAV13-2": [
+   "TRAV13-2"
+  ],
+  "TRAV13-4-DV7": [
+   "TRAV13-4-DV7"
+  ],
+  "TRAV13D-1": [
+   "TRAV13D-1"
+  ],
+  "TRAV13D-3": [
+   "TRAV13D-3",
+   "TRAV13N-3"
+  ],
+  "TRAV13D-4": [
+   "TRAV13D-4"
+  ],
+  "TRAV13N-1": [
+   "TRAV13N-1"
+  ],
+  "TRAV13N-2": [
+   "TRAV13N-2"
+  ],
+  "TRAV13N-4": [
+   "TRAV13N-4"
+  ],
+  "TRAV14-1": [
+   "TRAV14-1"
+  ],
+  "TRAV14-2": [
+   "TRAV14-2"
+  ],
+  "TRAV14-3": [
+   "TRAV14-3"
+  ],
+  "TRAV14D-3-DV8": [
+   "TRAV14D-3-DV8"
+  ],
+  "TRAV14N-1": [
+   "TRAV14N-1"
+  ],
+  "TRAV14N-2": [
+   "TRAV14N-2"
+  ],
+  "TRAV14N-3": [
+   "TRAV14N-3"
+  ],
+  "TRAV15-1-DV6-1": [
+   "TRAV15-1-DV6-1"
+  ],
+  "TRAV15-2-DV6-2": [
+   "TRAV15-2-DV6-2"
+  ],
+  "TRAV15D-1-DV6D-1": [
+   "TRAV15D-1-DV6D-1"
+  ],
+  "TRAV15N-2": [
+   "TRAV15N-2"
+  ],
+  "TRAV16": [
+   "TRAV16"
+  ],
+  "TRAV16D-DV11": [
+   "TRAV16D-DV11"
+  ],
+  "TRAV16N": [
+   "TRAV16N"
+  ],
+  "TRAV17": [
+   "TRAV17"
+  ],
+  "TRAV18": [
+   "TRAV18"
+  ],
+  "TRAV19": [
+   "TRAV19"
+  ],
+  "TRAV21-DV12": [
+   "TRAV21-DV12"
+  ]
+ },
+ "scores": {
+  "TRBV_A": {
+   "enzyme": "BbsI",
+   "n": 22,
+   "f1": 1.0,
+   "mean_p": 1.0
+  },
+  "TRAV_A": {
+   "enzyme": "BsmBI",
+   "n": 43,
+   "f1": 0.9987080103359174,
+   "mean_p": 0.999581927475195
+  },
+  "TRAV_B": {
+   "enzyme": "BsaI",
+   "n": 42,
+   "f1": 0.9990892531876139,
+   "mean_p": 0.9998295737921762
+  }
+ },
+ "v_aa": {
+  "TRBV1": "MWQFCILCLCVLMASVATDPTVTLLEQNPRWRLVPRGQAVNLRCILKNSQYPWMSWYQQDLQKQLQWLFTLRSPGDKEVKSLPGADYLATRVTDTELRLQVANMSQGRTLYC",
+  "TRBV10": "MGCRLLSCVAFCLLGIGPLETAVFQTPNYHVTQVGNEVSFNCKQTLGHDTMYWYKQDSKKLLKIMFSYNNKQLIVNETVPRRFSPQSSDKAHLNLRIKSVEPEDSAVYLC",
+  "TRBV12-1": "MSNTVLADSAWGITLLSWVTVFLLGTSSADSGVVQSPRHIIKEKGGRSVLTCIPISGHSNVVWYQQTLGKELKFLIQHYEKVERDKGFLPSRFSVQQFDDYHSEMNMSALELEDSAMYFC",
+  "TRBV12-2": "MSNTAFPDPAWNTTLLSWVALFLLGTSSANSGVVQSPRYIIKGKGERSILKCIPISGHLSVAWYQQTQGQELKFFIQHYDKMERDKGNLPSRFSVQQFDDYHSEMNMSALELEDSAVYFC",
+  "TRBV12-2+TRBV13-2": "MSNTAFPDPAWNTTLLSWVALFLLGTKHMEAAVTQSPRNKVAVTGGKVTLSCNQTNNHNNMYWYRQDTGHGLRLIHYSYGAGSTEKGDIPDGYKASRPSQENFSLILELATPSQTSVYFC",
+  "TRBV13-1": "MGSRLFLVLSLLCTKHMEAAVTQSPRNKVTVTGGNVTLSCRQTNSHNYMYWYRQDTGHGLRLIHYSYGAGNLQIGDVPDGYKATRTTQEDFFLLLELASPSQTSLYFC",
+  "TRBV13-2": "MGSRLFFVLSSLLCSKHMEAAVTQSPRNKVAVTGGKVTLSCNQTNNHNNMYWYRQDTGHGLRLIHYSYGAGSTEKGDIPDGYKASRPSQENFSLILELATPSQTSVYFC",
+  "TRBV13-3": "MGSRLFFVVLILLCAKHMEAAVTQSPRSKVAVTGGKVTLSCHQTNNHDYMYWYRQDTGHGLRLIHYSYVADSTEKGDIPDGYKASRPSQENFSLILELASLSQTAVYFC",
+  "TRBV14": "MGTRLLGWAVFCLLDTVLSEAGVTQSPRYAVLQEGQAVSFWCDPISGHDTLYWYQQPRDQGPQLLVYFRDEAVIDNSQLPSDRFSAVRPKGTNSTLKIQSAKQGDTATYLC",
+  "TRBV15": "MGIQTLCCVIFYVLIANHTDAGVTQTPRHEVAEKGQTIILKCEPVSGHNDLFWYRQTKIQGLELLSYFRSKSLMEDGGAFKDRFKAEMLNSSFSTLKIQPTEPKDSAVYLC",
+  "TRBV16": "MAPRLLFCLVLCFLRAEPTNAGVIQTPRHKVTGKGQEATLWCEPISGHSAVFWYRQTIVQGLEFLTYFRNQAPIDDSGMPKERFSAQMPNQSHSTLKIQSTQPQDSAVYLC",
+  "TRBV17": "MDPRLLCCVIFCLLAATFVDTTVKQNPRYKLARVGKPVNLICSQTMNHDTMYWYQKKPNQAPKLLLFYYDKILNREADTFEKFQSSRPNNSFCSLYIGSAGLEYSAMYLC",
+  "TRBV19": "MNKWVFCWVTLCLLTVETTHGDGGIITQTPKFLIGQEGQKLTLKCQQNFNHDTMYWYRQDSGKGLRLIYYSITENDLQKGDLSEGYDASREKKSSFSLTVTSAQKNEMAVFLC",
+  "TRBV2": "MGSIFLSCLAVCLLVAGPVDPKIIQKPKYLVAVTGSEKILICEQYLGHNAMYWYRQSAKKPLEFMFSYSYQKLMDNQTASSRFQPQSSKKNHLDLQITALKPDDSATYFC",
+  "TRBV20": "MLLLLLLLGPGCGLGALVYQYPRRTICKSGTSMRMECQAVGFQATSVAWYRQSPQKTFELIALSTVNSAIKYEQNFTQEKFPISHPNLSFSSMTVLNAYLEDRGLYLC",
+  "TRBV23": "MGARLICYVALCLLGAGSFDAAVTQKPRYLIKMKGQEAEMKCIPEKGHTAVFWYQQKQSKELKFLIYFQNQQPLDQIDMVKERFSAVCPSSSLCSLGIRTCEAEDSALYLC",
+  "TRBV26": "MATRLLCYTVLCLLGARILNSKVIQTPRYLVKGQGQKAKMRCIPEKGHPVVFWYQQNKNNEFKFLINFQNQEVLQQIDMTEKRFSAECPSNSPCSLEIQSSEAGDSALYLC",
+  "TRBV29": "MRVRLISAVVLCFLGTGLVDMKVTQMPRYLIKRMGENVLLECGQDMSHETMYWYRQDPGLGLQLIYISYDVDSNSEGDIPKGYRVSRKKREHFSLILDSAKTNQTSVYFC",
+  "TRBV3": "MDIWLLGWIIFSFLEAGHTGPKVLQIPSHQIIDMGQMVTLNCDPVSNHLYFYWYKQILGQQMEFLVNFYNGKVMEKSKLFKDQFSVERPDGSYFTLKIQPTALEDSAVYFC",
+  "TRBV30": "MWTFLLLLWSQGSVFSVLLYQKPNRDICQSGTSLKIQCVADSQVVSMFWYQQFQEQSLMLMATANEGSEATYESGFTKDKFPISRPNLTFSTLTVNNARPGDSSIYFC",
+  "TRBV31": "MLYSLLAFLLGMFLGVSAQTIHQWPVAEIKAVGSPLSLGCTIKGKSSPNLYWYWQATGGTLQQLFYSITVGQVESVVQLNLSASRPKDDQFILSTEKLLLSHSGFYLC",
+  "TRBV5": "MSCRLLLYVSLCLVETALMNTKITQSPRYLILGRANKSLECEQHLGHNAMYWYKQSAEKPPELMFLYNLKQLIRNETVPSRFIPECPDSSKLLLHISAVDPEDSAVYFC",
+  "TRAV1": "MLQMWGFVLYLFLTVGGAAGQGVEQPAKLMSVEGTFARVNCTYSTSGFNGLSWYQQREGQAPVFLSYVVLDGLKDSGHFSTFLSRSNGYSYLLLTELQIKDSASYLC",
+  "TRAV10": "MKTSLHTVFLFLWLWMDWESHGEKVEQHESTLSVREGDSAVINCTYTDTASSYFPWYKQEAGKSLHFVIDIRSNVDRKQSQRLIVLLDKKAKRFSLHITATQPEDSAIYFC",
+  "TRAV10N": "MKTSLHTVFLFLWLWMDWESHGEKVEQHESTLSVREGDSAVINCTYTDTASSYFPWYKQEAGKSLHFVIDIRSNVDRKQSQRLTVLLDKKAKRFSLHITATQPEDSAIYFC",
+  "TRAV11": "MKKRLSACWVVLWLHYQWVAGKTQVEQSPQSLVVRQGENCVLQCNYSVTPDNHLRWFKQDTGKGLVSLTVLVDQKDKTSNGRYSATLDKDAKHSTLHITATLLDDTATYIC",
+  "TRAV12-1": "MNMRPVTSSVLVLLLMLRRSNGDSVTQTEGLVTVTEGLPVKLNCTYQTTYLTIAFFWYVQYLNEAPQVLLKSSTDNKRTEHQGFHATLHKSSSSFHLQKSSAQLSDSALYYC",
+  "TRAV12-2": "MNMRPDTCSVLVLLLMLRRNNGDSVTQTEGLVTLTEGLPVMLNCTYQSTYSPFLFWYVQHLNEAPKLLLKSFTDNKRPEHQGFHATLHKSSSSFHLQKSSAQLSDSALYYC",
+  "TRAV12-3": "MRPGTCSVLVLLLMLRRSNGDGDSVTQKEGLVTLTEGLPVMLNCTYQTIYSNAFLFWYVHYLNESPRLLLKSSTDNKRTEHQGFHATLHKSSSSFHLQKSSAQLSDSALYYC",
+  "TRAV12D-3": "MRPVTCSVLVLLLMLRRSNGDGDSVTQTEGLVTLTEGLPVMLNCTYQTIYSNPFLFWYVQHLNESPRLLLKSFTDNKRTEHQGFHATLHKSSSSFHLQKSSAQLSDSALYYC",
+  "TRAV12N-1": "MNMRPVTCSVLVLLLMLRRSNGDSVTQTEGLVTVTEGLPVMLNCTYQTAYSDVAFFWYVQYLNEAPKLLLRSSTDNKRTEHQGFHATLHKSSSSFHLQKSSVQLSDSALYYC",
+  "TRAV12N-2": "MRPDTCSVLVLLLMLRRSNGDSVTQTEGLVTLTKGLPVMLNCTYQTTYSPFLFWYVQHLNEAPKLLLKSSTDNKRTEHQGFYATLHKSSSSFHLQKSSVQLSDSALYFC",
+  "TRAV13-1": "MKRLLSSLLGLLCTQVCWVKGQQVQQSPASLVLQEGENAELQCNFSTSLNSMQWFYQRPGGSLVSLFYNPSGTKHSGRLTSTTVIKERRSSLHISSSQTTDSGTYLC",
+  "TRAV13-2": "MKRLLCSLLGLLCTQVCWVKGQQVQQSPASLVLQEGENAELQCNFSSTATRLQWFYQHPGGRLVSLFYNPSGTKHTGRLTSTTVTNERRSSLHISSSQTTDSGTYFC",
+  "TRAV13-4-DV7": "MKRLLCSLLGLLCTQVCWVKGQQVQQSPASLVLQEGENAELQCNFSSTATRLQWFYQRPGGSLVSLLSNPSGTKHTGRLTSTTVTKERRGSLHISSSQITDSGTYLC",
+  "TRAV13D-1": "MKRLLCSLLGLLCTQVCWVKGQQVQQSPTSLVLQEGENAELQCNFSTSLNSMQWFYQRPGGSLVSVFYNPSGTKQSGRLTSTTVIKERRSSLHISSSQITDSGTYLC",
+  "TRAV13D-3": "MKRLLCSLLGLLCTQVCWVKGQQVQQSPPASLVLQEGENAELQCTYSTTLNSMQWFYQRPGGRLVSLLYSPSWAEQRGGRLTSSAASNESRSSLHISSSQITDSGTYLC",
+  "TRAV13D-4": "MKRLLCSLLGLLCTQVCWVKGQQVQQSPASLVLQEGENAELQCNFSSTATRLQWFYQRPGGSLVSLLYNPSGTKHTGRLTSTTVTKERRSSLHISSSQTTDSGTYFC",
+  "TRAV13N-1": "MKRLLCSLLGLLCTQVCWVKGQQVQQSPTSLVLQEGENAELQCNFSTSLNSMQWFYQRPGGSLISVFYNPSGTKQSGRLTSTTVIKERRSSLHISSSQITDSGTYLC",
+  "TRAV13N-2": "MKRLLCSLLGLLCTQVCWVKGQQVQQSPASLVLQEGENAELQCNFSSTATQLQWFYQSPGGSLVSLLSNPSGTKHTGRLTSTTVTKERRSSLHISSSQTTDSGTYLC",
+  "TRAV13N-4": "MKRLLCSLLGLLCTQVCCASQLGLKEQQVQQSPASLVLQEAENAELQCSFSIFTNQVQWFYQRPGGRLVSLLYNPSGTKQSGRLTSTTVIKERRSSLHISSSQITDSGTYLC",
+  "TRAV14-1": "MDKILTASFLLLGLHLAGVNGQQKEKHDQQQVRQSPQSLTVWEGGTTVLTCSYEDSTFNYFPWYQQFPGEGPALLISILSVSDKKEDGRFTTFFNKREKKLSLHIIDSQPGDSATYFC",
+  "TRAV14-2": "MDKILTASFLLLGLHLAGVSGQQQEKHDQQQVRQSPQSLTVWEGETAILNCSYEDSTFDYFPWYHQFPGESPALLIAIRPVSNKKEDGRFTIFFNKREKKFSLHIADSQPGDSATYFC",
+  "TRAV14-3": "MDKILTASFLLLGLHLSGVSGQQEKRDQQQVRQSPQSLTVWEGETAILNCSYENSAFDYFPWYQQFPGEGPALLIAIRSVSDKKEDGRFTIFFNKREKKLSLHITDSQPGDSATYFC",
+  "TRAV14D-3-DV8": "MDKILTASFLLLGLHLAGVSGQQEKRDQQQVRQSPQSLTVWEGETAILNCSYENSAFDYFPWYQQFPGEGPALLISILSVSDKKEDGRFTIFFNKREKKLSLHIADSQPGDSATYFC",
+  "TRAV14N-1": "MDKILTATFLLLGLHLAGVNGQQQEKRDQQQVRQSPQSLTVWEGETAILNCSYEDSTFNYFPWYQQFPGEGPALLISIRSVSDKKEDGRFTIFFNKREKKLSLHITDSQPGDSATYFC",
+  "TRAV14N-2": "MDKILTASFLLLGLHLAGVSGQQQEKRDQQQVRQSPQSLTVWEGETAILNCSYEDSTFDYFPWYWQFPRESPALLIAIRPVSNKKEDGRFTIFFNKREKKLSLHITDSQPGDSATYFC",
+  "TRAV14N-3": "MDKILTALFLLLGLHLAGVSGQQEKHDQQQVRQSSQSLTVWEGETAILNCSYENSAFDYFPWYQQFPGEGPALLIAIRSVSDKKEDGRFTIFFNKREKNLSLHIKDSQPGDSATYFC",
+  "TRAV15-1-DV6-1": "MPPHSLLCVLVALAFSGSNVAQKVIQVWSTTSRQEGEKLTLDCSYKTSQVLYHLFWYKHLLSGEMVLLIRQMPSTIAIERSGRYSVVFQKSRKSISLVISTLQPDDSGKYFC",
+  "TRAV15-2-DV6-2": "MQRDMCHMPPQSLLCVLVALAFSGCNVAQRVTQVQSTGSSQWGEVTLDCSYETSEYSYLILWYRQLFSGEMVFLIYQPSFDTQNQRSGHYSVVFQKSFKSISLVISASQPEDSGTYFC",
+  "TRAV15D-1-DV6D-1": "MQRTVCHMPPHSLFCVLVALAFSGSNVAEKVIQVWSTASRQEGEELTLDCSYETSQVLYHLFWYKHLLSGEMVFLIRQTSSSTAKERSGRYSVVFQKSLKSISLIISALQPDDSGKYFC",
+  "TRAV15N-2": "MPPQSLLCVLVALAFSGCNVAQRVTQVQPTGSSQWGEEVTLDCSYETSEYFYRIFWYRQLFSGEMVFLIYQPSFDTQNQRSGRYSVVFQKSFKSISLVISASQPEDSGTYFC",
+  "TRAV16": "MLILSLLGAAFGSICFATSMAQKVTQTQTSISVMEKTTVTMDCVYETRDSSYFLFWYKQTASGEIVFLIRQDSYKKENATEGHYSLNFQKPKSSIGLIITATQIEDSAVYFC",
+  "TRAV16D-DV11": "MLILSLLGAPFFGSICFATSMAQKVTQTQTSISVMEKTTVTMDCVYETQDSSYFLFWYKQTASGEIVFLIRQDSYKKENATVGHYSLNFQKPKSSIGLIITATQIEDSAVYFC",
+  "TRAV16N": "MLILSLLGAAFGSICFAATSMAQKVTQTQTSISVVEKTTVTMDCVYETRDSSYFLFWYKQTASGEIVFLIRQDSYKKENATVGHYSLNFQKPKSSIGLIITATQIEDSAVYFC",
+  "TRAV17": "MFPVTILLLSAFFSLRGNSAQSVDQPDAHVTLSEGASLELRCSYSYSAAPYLFWYVQYPGQSLQFLLKYITGDTVVKGTKGFEAEFRKSNSSFNLKKSPAHWSDSAKYFC",
+  "TRAV18": "MLLKLSVLLLWNQVARVATQRLEQSPRFLSIQEGQDFTARCSSSTTFPQLYWYRQVPREGPVILVTLVKSGEVKEQRRMTAKFGEARKNSSLFIARAQPGDAGIYFC",
+  "TRAV19": "MTGFLKALLLVLCLRPEWVKSQQKTSGQQVKQSSPSLTVQEGGISILNCDYENDMFDYFAWYKKYPDNSPTLLISVRSNVDKREDGRLTVFLNKSGKHFSLHITASQPEDTAVYLC",
+  "TRAV2": "MKQVAKVTVLLILVSWSLAKTTQPPSMEAYEGQEVNVSCSHTNIATSEYIYWYRQVPHQGPQFIIQGYKDYVVNEVASLFISADRKLSTLSLPWVSLRDAAVYYC",
+  "TRAV21-DV12": "MGCVSGIAILLALGIAGDAKTTQPDSMESTEGETVHLPCSHATISGNEYIYWYRQVPLQGPEYVTHGLQQNTTNSMAFLAIASDRKSSTLILPHVSLRDAAVYHC",
+  "TRAV3-1": "MKTVTGPLLLCFWLQLNCVSRGEQVEQRPPHLSVREGDSAIIICTYTDSATAYFSWYKQEAGAGLQLLMSVLSNVDRKEEQGLTVLLNKKDKRLSLNLTAAHPGDSAVYFC",
+  "TRAV3-3": "MKTVTGPLFLCFWLQLNCVSRGEQVEQRPPHLSVREGDSAVITCTYTDPNSYYFFWYKQEPGASLQLLMKVFSSTEINEGQGFTVLLNKKDKRLSLNLTAAHPGDSAAYFC",
+  "TRAV3-4": "MKTVAGPLFLCFWLQLNCVSRGEQVEQRPPHLSVREGDSAFIICTYTDSATAYFYWYKQEPGAGLQLLMSVFSNVDRKEEQGLTVLLNKKDKRLSLNLTAAHPGDSAVYFC",
+  "TRAV3N-3": "MKTVTGPLFLCFWLQLNCVSRGEQVEQRPPHLSVREGDSAVIICTYTDPNSYYFFWYKQEPGAGLQLLMKVFSSTEINEGQGFTVLLNKKDKQLSLNLTAAHPGDSAVYFC",
+  "TRAV4-2": "MERSPGTVLGLLLVPLCWVRGMPVEQNPPALSLYEGAESGLRCNFSTTMKGVQWFQQNHRGRLITLFYLAQGTKENGRLKSTFNSKERYSTLHIKDAQLEDSGTYFC",
+  "TRAV4-3": "MQRNLGAVLGILWVQICWVSGDKVKQSPSALSLQEGTNSALRCNFSIAATTVQWFLQNPRGSLINLFYLVPGTKENGRLKSAFDSKESYSTLHIRDAQLEDSGTYFC",
+  "TRAV4-4-DV10": "MQRNLGAVLGILWVQICWVRGDQVEQSPSALSLHEGTGSALRCNFTTTMRAVQWFQQNSRGSLINLFYLASGTKENGRLKSTFNSKESYSTLHIRDAQLEDSGTYFC",
+  "TRAV4N-3": "MERNLGAVLGILWVQICWVSGDKVKQSPSALSLQEGTNSALRCNFSIAATTVQWFLQNPRGSLMNLFYLVPGTKENGRLKSAFDSKESYSTLHIRDAQLEDSGTYFC",
+  "TRAV4N-4": "MQRNLGAVLGILWVQICWVRGDQVEQSPSALSLHEGTGSALRCNFTTTMRAVQWFRKNSRGSLINLFYLASGTKENGRLKSAFDSKERYSTLHIRDAQLEDSGTYFC",
+  "TRAV5-1": "MKTAIHALFIFFWLQMDWKSQGEQVEQLPSSLIVQEGASVLINCSYTDSASVYFPWYKQEPGKRLQFIIDIRSNMERKQTQRLTLLFDKKTKHLSLHITATQPGDSAIYFC",
+  "TRAV5-4": "MKTYAPTLFMFLWLQLDGMSQGEQVEQLPSILRVQEGSSASINCSYEDSASNYFPWYKQEPGENPKLIIDIRSNMERKQIQELIVLLDKKAKRFSLHITDTQPGDSAMYFC",
+  "TRAV5N-4": "MKTYAPTLFMFLWLQLDGMSQGEQVEQLPSILRVQEGSSASINCTYENSASNYFPWYKQEPGENPKLIIDIRSNMERKQTQGLIVLLDKKAKRFSLHITDTQPGDSAMYFC",
+  "TRAV6-1": "MNYSPALVTVMLFVFGRTHGDSVTQMQGQVTLSEDDFLFINCTYSTTWYPTLFWYVQYPGEGPQLLLKVTTANNKGISRGFEATYDKGTTSFHLQKASVQESDSAVYYC",
+  "TRAV6-2": "MNTSPALVTVMLLFMLERTHGNSVTQMQGQVTLSEEEFLFINCTYSTTGYPTLFWYVQYPGEGPQLLLKVTTANNKGSSRGFEATYDKGTTSFHLQKASVQESDSAVYYC",
+  "TRAV6-3": "MNNSPALVTVMLFILGRTHGDSVIQMQGQVTLSENDFLFINCTYSTTGYPTLFWYVQYSGEGPQLLLQVTTANNKGSSRGFEATYDKGTTSFHLQKTSVQEIDSAVYYC",
+  "TRAV6-4": "MNTSPVLVTVMLLFMLGMRKTHGDSVTQKQGQVTLSEDDFLFINCTYSTTTYPTLLWYVQYLGQGPQLLLKVTTANNKGISRGFEATYDKGTTSFHLQKASVQESDSAVYFC",
+  "TRAV6-5": "MNLCPELGILLFLMLGESNGDSVTQTEGPVTLSEGTSLTVNCSYETKQYPTLFWYVQYPGEGPQLLFKVPKANEKGSNRGFEATYNKEATSFHLQKASVQESDSAVYYC",
+  "TRAV6-7-DV9": "MLRIMNTVEMGLKMNSSPGFMTVMLLIFTRAHGDSVTQTEGQVALSEEDFLTIHCNYSASGYPTLFWYVQYPGEGPQLLFRASRDKEKGSSRGFEATYDKGTTSFHLRKASVQESDSAVYYC",
+  "TRAV6D-4": "MNTSPVLVTAMLLFMLGMRKTHGDSVTQKQGQVTLSEDDFLFINCTYSTTTYPTLFWYVQYPGQGPQLLLKVTTANNKGISRGFEATYDKGTTSFHLQKASVQESDSAVYFC",
+  "TRAV6D-5": "MNLCPELGILLFLMLGESNGDSVTQTKGPVTLSEGTSLTVNCSYETKQYPTLFWYVQYPGEGPQLLFKVPKANEKGSNRGFEATYDKGTTSFHLQKASVQESDSAVYYC",
+  "TRAV6D-6": "MDSSPGFVAVILLILGRTHGDSVTQTEGPVTVSESESLIINCTYSATSIAYPNLFWYVRYPGEGLQLLLKVITAGQKGSSRGFEATYNKETTSFHLQKASVQESDSAVYYC",
+  "TRAV6D-7": "MNSSPGFMTVMLLIFTRAHGDSVTQTEGQVALSEEDFLTIHCNYSASGYPALFWYVQYPGEGPQFLFRASRDKEKGSSRGFEATYDKGTTSFHLRKASVQESDSAVYYC",
+  "TRAV6N-5": "MNLCPELGILLFLMLFGESNGDSVTQTEGPVTLSEGTSLTVNCSYETKQYPTLFWYVQYPGEGPQLLFKVPKANEKGSNRGFEATYNKEATSFHLQKASVQESDSAVYYC",
+  "TRAV6N-6": "MDSSPGFVAVILLILGRTHGDSVTQTEGQVTVSESKSLIINCTYSATSIGYPNLFWYVRYPGEGLQLLLKVITAGQKGSSRGFEATYNKEATSFHLQKASVQESDSAVYYC",
+  "TRAV6N-7": "MGLKMNSSPGFMTVMLLIFTRAHGDSVTQTEGQVALSEEDFLTIHCNYSASGYPALFWYVQYPGEGPQFLFRASRDKEKGSSRGFEATYDKGTTSFHLRKASVQESDSAVYYC",
+  "TRAV7-1": "MKSLCVSLVVLWLQLHWVNSQQKVQQSPESLIVPEGGMASLNCTFSDRNSQYFWWYRQHSGEGPKALMSIFSNGDKKEGRFTAHLNKASLHVSLHIKDSQPSDSALYFC",
+  "TRAV7-3": "MKSLSVSLVVLWLQLNWVNSQQKVQQSPESLIVPEGAMTSLNCTFSDSASQYFAWYRQHSGKAPKALMSIFSNGEKEEGRFTIHLNKASLHFSLHIRDSQPSDSALYLC",
+  "TRAV7-4": "MKSLSVSLVVLWLQLNCVRSQQKVQQSPESLSVPEGGMASLNCTSSDRNFQYFWWYRQHSGEGPKALMSIFSDGDKKEGRFTAHLNKASLHVSLHIRDSQPSDSALYFC",
+  "TRAV7-5": "MKSLSVSLVVLWLQFNWVSSQQKVQQSPESLTVSEGAMASLNCTFSDGTSNNFRWYRQHSAKGLEVLVSIFSDGEKEEGRFTAHLNRANLHVSLHIREPQPSDSAVYLC",
+  "TRAV7-6": "MHSLHVSLVFLWLQLGGVSSQEKVQQSPESLIVPEGAMVSLNCSFSDSASQSIWWYQQHPGKGPKALISIFSNGNKKEGRLTVYLNRASLHVSLHIKDSQPSDSAVYLC",
+  "TRAV7D-2": "MKSFSISLVVLWLQLNWVNSQQKVQQSPESLIVPEGGMASLNCTSSDRNVDYFWWYRQHSGKSPKMLMSIFSNGEKEEGRFTVHLNKASLHTSLHIRDSQPSDSALYLC",
+  "TRAV7D-4": "MKSLSVLLVVLWLQLNCVRSQQKVQQSPESLSVPEGGMASLNCTSSDRNFQYFWWYRQHSGEGPKALMSIFSDGDKKEGRFTAHLNKASLHVSLHIRDSQPSDSALYFC",
+  "TRAV7N-4": "MKSLSVSLVVLWLQLNWVKSQQKVQQSPESLSVPEGGMASLNCTSSDRNFQYFWWYRQHSGEGPKALMSIFSDGDKKEGRFTAHLNKASLHVSLHIRDSQPSDSALYFC",
+  "TRAV7N-5": "MKSLSVSLVVLWLQFNWVRSQQKVQQSPESLTVSEGAMASLNCTFSDRSSDNFRWYRQHSGKGLEVLVSIFSDGEKEEGSFTAHLNRASLHVFLHIREPQPSDSALYLC",
+  "TRAV7N-6": "MHSLHVSLVFLWLQLGGVSSQEKVQQSPESLIVPEGAMSSLNCTFSNSASQSIWWYQQHPGKGPEALISIFSNGNKKEGRLTVYLNRASLHVSLHIRDSQPSDSAVYLC",
+  "TRAV8-1": "MHSLLGLLLWLQLTRVNSQLAEENSWALSVHEGESVTVNCSYKTSITALQWYRQKSGKGPAQLILIRSNEREKRNGRLRATLDTSSQSSSLSITATRCEDTAVYFC",
+  "TRAV8D-1": "MHSLLGLLMVSLWLQLTRVNSQLAEENLWALSVHEGESVTVNCSYKTSITALQWYRQKSGEGPAQLILIRSNEREKRNGRLRATLDTSSQSSSLSITATRCEDTAVYFC",
+  "TRAV8D-2": "MNRFLGISLVTLWFRVAWAKSQWGEENLQALSIQEGEDVTMNCSYKTYTTVVHWYRQDSGRGPALIILIRSNEREKRSGRLRATLDTSSQSSSLSITAAQCEDTAVYFC",
+  "TRAV8N-2": "MNRFLGISLVTLWFQVAWAKSQWGEENLQALSIQEGEDVTMNCSYKTYTTVVQWYRQKSGKGPAQLILIRSNEREKRSGRLRATLDTSSQSSSLSITGTLATDTAVYFC",
+  "TRAV9-1": "MLLVLISFLGIHFFLDVQTQTVSQSDAHVTVFEGDSVELRCNYSYGGSIYLSWYIQHHGHGLQFLLKYYSGNPVVQGVNGFEAEFSKSDSSFHLRKASVHWSDSAVYFC",
+  "TRAV9-2": "MLLALLPVLGIHFVLRDAQAQSVTQPDARVTVSEGASLQLRCKYSYSGTPYLFWYVQYPRQGLQLLLKYYSGDPVVQGVNGFEAEFSKSNSSFHLRKASVHWSDSAVYFC",
+  "TRAV9-4": "MLLALLPVLGIHFVLRDAQAQSVTQPDARVTVSEGASLQLRCKYSYSGTPYLFWYVQYPRQGLQLLLKYYSGDPVVQGVNGFEAEFIKSNSSFHLRKASVHWSDSAVYFC",
+  "TRAV9D-1": "MLLVLISFLGIHFFLDVQTQTVSQSDAHVTVFEGDSVELRCNYSYGGSIYLSWYIQHHGRGLQFLLKYYSGNPVVQGVNGFKAEFSKSDSSFHLRKASVHWSDSAVYFC",
+  "TRAV9D-4": "MLLALLPVLGIHFVLRDAQAQSVTQPDARVTVSEGASLQLRCKYSYSATPYLFWYVQYPRQGLQLLLKYYSGDPEFSKSNSSFHLQKASVHWSDSAVYFC",
+  "TRAV9N-2": "MLLALLPVLGIHFVLRDAQAQSVTQPDARVTVSEGASLQLRCKYSSSGTPYLFWYVQYPRQGLQLLLKYYSGDPVVQGVNGFEAEFSKSNSSFHLRKASVHWSDSAVYFC",
+  "TRAV9N-3": "MLLALLPVLGIHFLLRDAQAQSVTQPDARVTVSEGASLQLRCKYSYFGTPYLFWYVQYPRQGLQLLLKYYPGDPVVQGVNGFEAEFSKSNSSFHLRKASVHWSDWAVYFC",
+  "TRAV9N-4": "MLLALLPVLGIHFVLRDAQAQSVTQPDARVTVSEGASLQLRCKYSYSATPYLFWYVQYPRQGLQLLLKYYSGDPVVQGVNSFEAEFSKSNSSFHLQKASVHWSDSAVYFC"
+ }
+}

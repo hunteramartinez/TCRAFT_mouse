@@ -1,16 +1,21 @@
 #!/usr/bin/env python
 """
-Design overhang sets for the mouse TCRAFT library.
+Design the final overhang sets for the mouse TCRAFT library and save them to
+references/mouse/overhang_sets.json.
 
-  Step 1 (BbsI):   TRBV vectors,  overhangs = (TRBV 3' window, TRAC N-term window)
-  Step 2 (BsmBI/BsaI): TRAV vectors, overhangs = (TRBC1 N-term window, TRAV 3' window)
+  Step 1 (BbsI):        TRBV vectors  - overhangs (TRBV 3' window, TRAC N-term window)
+  Step 2 (BsmBI/BsaI):  TRAV vectors  - overhangs (TRBC1 N-term window, TRAV 3' window)
 
-Windows copy the human ranges: constants = first 10 codons (30 nt); TRBV = last 33 nt,
-TRAV = last 21 nt of the leader->Cys104 block (Cys104 codon is preserved by construction).
-usage: uv run python TCRAFT/scripts/design_overhangs.py [--pools 1 2 3 4]
+Windows copy the human ranges: constants = first 10 codons (30 nt); TRBV = last 33 nt and
+TRAV = last 21 nt of the leader->Cys104 block (the Cys104 codon is preserved: recoding is synonymous).
+All TRBV share one pool (A); TRAV is split into two contiguous natural-order halves
+(A = BsmBI, B = BsaI), mirroring the human A/B design.
+
+usage: uv run python TCRAFT/scripts/design_overhangs.py [--seeds 3]
 """
 import argparse
 import json
+import re
 import statistics
 import sys
 from pathlib import Path
@@ -19,11 +24,18 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from TCRAFT.overhang_tools import Fidelity, optimize, window_candidates  # noqa: E402
+from TCRAFT.overhang_tools import Fidelity, optimize, rc, window_candidates  # noqa: E402
 
 REF = ROOT / "TCRAFT" / "references" / "mouse"
 V_WIN = {"TRB": 33, "TRA": 21}
 C_WIN = 30
+# Overhangs already used by the (human-derived) vector flanks / middle sites; never reuse them.
+FIXED = {"TAAT", "AAAC", "GTCA", "GAAT_PLACEHOLDER"} - {"GAAT_PLACEHOLDER"}
+FIXED_ALL = FIXED | {rc(x) for x in FIXED}
+
+
+def natural_key(s):
+    return [int(t) if t.isdigit() else t for t in re.findall(r"\d+|\D+", s)]
 
 
 def read_fasta_seq(path, key):
@@ -43,57 +55,94 @@ def backtranslate(aa, usage):
     return "".join(best[a] for a in aa)
 
 
+def usage_score(span, freq):
+    return sum(freq.get(span[i:i + 3], 0) for i in range(0, len(span), 3))
+
+
+def pick(cands, oh, freq, prefer):
+    """Choose one (start, codon_idx, span) for overhang `oh`. prefer: 'early' or 'late' start."""
+    opts = cands[oh]
+    key = (lambda o: (o[0], -usage_score(o[2], freq))) if prefer == "early" else (lambda o: (-o[0], -usage_score(o[2], freq)))
+    return min(opts, key=key)
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--pools", type=int, nargs="+", default=[1, 2, 3, 4])
-    ap.add_argument("--seed", type=int, default=1)
+    ap.add_argument("--seeds", type=int, default=3)
     args = ap.parse_args()
 
     usage = json.load(open(REF / "mouse_codon_usage.json"))
+    freq = {c.lower(): f for lst in usage.values() for c, f in lst}
     cons = pd.read_csv(REF / "mouse_V_consensus.csv")
     trac = read_fasta_seq(REF / "mouse_constants_cys_nt.fa", "TRAC_Cys")
     trbc = read_fasta_seq(REF / "mouse_constants_cys_nt.fa", "TRBC1_Cys")
-    trac_c = list(window_candidates(trac, 0, C_WIN))
-    trbc_c = list(window_candidates(trbc, 0, C_WIN))
-    print(f"constant-window candidates (palindromes + site-creating recodings removed): "
-          f"TRAC {len(trac_c)}, TRBC1 {len(trbc_c)}")
 
-    def v_cands(chain):
-        g = cons[cons.chain == chain].drop_duplicates("vector_group").sort_values("vector_group")
-        names, cands = [], []
+    def filt(d):
+        return {o: v for o, v in d.items() if o not in FIXED_ALL}
+
+    trac_d = filt(window_candidates(trac, 0, C_WIN))
+    trbc_d = filt(window_candidates(trbc, 0, C_WIN))
+    trac_c, trbc_c = list(trac_d), list(trbc_d)
+    print(f"constant windows: TRAC {len(trac_c)} candidates, TRBC1 {len(trbc_c)}")
+
+    def v_block(chain):
+        g = cons[cons.chain == chain]
+        groups = {}
         for _, r in g.iterrows():
-            nt = backtranslate(r.v_aa, usage)
-            c = list(window_candidates(nt, max(0, len(nt) - V_WIN[chain]), len(nt)))
-            names.append(r.vector_group)
-            cands.append(c)
-        return names, cands
+            groups.setdefault(r.vector_group, {"aa": r.v_aa, "genes": []})["genes"].append(r.gene)
+        names = sorted(groups, key=natural_key)
+        dicts = []
+        for n in names:
+            nt = backtranslate(groups[n]["aa"], usage)
+            dicts.append(filt(window_candidates(nt, max(0, len(nt) - V_WIN[chain]), len(nt))))
+        return names, groups, dicts
 
-    trbv_names, trbv_c = v_cands("TRB")
-    trav_names, trav_c = v_cands("TRA")
-    for lab, names, c in (("TRBV", trbv_names, trbv_c), ("TRAV", trav_names, trav_c)):
-        k = [len(x) for x in c]
-        print(f"{lab}: {len(names)} vector groups | candidates/gene min {min(k)} median {statistics.median(k)} max {max(k)}"
-              f" | genes with <10: {[n for n, x in zip(names, k) if x < 10]}")
+    trbv_names, trbv_groups, trbv_d = v_block("TRB")
+    trav_names, trav_groups, trav_d = v_block("TRA")
+    for lab, names, d in (("TRBV", trbv_names, trbv_d), ("TRAV", trav_names, trav_d)):
+        k = [len(x) for x in d]
+        print(f"{lab}: {len(names)} vector groups | candidates/gene min {min(k)} median {statistics.median(k)} max {max(k)}")
 
-    # ---- Step 1: all TRBV in one pool, BbsI ----
-    f_bbs = Fidelity("BbsI")
-    L, R, sc = optimize(f_bbs, trbv_c, [trac_c] * len(trbv_c), seed=args.seed, patience=600,
-                        stage1=(4, 8000, 1e-4), stage2=(4, 4000, 1e-3))
-    print(f"\nStep 1 TRBV-TRAC, 1 pool of {len(L)} (BbsI): f1={sc['f1']:.3f} mean_p={sc['p_vec'].mean():.3f} "
-          f"distinct L/R={len(set(L))}/{len(set(R))}")
+    result = {"TRBV": {}, "TRAV": {}, "members": {}, "scores": {}}
 
-    # ---- Step 2: TRAV split into P pools (alternating BsmBI / BsaI tables) ----
-    fids = {"BsmBI": Fidelity("BsmBI"), "BsaI": Fidelity("BsaI")}
-    for P in args.pools:
-        print(f"\nStep 2 TRBC1-TRAV with {P} pool(s) (balanced, gene order):")
-        n = len(trav_names)
-        for k in range(P):
-            idx = list(range(k, n, P))  # interleave so each pool spans all families
-            enz = "BsmBI" if k % 2 == 0 else "BsaI"
-            L, R, sc = optimize(fids[enz], [trbc_c] * len(idx), [trav_c[i] for i in idx], seed=args.seed + k,
-                                patience=600, stage1=(4, 8000, 1e-4), stage2=(4, 4000, 1e-3))
-            print(f"  pool {k+1} ({enz}) n={len(idx):2d}: f1={sc['f1']:.3f} mean_p={sc['p_vec'].mean():.3f} "
-                  f"distinct L/R={len(set(L))}/{len(set(R))}")
+    def best_of(fid, lc, rc_, tag):
+        best = None
+        for sd in range(args.seeds):
+            L, R, sc = optimize(fid, lc, rc_, seed=100 + sd, patience=1000)
+            print(f"   {tag} seed {sd}: f1={sc['f1']:.4f} mean_p={sc['p_vec'].mean():.4f}")
+            if best is None or sc["f"] > best[2]["f"]:
+                best = (L, R, sc)
+        return best
+
+    # ---- Step 1: TRBV (single pool A), BbsI ----
+    print("\nStep 1 TRBV-TRAC (BbsI), one pool:")
+    L, R, sc = best_of(Fidelity("BbsI"), [list(d) for d in trbv_d], [trac_c] * len(trbv_names), "TRBV")
+    result["scores"]["TRBV_A"] = dict(enzyme="BbsI", n=len(L), f1=sc["f1"], mean_p=float(sc["p_vec"].mean()))
+    for i, n in enumerate(trbv_names):
+        ls, lc0, lspan = pick(trbv_d[i], L[i], freq, "late")
+        rs, rc0, rspan = pick(trac_d, R[i], freq, "early")
+        result["TRBV"][n] = dict(set="A", left=L[i], left_info=[ls, lc0, lspan], right=R[i], right_info=[rs, rc0, rspan])
+        result["members"][n] = trbv_groups[n]["genes"]
+
+    # ---- Step 2: TRAV, two contiguous natural-order halves ----
+    half = (len(trav_names) + 1) // 2
+    pools = {"A": (list(range(0, half)), "BsmBI"), "B": (list(range(half, len(trav_names))), "BsaI")}
+    for pool, (idx, enz) in pools.items():
+        print(f"\nStep 2 TRBC1-TRAV pool {pool} ({enz}), n={len(idx)}: {trav_names[idx[0]]} .. {trav_names[idx[-1]]}")
+        L, R, sc = best_of(Fidelity(enz), [trbc_c] * len(idx), [list(trav_d[i]) for i in idx], f"TRAV-{pool}")
+        result["scores"][f"TRAV_{pool}"] = dict(enzyme=enz, n=len(idx), f1=sc["f1"], mean_p=float(sc["p_vec"].mean()))
+        for j, i in enumerate(idx):
+            n = trav_names[i]
+            ls, lc0, lspan = pick(trbc_d, L[j], freq, "early")
+            rs, rc0, rspan = pick(trav_d[i], R[j], freq, "late")
+            result["TRAV"][n] = dict(set=pool, left=L[j], left_info=[ls, lc0, lspan], right=R[j], right_info=[rs, rc0, rspan])
+            result["members"][n] = trav_groups[n]["genes"]
+
+    result["v_aa"] = {n: g["aa"] for grp in (trbv_groups, trav_groups) for n, g in grp.items()}
+    out = REF / "overhang_sets.json"
+    json.dump(result, open(out, "w"), indent=1)
+    print("\nwrote", out)
+    print(json.dumps(result["scores"], indent=1))
 
 
 if __name__ == "__main__":

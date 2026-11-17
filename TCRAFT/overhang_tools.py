@@ -145,6 +145,60 @@ def has_site(s):
     return any(x in s or rc(x) in s for x in SITES)
 
 
+_HOMOPOLY = ("AAAAA", "CCCCC", "GGGGG", "TTTTT")
+
+
+def count_problems(s):
+    """Number of screened restriction-site hits (either strand) + homopolymer runs >= 5."""
+    s = s.upper()
+    n = 0
+    for x in SITES:
+        for y in {x, rc(x)}:
+            i = s.find(y)
+            while i != -1:
+                n += 1
+                i = s.find(y, i + 1)
+    return n + sum(s.count(h) for h in _HOMOPOLY)
+
+
+def clean_nt(nt, usage, protect=(), sites_only=False):
+    """
+    Remove screened restriction sites (and homopolymers >= 5 unless sites_only) from an
+    in-frame coding sequence using synonymous codon swaps only.
+    usage: {aa: [[codon, freq], ...]} (e.g. mouse_codon_usage.json), used to prefer common codons.
+    protect: codon indices that must not change (e.g. an already-chosen overhang window).
+    Greedy: repeatedly apply the swap that most reduces the problem count, ties -> higher usage.
+    """
+    freq = {c.lower(): f for aa, lst in usage.items() for c, f in lst}
+    cost = (lambda s: len([1 for x in SITES for y in {x, rc(x)} if y in s.upper()])) if sites_only else count_problems
+    codons = [nt[i:i + 3].lower() for i in range(0, len(nt) // 3 * 3, 3)]
+    prot = str(Seq("".join(codons)).translate())
+    protect = set(protect)
+    cur = cost("".join(codons))
+    while cur > 0:
+        best = None
+        seq = "".join(codons)
+        for i, aa in enumerate(prot):
+            if i in protect or len(SYN[aa]) < 2:
+                continue
+            lo, hi = max(0, (i - 5) * 3), (i + 6) * 3
+            before = cost(seq[lo:hi])
+            for alt in SYN[aa]:
+                if alt == codons[i]:
+                    continue
+                trial = seq[:i * 3] + alt + seq[i * 3 + 3:]
+                gain = before - cost(trial[lo:hi])
+                if gain > 0 and (best is None or (gain, freq.get(alt, 0)) > best[0]):
+                    best = ((gain, freq.get(alt, 0)), i, alt)
+        if best is None:
+            raise ValueError("clean_nt: could not remove all problems with synonymous swaps")
+        codons[best[1]] = best[2]
+        cur = cost("".join(codons))
+    out = "".join(codons)
+    assert str(Seq(out).translate()) == prot
+    return out
+
+
 def window_candidates(nt, lo, hi):
     """
     nt: in-frame coding sequence (any valid back-translation; only its protein and local
@@ -160,7 +214,7 @@ def window_candidates(nt, lo, hi):
         right_ctx = nt[(c1 + 1) * 3: (c1 + 3) * 3]
         for combo in product(*[SYN[prot[c]] for c in range(c0, c1 + 1)]):
             span = "".join(combo)
-            if has_site(left_ctx + span + right_ctx):
+            if count_problems(left_ctx + span + right_ctx):
                 continue
             oh = span[s - c0 * 3: s - c0 * 3 + 4].upper()
             if is_palindromic(oh):

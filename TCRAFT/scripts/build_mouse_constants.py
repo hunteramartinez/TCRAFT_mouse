@@ -87,6 +87,18 @@ def main():
     trac_cys = apply_cys(trac, "DKTVLDM", 2)
     trbc_cys = apply_cys(trbc, "GVSTDP", 2)
 
+    # domesticate: remove BsaI/BsmBI/BbsI/SapI/XbaI/EcoRI/XhoI/EcoRV/NotI sites by synonymous swaps
+    import json
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    from TCRAFT.overhang_tools import clean_nt, count_problems
+    usage = json.load(open(REF / "mouse_codon_usage.json"))
+    for nm, seq in (("TRAC", trac_cys), ("TRBC1", trbc_cys)):
+        print(f"{nm}: screened-site hits before domestication: "
+              f"{count_problems(seq) - sum(seq.upper().count(h) for h in ('AAAAA','CCCCC','GGGGG','TTTTT'))}")
+    trac_cys = clean_nt(trac_cys, usage, sites_only=True)
+    trbc_cys = clean_nt(trbc_cys, usage, sites_only=True)
+
     p_trac, p_trbc = str(Seq(trac_cys).translate()), str(Seq(trbc_cys).translate())
     ref_trac = fasta(REF / "imgt_genes_aa" / "IMGT_TRAC_LVL-Cys_aa.fa")[0][1].replace("X", "D", 1)
     ref_trbc = fasta(REF / "imgt_genes_aa" / "IMGT_TRBC1_Cys_aa.fa")[0][1].replace("X", "E", 1)
@@ -97,8 +109,8 @@ def main():
 
     out = REF / "mouse_constants_cys_nt.fa"
     with open(out, "w") as fh:
-        fh.write(">TRAC_Cys_T48C_no-stop  (starts at D codon after J; LVL not applied)\n" + trac_cys + "\n")
-        fh.write(">TRBC1_Cys_S57C_no-stop (starts at E codon after J; LVL n/a)\n" + trbc_cys + "\n")
+        fh.write(">TRAC_Cys_T48C_no-stop  (starts at D codon after J; LVL not applied; domesticated)\n" + trac_cys + "\n")
+        fh.write(">TRBC1_Cys_S57C_no-stop (starts at E codon after J; domesticated)\n" + trbc_cys + "\n")
     print("wrote", out)
 
     for name, nt in (("TRAC", trac_cys), ("TRBC1", trbc_cys)):
