@@ -147,10 +147,20 @@ each constant and the last 33 nt (TRBV) / 21 nt (TRAV) of each V block.
 
 ## Validation so far
 
-On a random 2,000-TCR sample of the HAM-07-007-012 clones: all 2,000 produced valid oligos (0.85% >300 bp), all 2,000
-passed simulated assembly, and the assembled V+CDR3+J protein matched each clone's own sequence in the source file for
-99.8% of β chains and 98.35% of α chains (98.15% for both). Remaining differences are mostly single residues where a
-clone deviates from its gene's consensus. **No wet-lab validation yet.**
+Full run on all **164,646** paired clones of HAM-07-007-012 (97% singletons; every clone, expanded or not):
+
+- **Generate:** 164,646 / 164,646 valid oligos, 0 invalid. 296 (0.18%) are >300 bp (mean 262 bp; mean of the >300 bp
+  group 304 bp). About 650 oligos needed resampling to clear a junction restriction site.
+- **Validate (simulated assembly):** 164,646 / 164,646 assembled to the intended protein with no stray restriction
+  sites; 0 failures. Final vectors are 1,752-1,875 nt (TRBV-CDR3-TRAC step-1 products average 935 nt).
+  Step 2 splits 90,379 TCRs into the TRAV A / BsmBI reaction and 74,267 into B / BsaI (set by the TRAV genes the
+  clones use).
+- **Independent check against the source data:** the translated V+CDR3+J of each assembled TCR was compared with that
+  clone's own `sequence_aa` in the input file (164,086 unique TCRs): identical for **99.69% of β chains and 98.31% of
+  α chains**. The differences are mostly single residues where a clone deviates from its gene's consensus. This
+  check is what exposed the J-gene-specific TRAJ/TRAC residue and two wrong J-table rows during development.
+
+**No wet-lab validation yet.**
 
 ## Known placeholders and limitations
 
