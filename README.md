@@ -1,97 +1,167 @@
-# TCRAFT
-TCRAFT is a a scalable and cost-effective platform for pooled assembly of synthetic TCR libraries. This software package converts a table of user-inputted TCR sequences into CDR3 oligonucleotide pools to order for the TCRAFT assembly process. 
+# TCRAFT — mouse implementation
 
-The TCRAFT package requires prior installation of [Python](https://www.python.org/downloads/) 3.7 or higher as well as an updated version of pip.
+TCRAFT (**T**CR **R**apid **A**ssembly for **F**unctional **T**esting) is a scalable, low-cost platform for pooled
+assembly of synthetic TCR libraries by Golden Gate cloning. This repository is a **direct mouse implementation of
+the human TCRAFT design**: the assembly logic, oligo layout, A/B pooling scheme and software interface are the same;
+only the sequences (V/J genes, constant regions, codon usage, overhang sets) are mouse.
+
+The software turns a table of TCRs into CDR3 oligonucleotide pools to order, and then simulates the Golden Gate
+assembly of those oligos to check that every TCR assembles into exactly the intended protein.
+
+> Original method: Gaglione *et al.*, "Scalable TCR synthesis and screening enable antigen reactivity mapping in
+> vitiligo", *Immunity* 2026 (`docs/gaglione_et_al.pdf`). Original human code: Rachit Mukkamala,
+> [birnbaumlab/TCRAFT](https://github.com/birnbaumlab/TCRAFT).
+> The separate CRISPR-HDR knock-in design for mouse lives on the `mouse-trac-hdr` branch.
+
+## The mouse cassette
+
+```
+TRBV ─ CDR3β ─ TRBJ ─ TRBC1(Cys) ─ GSG-P2A ─ TRAV ─ CDR3α ─ TRAJ(+J/C residue) ─ TRAC(Cys) ─ stop
+```
+
+- **Order:** β – P2A – α. The P2A includes the N-terminal GSG linker (`GSGATNFSLLKQAGDVEENPGP`).
+- **Constants:** Cys-engineered mouse TRBC1 (S57C) and TRAC (T48C) for preferential α/β pairing. The LVL
+  transmembrane mutation is **not** applied. All TCRs use TRBC1.
+- **Oligo layout** (identical to human): `fwd primer | BbsI | TRBV-right | CDR3β-J | TRBC-left | BsmBI-or-BsaI middle
+  site | TRAV-right | CDR3α-J | TRAC-left | BbsI | rev primer`.
+- **Three Golden Gate steps:** (1) the oligo is ligated into TRBV–TRAC vectors with BbsI; (2) a TRBC1-P2A-TRAV insert is
+  placed between the two CDR3s with BsmBI (TRAV pool A) or BsaI (pool B); (3) transfer to the expression vector (pMIGR).
+- **Overhangs:** each V-gene vector carries a unique pair of 4-nt overhangs written into the gene by synonymous
+  recoding only (never changing the protein; Cys104 is always preserved).
+- **J–C junction:** the residue between TRAJ and TRAC is encoded by `(last J nucleotide) + AC` and is N, D, Y or H
+  depending on the J gene. It is carried by the TRAJ sequence and TRAC starts at `IQN…`, as in the human design.
+
+### Gene coverage
+
+The V genes are those observed in the clonotype table used to build the references
+(HAM-07-007-012, 164,646 paired clones): **89 TRAV and 22 TRBV genes** (identical-protein genes share a vector:
+85 unique TRAV blocks), and **55 J genes** (43 TRAJ, 12 TRBJ). TCRs that use any other gene are reported in
+`Invalid_CDR3_table.csv`. V sequences are per-gene **consensus** proteins (leader → Cys104) taken from the Cell Ranger
+`sequence_aa` of every clone using that gene, so they follow your animals' sequences, not IMGT. (IMGT is only the
+fallback for genes with <30 clones; several IMGT "N"-gene records are also wrong or truncated.)
+
+### Pools
+
+| Reaction | Vectors | Pools | Model fidelity f1* |
+|---|---|---|---|
+| Step 1 TRBV–TRAC (BbsI) | 22 | 1 (A) | 1.000 |
+| Step 2 TRBC1–TRAV | 85 | 2: A = BsmBI (43), B = BsaI (42) | 0.9987 / 0.9991 |
+
+\*Worst-case predicted correct-assembly score from the NEB 4-nt ligation-fidelity tables, using the scoring function of
+Gaglione *et al.* (human sets score 0.63–0.80 under the same function). These are model scores, not measured rates.
+
+**The `Pool` column in the oligo files is the Step-1 (TRBV) pool, so every oligo is in pool A and the "Pool B" files
+are empty.** The TRAV A/B split is built into each oligo (middle site BsmBI vs BsaI), so you order one pool and
+Step 2 separates it by enzyme.
 
 ## Installation
 
-### Option 1: Install from GitHub
-This option requires you to have [Git](https://git-scm.com/downloads) installed.
-1. Open Terminal or Command Prompt on your machine.
-2. Enter the following command: `pip install git+https://github.com/birnbaumlab/TCRAFT.git`
+Requires [uv](https://docs.astral.sh/uv/). Python 3.11 and the package versions used are pinned
+(`.python-version`, `pyproject.toml`, `uv.lock`).
 
-### Option 2: Build the TCRAFT package locally
-1. Download or clone the TCRAFT git repository locally.
-2. In Terminal or Command Prompt, navigate to the base directory of the package (`/TCRAFT`) and execute the following command: `pip install .`
-  
-### Note: Using TCRAFT command line interface
-In order to use the command line interface to run TCRAFT, you will need to either install TCRAFT inside of a [Conda](https://www.anaconda.com/download/success) environment or make sure that the folder where your Python packages are installed is added to your `$PATH` environment variable.
+```bash
+git clone https://github.com/hunteramartinez/TCRAFT_mouse.git
+cd TCRAFT_mouse
+git checkout mouse-tcraft-direct
+uv sync
+```
 
-If you are unfamiliar with these steps or are not interested in this, TCRAFT can also be imported and run from within a Python script. Both the Python and Command Line versions are identical, and instructions are provided for both options below.
+Run everything with `uv run` (e.g. `uv run TCRAFT-generate ...`). Dependencies: numpy, pandas, tqdm, biopython.
 
-### Note: Install Dependencies Manually
-By default, pip will automatically find and install all Python packages that are necessary for TCRAFT to run. In the event that dependency errors arise during installation, you can also manually install the requisite packages in your Python environment by running the following line in Terminal or Command Prompt:
+## Usage
 
-`pip install numpy pandas tqdm biopython`
+### 1. Prepare the TCR table
 
-TCRAFT uses the following package versions:
-- numpy>=1.26.4
-- pandas>=2.2.3
-- tqdm>=4.67.0
-- biopython>=1.84
+CSV with these columns (extra columns are ignored):
 
-## How to use the TCRAFT software package
-Once installed, TCRAFT can be executed from the either the terminal or a Python script using two simple functions: TCRAFT-generate and TCRAFT-validate. TCRAFT-generate takes in a CSV-formatted list of TCR sequences to assemble and generates lists of oligonucleotide sequences to order in pooled format for the TCRAFT assembly process. TCRAFT-validate takes in the list of oligonucleotides created by TCRAFT-generate and simulates TCRAFT Golden Gate assembly of these oligos into complete TCR sequences. TCRAFT-validate then checks all of these simulated assemblies to ensure that the desired TCR sequence is correctly assembled and does not contain any errors.
+| Column | Content |
+|---|---|
+| `V_alpha`, `V_beta` | mouse V gene, no allele, e.g. `TRAV6D-6`, `TRBV12-1` |
+| `J_alpha`, `J_beta` | J gene, no allele, e.g. `TRAJ31`, `TRBJ1-1` |
+| `CDR3_alpha`, `CDR3_beta` | junction amino acids, **C … F/W** (the conserved Cys through the J-anchor F/W) |
 
-Below are detailed instructions on how to use this package to prepare CDR3 oligo pools for your TCRAFT experiment:
+To convert a paired clonotype table (columns `tra_v_call`, `tra_j_call`, `tra_junction_aa`, and the `trb_*`
+equivalents):
 
+```bash
+uv run python TCRAFT/scripts/prepare_input_from_clonotypes.py clonotypes.csv tcrs.csv [--sample 2000 --seed 1]
+```
 
-1. **Prepare a CSV table of TCR sequences to assemble.** 
-The CSV table *must* contain the following columns or else TCRAFT-generate will throw an error:
-    - `V_alpha` (TCR $\alpha$ chain V region IMGT ID)
-    - `V_beta`  (TCR $\beta$ chain V region IMGT ID)
-    - `J_alpha` (TCR $\alpha$ chain J region IMGT ID)
-    - `J_beta` (TCR $\beta$ chain J region IMGT ID)
-    - `CDR3_alpha` (TCR $\alpha$ chain CDR3 amino acid sequence)
-    - `CDR3_beta` (TCR $\beta$ chain CDR3 amino acid sequence)
+### 2. Generate the oligo pools
 
-    A sample TCR list is provided in this repository as an example of how to properly format and prepare the TCR list and can be used to test the TCRAFT pipeline.
+```bash
+uv run TCRAFT-generate tcrs.csv --output_dir out/generate
+```
+```python
+from TCRAFT.Generate import generate_cdr3_oligos
+generate_cdr3_oligos("tcrs.csv", output_dir="out/generate")
+```
 
-2. **Generate CDR3 oligo pools by executing one of the following:**
+Outputs (in `output_dir`, default `./TCRAFT-generate_<date>`): `All_<N>_CDR3_oligos.csv`,
+`Under300_*`/`Over300_*` oligo files (≤300 bp for e.g. Twist, >300 bp for e.g. IDT), `Oligo_Pool_Metadata.csv`
+and `Invalid_CDR3_table.csv` (TCRs with an unsupported gene or that failed generation). Codon choice is random, so
+repeated runs give different (equivalent) DNA; seed `random`/`numpy` for reproducibility.
 
-    a. Command Line option:
-        
-        TCRAFT-generate /path/to/TCR/list.csv --output_dir /path/to/output/directory
+### 3. Validate by simulated assembly
 
-    b. Python script option:
-    
-        from TCRAFT.Generate import generate_cdr3_oligos
-        generate_cdr3_oligos(input_csv_path="/path/to/TCR/list.csv", output_dir="/path/to/output/directory")
+```bash
+uv run TCRAFT-validate out/generate/All_<N>_CDR3_oligos.csv --output_dir out/validate
+```
 
-    Note: The `output_dir` argument is optional and allows you to specify the output file directory. If not specified the output files will be stored in `./TCRAFT-generate_<current date>`. 
+Simulates Steps 1 and 2 for every oligo, translates the final vector and requires (a) the exact intended protein and
+(b) no stray BsmBI/BsaI/BbsI/SapI/XbaI/XhoI/EcoRI/EcoRV/NotI sites. Outputs
+`Reference_Assembled_TCR_Sequences.csv` (full sequences of passing TCRs), `Failed_Assemblies.csv` and
+`Assembly_Metadata.csv`.
 
-    TCRAFT-generate creates the following output files in the output directory:
-    - `All_<Number of TCRs>_CDR3_oligos.csv`: Contains all successfully generated oligos
-    - `Under300_All_CDR3_oligos.csv`: Contains only oligos with length <= 300bp (which can be ordered from suppliers such as Twist Biosciences).
-    - `Over300_All_CDR3_oligos.csv`: Contains only oligos with length > 300bp (which can be ordered from alternative suppliers such as IDT).
-    - `Under300_Pool<A or B>_CDR3_oligos.csv`: Split up the under 300bp oligos into pools that can be ordered together from an oligo pool supplier.
-    - `Over300_Pool<A or B>_CDR3_oligos.csv`: Split up the oversize >300bp oligos into pools that can be ordered together from an oligo pool supplier.
-    - `Oligo_Pool_Metadata.csv`: Table of oligo pool statistics which are helpful to plan out TCRAFT experimental protocols (ex: number of oligos per pool, average oligo size, etc.). This table can be directly pasted into the TCRAFT experiment planning workbook template to automatically compute resuspension volumes, mixing ratios, etc.
-    - `Invalid_CDR3_Table.csv`: Contains TCRs that failed TCRAFT oligo generation. The most common reason for failure is due to specification of a V/J allele ID which is not supported by TCRAFT (TCRAFT only uses functional, coding alleles as annotated by IMGT).
+> Note: the protein check uses the same reference tables as generation, so it tests the assembly mechanics, not
+> the biology of the tables themselves. The tables were additionally checked against the source data (below).
 
-3. **Validate the CDR3 oligo pools by executing one of the following:**
+## Reference tables (`TCRAFT/references/mouse/`)
 
-    a. Command Line option:
-    
-        TCRAFT-validate /path/to/TCRAFT/oligo/file.csv --output_dir /path/to/output/directory
+The pipeline reads only this folder. The human tables in `TCRAFT/references/` are kept for provenance and are not used.
+The files below mirror the human files one-to-one (same schemas):
 
-    b. Python script option:
-        
-        from TCRAFT.Validate import validate_cdr3_oligos
-        validate_cdr3_oligos(input_csv_path="path/to/TCRAFT/oligo/file.csv", output_dir="/path/to/output/directory")
-        
+`TRBV_TRAC_OHset.csv`, `TRBC_TRAV_OHset.csv` (overhang pairs + pool), `TRBV_TRAC_OH_frags.csv`,
+`TRBC_TRAV_OH_frags.csv` (oligo-side/vector-side fragments), `TRBV_vector_inserts.csv`, `TRAV_vector_inserts.csv`
+(gene blocks), `TRJ_seqs.csv`, `TRAC_protein.txt`, `TRBC1_protein.txt`, `TRAC_nt_conserved.txt`, `P2A.txt`,
+`Oligo_Components.json`, `mouse_codon_usage.json`; plus the mouse-specific `V_reference_aa.csv`,
+`mouse_V_consensus.csv`, `mouse_J_from_data.csv`, `overhang_sets.json` and `mouse_constants_cys_nt.fa`.
+(`cellranger_genes*`, `imgt_genes_*`, `mm_*_HDR_sequences.fa`, `mouse_J_FR4.csv` and `tcr_antibodies/` are inputs or
+leftovers from the HDR work and are not read by the pipeline.)
 
-    Note: Similar to above, the `output_dir` argument is optional. If not specified the output files will be stored in `./TCRAFT-validate_<current date>`. 
+### Rebuilding the tables
 
-    TCRAFT-validate will simulate Golden Gate assembly of all inputted CDR3 oligos. If an oligo fails assembly validation, either due to presence of extraneous restriction sites or mismatch between the simulated and desired TCR protein sequence, the program will print the oligo/TCR that needs fixing. At the end, the program will output the percentage of inputted TCRs that passed assembly validation.
+Run in this order (`clonotypes.csv` is the paired clonotype table):
 
-    TCRAFT-validate creates the following output files in the output directory:
-    - `Reference_Assembled_TCR_Sequences.csv`: These are the full successfully validated TCR sequences obtained after `TCRAFT-validate` simulated TCRAFT assembly of the CDR3 oligos into full TCR sequences. This reference list is sometimes useful to cross-check downstream experimental sequencing data against the ground-truth list of assembled sequences.
-    - `Failed_Assemblies.csv`: Contains the TCRs that failed assembly validation along with info that is helpful for debugging the failures.
-    - `Assembly_Metadata.csv`: Similar to the `Oligo_Pool_Metadata.csv` file, this table contains useful statistics for experimental planning and can also be directly pasted into the TCRAFT experiment planning workbook template.
+```bash
+uv run python TCRAFT/scripts/build_v_consensus.py clonotypes.csv     # per-gene V consensus (+ IMGT comparison)
+uv run python TCRAFT/scripts/build_j_from_data.py clonotypes.csv     # J segments + TRAJ junction residue
+uv run python TCRAFT/scripts/build_mouse_constants.py                # Cys constants, domesticated, checked vs IMGT
+uv run python TCRAFT/scripts/design_overhangs.py                     # overhang-set search → overhang_sets.json
+uv run python TCRAFT/scripts/build_mouse_tables.py                   # all CSV/TXT tables above
+```
+
+`TCRAFT/overhang_tools.py` holds the fidelity scoring (NEB tables in `references/neb_tables/`), the Metropolis
+search and the synonymous-recoding/site-removal helpers. Overhang windows copy the human ranges: the first 10 codons of
+each constant and the last 33 nt (TRBV) / 21 nt (TRAV) of each V block.
+
+## Validation so far
+
+On a random 2,000-TCR sample of the HAM-07-007-012 clones: all 2,000 produced valid oligos (0.85% >300 bp), all 2,000
+passed simulated assembly, and the assembled V+CDR3+J protein matched each clone's own sequence in the source file for
+99.8% of β chains and 98.35% of α chains (98.15% for both). Remaining differences are mostly single residues where a
+clone deviates from its gene's consensus. **No wet-lab validation yet.**
+
+## Known placeholders and limitations
+
+- The **vector-insert flanks** (XhoI/NotI ends, BsaI/BsmBI/BbsI sites, `TAAT`/`AAAC`/`GTCA`/`GGGT`), the **BbsI stuffer
+  cassette** and the **TRAC remainder in the Step-1 backbone** are copied from the human design until the mouse
+  intermediate vectors are designed.
+- Only genes seen in the source clonotype table are supported (10 further J genes in IMGT have no data and are omitted).
+- Overhang fidelity numbers are model predictions.
 
 ## Version
-1.1.0
+1.1.0+mouse (human TCRAFT 1.1.0 → mouse implementation)
 
-## Author
-[Rachit Mukkamala](mailto:rsmukk@mit.edu)
+## Authors
+Mouse implementation: Hunter Martinez. Original TCRAFT software: [Rachit Mukkamala](mailto:rsmukk@mit.edu).
