@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "TCRAFT"
+version = "1.1.0+mouse"
+description = "Mouse implementation of TCRAFT (TCR Rapid Assembly for Functional Testing): CDR3 oligo generation and in-silico validation for pooled Golden Gate TCR library assembly"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.26.4",
+    "pandas>=2.2.3",
+    "tqdm>=4.67.0",
+    "biopython>=1.84",
+]
+
+[project.scripts]
+TCRAFT-generate = "TCRAFT.Generate:run_CLI"
+TCRAFT-validate = "TCRAFT.Validate:run_CLI"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["TCRAFT*"]
+
+[tool.setuptools.package-data]
+"TCRAFT.references" = ["*"]
+"TCRAFT.references.mouse" = ["*"]

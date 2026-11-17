@@ -2,3 +2,10 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# raw inputs and generated outputs (large; keep local)
+/input_data
+/output
+/TCRAFT.egg-info
+/.venv
+custom_tcrs/HAM-07-007-012_CD4_clonotypes*
